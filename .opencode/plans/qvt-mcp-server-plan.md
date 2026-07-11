@@ -23,6 +23,8 @@ This plan details how to add Model Context Protocol (MCP) server capabilities to
 | **Transport** | Web: HTTP POST at `/mcp/qvt`; Local: `php artisan mcp:start qvt --user={id}` | MCP spec compliant; web for remote agents, local for desktop agents |
 | **Confirmation** | Preview/confirmed pattern on all write tools | AI agent presents a preview and asks for approval before executing destructive changes |
 | **Token Lifetime** | Long-lived, revocable | Staff generate tokens once and revoke from the admin profile when needed |
+| **Response Links** | Named route URLs in all record responses | Every tool returning a record includes a `url` field so agents can present clickable links back to staff |
+| **Chat-Forward Design** | Programmatic tool calls + natural-language messages | Tools return structured data + human-readable `message` + `url` so a future chat UI can consume them directly |
 
 ---
 
@@ -156,6 +158,56 @@ This ensures that even if a non-admin token is presented, no tools are exposed.
 - Read tools annotated with `#[IsReadOnly(true)]`.
 - No trade prices exposed in any tool response unless explicitly marked internal.
 - All tools validate input via `$request->validate()` with clear, actionable error messages.
+
+---
+
+## Response Link Standard
+
+Every tool that returns a single record (customer, quote, order, enquiry, vehicle, product) or operates on a single record (create, update, delete, status change) must include a `url` field pointing to the staff admin view page.
+
+### Rule
+
+| Tool Type | Required Response Fields |
+|-----------|--------------------------|
+| **Create/Update/Delete** | `status`, `message`, `url` + record data |
+| **Get by ID** | Record data + `url` |
+| **List/Search** | Each item in the array must include `url` |
+| **Preview** | `status: "preview"`, `message`, `data` (no `url` until confirmed) |
+
+### Named Routes
+
+Use existing named routes from the web UI:
+
+```php
+// Customer
+'url' => route('customers.show', $customer)
+
+// Quote
+'url' => route('quotes.show', $quote)
+
+// Order
+'url' => route('orders.show', $order)
+
+// Enquiry
+'url' => route('enquiries.show', $enquiry)
+```
+
+### Example: Create Customer Response (Confirmed)
+
+```json
+{
+  "status": "completed",
+  "message": "I have created a new customer record for John.",
+  "url": "http://localhost/customers/42",
+  "customer": {
+    "id": 42,
+    "name": "John",
+    "email": "john@johnblackmore.com"
+  }
+}
+```
+
+The AI agent can present this as a clickable card or button in the chat interface: **"View John in Customer List"**.
 
 ---
 
@@ -295,62 +347,62 @@ A new "AI Agent Access" page is added to the staff profile area.
 
 | Tool | Description | Write/Read | Key Params | Returns |
 |------|-------------|------------|------------|---------|
-| `create-customer` | Create a new customer record | Write | name, email, phone, address, notes, preview, confirmed | Customer JSON / Preview JSON |
-| `update-customer` | Update customer details | Write | id, name, email, phone, address, notes, preview, confirmed | Updated customer JSON / Preview JSON |
-| `list-customers` | List customers with pagination | Read | per_page, page, sort | Paginated customers |
-| `get-customer` | Get single customer by ID | Read | id | Customer with vehicles, quotes, orders |
-| `search-customers` | Fuzzy search by name/email | Read | query | Matching customers |
-| `delete-customer` | Soft delete a customer | Write (destructive) | id, preview, confirmed | Confirmation / Preview JSON |
+| `create-customer` | Create a new customer record | Write | name, email, phone, address, notes, preview, confirmed | Customer JSON + `message` + `url` / Preview JSON |
+| `update-customer` | Update customer details | Write | id, name, email, phone, address, notes, preview, confirmed | Updated customer JSON + `message` + `url` / Preview JSON |
+| `list-customers` | List customers with pagination | Read | per_page, page, sort | Paginated customers (each item has `url`) |
+| `get-customer` | Get single customer by ID | Read | id | Customer with `url`, vehicles, quotes, orders |
+| `search-customers` | Fuzzy search by name/email | Read | query | Matching customers (each item has `url`) |
+| `delete-customer` | Soft delete a customer | Write (destructive) | id, preview, confirmed | Confirmation + `message` + `url` / Preview JSON |
 
 ### Quote Tools
 
 | Tool | Description | Write/Read | Key Params | Returns |
 |------|-------------|------------|------------|---------|
-| `create-quote` | Create a blank quote for a customer | Write | customer_id, notes, valid_until, preview, confirmed | Quote JSON / Preview JSON |
-| `create-quote-from-template` | Clone a sample quote to a real quote | Write | sample_quote_id, customer_id, preview, confirmed | Quote with line items / Preview JSON |
-| `add-quote-line-item` | Add a product/labour/ad-hoc line | Write | quote_id, line_type, product_id, quantity, description, preview, confirmed | Updated quote / Preview JSON |
-| `update-quote-status` | Change quote status (draft->sent->accepted...) | Write | id, status, preview, confirmed | Updated quote / Preview JSON |
-| `list-quotes` | List quotes with filters | Read | status, customer_id, since, per_page | Paginated quotes |
-| `get-quote` | Get quote with full line items | Read | id | Quote with line items, totals |
-| `search-quotes` | Search by reference or customer | Read | query | Matching quotes |
-| `send-quote-email` | Send quote PDF via email template | Write | quote_id, template_id, custom_message, preview, confirmed | Email sent confirmation / Preview JSON |
+| `create-quote` | Create a blank quote for a customer | Write | customer_id, notes, valid_until, preview, confirmed | Quote JSON + `message` + `url` / Preview JSON |
+| `create-quote-from-template` | Clone a sample quote to a real quote | Write | sample_quote_id, customer_id, preview, confirmed | Quote with line items + `message` + `url` / Preview JSON |
+| `add-quote-line-item` | Add a product/labour/ad-hoc line | Write | quote_id, line_type, product_id, quantity, description, preview, confirmed | Updated quote + `message` + `url` / Preview JSON |
+| `update-quote-status` | Change quote status (draft->sent->accepted...) | Write | id, status, preview, confirmed | Updated quote + `message` + `url` / Preview JSON |
+| `list-quotes` | List quotes with filters | Read | status, customer_id, since, per_page | Paginated quotes (each item has `url`) |
+| `get-quote` | Get quote with full line items | Read | id | Quote with `url`, line items, totals |
+| `search-quotes` | Search by reference or customer | Read | query | Matching quotes (each item has `url`) |
+| `send-quote-email` | Send quote PDF via email template | Write | quote_id, template_id, custom_message, preview, confirmed | Email sent confirmation + `message` + `url` / Preview JSON |
 | `download-quote-pdf` | Generate and return PDF content | Read | quote_id | PDF binary or URL |
 
 ### Order Tools
 
 | Tool | Description | Write/Read | Key Params | Returns |
 |------|-------------|------------|------------|---------|
-| `create-order` | Create an order (optionally from a quote) | Write | customer_id, quote_id, total_amount, deposit_required, preview, confirmed | Order JSON / Preview JSON |
-| `update-order-status` | Change order status | Write | id, status, preview, confirmed | Updated order / Preview JSON |
-| `update-deposit` | Record a deposit payment | Write | id, deposit_paid, preview, confirmed | Updated order with balance / Preview JSON |
-| `list-orders` | List orders with filters | Read | status, customer_id, since, per_page | Paginated orders |
-| `get-order` | Get order details | Read | id | Order with customer, quote, deposit % |
-| `schedule-installation` | Set/change scheduled date | Write | id, scheduled_date, preview, confirmed | Updated order / Preview JSON |
+| `create-order` | Create an order (optionally from a quote) | Write | customer_id, quote_id, total_amount, deposit_required, preview, confirmed | Order JSON + `message` + `url` / Preview JSON |
+| `update-order-status` | Change order status | Write | id, status, preview, confirmed | Updated order + `message` + `url` / Preview JSON |
+| `update-deposit` | Record a deposit payment | Write | id, deposit_paid, preview, confirmed | Updated order with balance + `message` + `url` / Preview JSON |
+| `list-orders` | List orders with filters | Read | status, customer_id, since, per_page | Paginated orders (each item has `url`) |
+| `get-order` | Get order details | Read | id | Order with `url`, customer, quote, deposit % |
+| `schedule-installation` | Set/change scheduled date | Write | id, scheduled_date, preview, confirmed | Updated order + `message` + `url` / Preview JSON |
 
 ### Product Tools
 
 | Tool | Description | Write/Read | Key Params | Returns |
 |------|-------------|------------|------------|---------|
-| `list-products` | List products with filtering | Read | category_id, search, is_active, per_page | Paginated products |
-| `get-product` | Get product with suppliers | Read | id | Product with supplier pivots (trade prices only if admin) |
-| `search-products` | Search product catalogue | Read | query | Matching products |
+| `list-products` | List products with filtering | Read | category_id, search, is_active, per_page | Paginated products (each item has `url`) |
+| `get-product` | Get product with suppliers | Read | id | Product with `url`, supplier pivots (trade prices staff-only) |
+| `search-products` | Search product catalogue | Read | query | Matching products (each item has `url`) |
 
 ### Enquiry Tools
 
 | Tool | Description | Write/Read | Key Params | Returns |
 |------|-------------|------------|------------|---------|
-| `list-enquiries` | List enquiries with filters | Read | status, source, since, per_page | Paginated enquiries |
-| `create-enquiry` | Log a new enquiry | Write | source, subject, message, customer_id, preview, confirmed | Enquiry JSON / Preview JSON |
-| `link-enquiry-to-customer` | Link an enquiry to a customer | Write | enquiry_id, customer_id, preview, confirmed | Updated enquiry / Preview JSON |
-| `respond-to-enquiry` | Mark enquiry as responded | Write | id, staff_user_id, preview, confirmed | Updated enquiry / Preview JSON |
+| `list-enquiries` | List enquiries with filters | Read | status, source, since, per_page | Paginated enquiries (each item has `url`) |
+| `create-enquiry` | Log a new enquiry | Write | source, subject, message, customer_id, preview, confirmed | Enquiry JSON + `message` + `url` / Preview JSON |
+| `link-enquiry-to-customer` | Link an enquiry to a customer | Write | enquiry_id, customer_id, preview, confirmed | Updated enquiry + `message` + `url` / Preview JSON |
+| `respond-to-enquiry` | Mark enquiry as responded | Write | id, staff_user_id, preview, confirmed | Updated enquiry + `message` + `url` / Preview JSON |
 
 ### Dashboard / Reporting Tools
 
 | Tool | Description | Write/Read | Key Params | Returns |
 |------|-------------|------------|------------|---------|
-| `get-dashboard-stats` | High-level business stats | Read | - | Stats JSON |
-| `get-quote-activity` | Quote changes in date range | Read | since, until | Activity summary |
-| `get-weekly-summary` | Full weekly business update | Read | - | Narrative + structured data |
+| `get-dashboard-stats` | High-level business stats | Read | - | Stats JSON + `message` |
+| `get-quote-activity` | Quote changes in date range | Read | since, until | Activity summary + `message` |
+| `get-weekly-summary` | Full weekly business update | Read | - | Narrative + structured data + `message` |
 
 ---
 
@@ -380,18 +432,78 @@ Prompts provide reusable templates that help the AI client structure interaction
 
 ---
 
+## Phase 2: Chat Interface (Future — Factored into Phase 1)
+
+A staff chat interface will be added inside the admin area so users can type natural language (e.g., "Create a quote for John") and have the system execute actions via the MCP tools. To make Phase 2 straightforward, Phase 1 must build the tools with the following constraints.
+
+### How the Chat Interface Will Work
+
+1. Staff user types a message in the chat UI
+2. A backend controller receives the message and sends it to an external LLM API (e.g., OpenAI, Anthropic) with the full list of available MCP tools and their descriptions
+3. The LLM classifies intent, selects the appropriate tool(s), and extracts parameters
+4. The backend calls the tool programmatically via the Laravel MCP Client:
+   ```php
+   $client = Mcp::client('qvt'); // Connects to the local QvtServer
+   $result = $client->callTool('create-customer', ['name' => 'John', ...]);
+   ```
+5. The backend receives the tool result (structured JSON + `message` + `url`) and renders it in the chat as a message bubble + action button
+6. If the tool returns `status: "preview"`, the chat UI asks the user to confirm before re-calling with `confirmed: true`
+
+### Phase 1 Design Requirements for Chat Compatibility
+
+| Requirement | Phase 1 Implementation |
+|-------------|------------------------|
+| **Programmatic tool calls** | Tools must be callable via `Mcp::client('qvt')->callTool()` without relying on HTTP request context for core logic. Use `Request` only for input extraction, not for auth or state. |
+| **Natural-language descriptions** | Every tool `#[Description]` must be clear enough for an LLM to select it from a list. Example: *"Create a new customer record for the QVT Job Tracker. Requires confirmation."* |
+| **Structured + message + url** | Every tool response must include: `message` (human-readable), `url` (link to view), and `status` (preview/completed/error). The chat UI will display `message` and render `url` as a button. |
+| **Output schemas** | Every tool should define `outputSchema()` so the LLM knows exactly what to expect and the chat UI can parse reliably. |
+| **No HTTP-only dependencies** | Tools must not rely on `session()`, `cookie()`, or `request()->ip()` for business logic. Chat calls bypass HTTP entirely. |
+| **Consistent error format** | Validation errors and business errors must return `Response::error('clear natural language message')` so the chat UI can display them directly to the user. |
+| **Audit logging** | All write tools must log `staff_user_id` explicitly (passed as param or resolved from auth). The chat controller will set the acting user before calling tools. |
+
+### Chat UI Mock (Future)
+
+```
+┌─────────────────────────────────────────┐
+│  QVT Assistant                          │
+├─────────────────────────────────────────┤
+│                                         │
+│  User: Create a customer for John         │
+│                                         │
+│  Bot: I will create a new customer       │
+│       record.                            │
+│       Name: John                         │
+│       Email: (not provided)              │
+│                                         │
+│       [Confirm]  [Edit]  [Cancel]        │
+│                                         │
+│  User: Confirm                           │
+│                                         │
+│  Bot: I have created a new customer      │
+│       record for John.                   │
+│                                         │
+│       [View John in Customer List]       │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+The `[View John in Customer List]` button uses the `url` from the tool response.
+
+---
+
 ## Implementation Phases
 
 ### Phase 1: Foundation & Auth
 1. Install `laravel/mcp` and `laravel/sanctum`
 2. Publish `routes/ai.php`
-3. Create `QvtServer` class
+3. Create `QvtServer` class (design for both HTTP and programmatic consumption)
 4. Configure Sanctum on `User` model
 5. Add API token generation UI to staff profile page
 6. Register both local and web servers in `routes/ai.php`
 7. Create `AdminRoleMiddleware` or use Spatie's existing role middleware
 8. Add `--user` flag handling for local MCP server
 9. Write feature test: MCP server is unreachable without valid token
+10. **Chat-forward setup**: Ensure `QvtServer` can be consumed via `Mcp::client('qvt')` for future chat interface
 
 ### Phase 2: Customer & Product Read Tools
 1. `list-customers`, `get-customer`, `search-customers`
@@ -477,10 +589,18 @@ If a future customer portal MCP server is ever created, it must use a **separate
    - Preview includes human-readable confirmation message
    - Confirmed mode performs the action correctly
    - Calling without preview or confirmed returns instructional error
-3. **Integration tests for cross-model workflows:**
+3. **Response link tests:**
+   - Every create/update/get tool response includes a `url` field with valid named route
+   - List/search responses include `url` on every item
+   - URL resolves to the correct staff admin show page
+4. **Chat-forward tests:**
+   - Every tool response includes a `message` field
+   - Error responses are human-readable and suitable for chat UI display
+   - Tool descriptions are clear enough for LLM intent classification
+5. **Integration tests for cross-model workflows:**
    - Create customer -> create quote from template -> send email -> check activity
    - Create quote -> convert to order -> pay deposit -> check status
-4. **Security tests:**
+6. **Security tests:**
    - Trade prices do not appear in quote PDF or email tools
    - Rate limiting triggers after threshold
    - Local server with invalid --user flag exposes no tools
@@ -528,6 +648,22 @@ class CreateCustomerTool extends Tool
         ];
     }
 
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return [
+            'status' => $schema->string()->enum(['preview', 'completed', 'error'])->description('Action status')->required(),
+            'message' => $schema->string()->description('Human-readable result message for chat UI')->required(),
+            'url' => $schema->string()->description('Link to view the record in the staff admin area')->nullable(),
+            'customer' => $schema->object([
+                'id' => $schema->integer(),
+                'name' => $schema->string(),
+                'email' => $schema->string(),
+                'phone' => $schema->string()->nullable(),
+                'created_at' => $schema->string(),
+            ])->nullable(),
+        ];
+    }
+
     public function handle(Request $request): Response
     {
         $validated = $request->validate([
@@ -552,7 +688,6 @@ class CreateCustomerTool extends Tool
         if ($isPreview && ! $isConfirmed) {
             return Response::structured([
                 'status' => 'preview',
-                'action' => 'create_customer',
                 'message' => "I will create a new customer record.\n\nName: {$validated['name']}\nEmail: {$validated['email']}\n\nIs that correct?",
                 'data' => [
                     'name' => $validated['name'],
@@ -575,13 +710,13 @@ class CreateCustomerTool extends Tool
         return Response::structured([
             'status' => 'completed',
             'message' => "I have created a new customer record for {$customer->name}.",
+            'url' => route('customers.show', $customer),
             'customer' => [
                 'id' => $customer->id,
                 'name' => $customer->name,
                 'email' => $customer->email,
                 'phone' => $customer->phone,
                 'created_at' => $customer->created_at->toIso8601String(),
-                'url' => route('customers.show', $customer),
             ],
         ]);
     }
@@ -601,7 +736,9 @@ When building or modifying staff admin functionality, agents must maintain parit
 3. **Preview Pattern**: All new write tools must implement the `preview` / `confirmed` boolean parameter pattern (default `preview=true`, `confirmed=false`) to enable confirmation flows.
 4. **Trade Price Rule**: Never expose `trade_price` or `total_trade` in any MCP tool response that could be used for customer-facing output. Internal-only read tools may expose trade data if clearly labeled.
 5. **Route Registration**: New tool categories should be grouped in the `QvtServer::$tools` array with clear namespacing.
-6. **Testing**: Every new tool must have a PHPUnit feature test covering:
+6. **Response Links**: Every tool returning a single record must include a `url` field using `route('model.show', $record)`. List responses must include `url` on each item.
+7. **Chat-Forward Design**: Every tool must return a `message` field with natural language suitable for a chat UI. Error messages must be human-readable. Tool `#[Description]` attributes must be clear enough for an LLM to select the tool from a list.
+8. **Testing**: Every new tool must have a PHPUnit feature test covering:
    - Preview mode returns correct preview data with no DB changes
    - Execute mode (`confirmed: true`) performs the action correctly
    - Validation errors return clear, actionable messages
