@@ -93,6 +93,15 @@
                         <x-lucide-mail-plus class="w-5 h-5 shrink-0" />
                         Email Templates
                     </a>
+
+                    <a
+                        href="{{ route('admin.api-tokens') }}"
+                        wire:navigate
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.api-tokens') ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                    >
+                        <x-lucide-key class="w-5 h-5 shrink-0" />
+                        AI Agent Access
+                    </a>
                 </nav>
 
                 {{-- User menu --}}

@@ -213,6 +213,39 @@ Not part of the initial build, but planned:
 
 When building Phase 1, keep data structures compatible with Phase 2 requirements (e.g., quotes have `reference_number` suitable for external sharing).
 
+---
+
+## MCP Server Maintenance Rules
+
+When building or modifying staff admin functionality, agents must maintain parity between the web UI and the MCP server interface.
+
+### Rules
+
+1. **New Feature = New Tool**: Any new CRUD operation, status transition, or business action added to a Livewire component must have a corresponding MCP tool registered in `QvtServer`.
+2. **Schema Parity**: When modifying validation rules, fillable fields, or business logic in a controller/Livewire form, update the matching MCP tool's `schema()` and `handle()` methods.
+3. **Preview Pattern**: All new write tools must implement the `preview` / `confirmed` boolean parameter pattern (default `preview=true`, `confirmed=false`) to enable confirmation flows.
+4. **Trade Price Rule**: Never expose `trade_price` or `total_trade` in any MCP tool response that could be used for customer-facing output. Internal-only read tools may expose trade data if clearly labeled.
+5. **Route Registration**: New tool categories should be grouped in the `QvtServer::$tools` array with clear namespacing.
+6. **Response Links**: Every tool returning a single record must include a `url` field using `route('model.show', $record)`. List responses must include `url` on each item.
+7. **Chat-Forward Design**: Every tool must return a `message` field with natural language suitable for a chat UI. Error messages must be human-readable. Tool `#[Description]` attributes must be clear enough for an LLM to select the tool from a list.
+8. **Testing**: Every new tool must have a PHPUnit feature test covering:
+   - Preview mode returns correct preview data with no DB changes
+   - Execute mode (`confirmed: true`) performs the action correctly
+   - Validation errors return clear, actionable messages
+   - Unauthenticated / non-admin requests return 401 / empty tool list
+
+### MCP Directory Conventions
+
+- `app/Mcp/Servers/` — Server definitions
+- `app/Mcp/Tools/{Domain}/` — Grouped by business domain (Customers, Quotes, Orders, etc.)
+- `app/Mcp/Resources/` — Read-only contextual data
+- `app/Mcp/Prompts/` — Reusable AI prompt templates
+- `routes/ai.php` — MCP route registration
+
+### Updating AGENTS.md
+
+If you add new business domains (e.g., Invoicing, Calendar), add the new tool category to the plan in `.opencode/plans/qvt-mcp-server-plan.md` and update this section.
+
 ===
 
 <laravel-boost-guidelines>

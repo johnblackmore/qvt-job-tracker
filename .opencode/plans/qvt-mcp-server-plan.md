@@ -491,25 +491,61 @@ The `[View John in Customer List]` button uses the `url` from the tool response.
 
 ---
 
-## Implementation Phases
+## Implementation Progress
 
-### Phase 1: Foundation & Auth
-1. Install `laravel/mcp` and `laravel/sanctum`
-2. Publish `routes/ai.php`
-3. Create `QvtServer` class (design for both HTTP and programmatic consumption)
-4. Configure Sanctum on `User` model
-5. Add API token generation UI to staff profile page
-6. Register both local and web servers in `routes/ai.php`
-7. Create `AdminRoleMiddleware` or use Spatie's existing role middleware
-8. Add `--user` flag handling for local MCP server
-9. Write feature test: MCP server is unreachable without valid token
-10. **Chat-forward setup**: Ensure `QvtServer` can be consumed via `Mcp::client('qvt')` for future chat interface
+| Phase | Status | Tools / Deliverables |
+|-------|--------|---------------------|
+| **Phase 1: Foundation & Auth** | ✅ Complete | `laravel/mcp` + `laravel/sanctum` installed, `QvtServer` created, `routes/ai.php` registered (web + local), `McpSanctumAuth` middleware, `mcp.sanctum` guard, `throttle:mcp` rate limiter, `--user=email` flag for local server, `ApiTokenManager` Livewire component with sidebar nav, `QvtServerAuthTest` (3 tests) |
+| **Phase 2: Customer & Product Read Tools** | ✅ Complete | `list-customers`, `get-customer`, `search-customers`, `list-products`, `get-product`, `search-products`. All `#[IsReadOnly(true)]`, all return `message` + `url` (or `data` + `pagination`). `get-product` includes `internal_trade_price`. `CustomerToolTest` (9 tests), `ProductToolTest` (7 tests) |
+| **Phase 3: Customer & Quote Write Tools** | ⏳ Pending | `create-customer`, `update-customer`, `create-quote`, `create-quote-from-template`, `add-quote-line-item`, `update-quote-status` |
+| **Phase 4: Order & Enquiry Tools** | ⏳ Pending | `create-order`, `update-order-status`, `update-deposit`, `schedule-installation`, `list-enquiries`, `create-enquiry`, `link-enquiry-to-customer` |
+| **Phase 5: Communication & PDF Tools** | ⏳ Pending | `send-quote-email`, `download-quote-pdf`, `respond-to-enquiry` |
+| **Phase 6: Dashboard & Reporting Tools** | ⏳ Pending | `get-dashboard-stats`, `get-quote-activity`, `get-weekly-summary`, resources, prompts |
+| **Phase 7: Polish & Security Hardening** | ⏳ Pending | Rate limit audit, trade-price audit, confirmation messages, `IsDestructive` on deletes, full test suite, client config docs |
 
-### Phase 2: Customer & Product Read Tools
-1. `list-customers`, `get-customer`, `search-customers`
-2. `list-products`, `get-product`, `search-products`
-3. Add `[IsReadOnly(true)]` annotations
-4. Write tests: tools return correct data, respect pagination
+---
+
+## Completed Phase Details
+
+### Phase 1: Foundation & Auth — ✅ COMPLETE
+- [x] Install `laravel/mcp` (^0.8.2) and `laravel/sanctum` (^4.3)
+- [x] Publish `routes/ai.php`
+- [x] Publish Sanctum migration (`personal_access_tokens` table)
+- [x] Create `QvtServer` class with chat-forward design
+- [x] Add `HasApiTokens` to `User` model
+- [x] Register web server at `/mcp/qvt` with `mcp.sanctum` + `role:admin` + `throttle:mcp` middleware
+- [x] Register local server `qvt` with `--user=email` flag support
+- [x] Create `McpSanctumAuth` middleware (returns JSON-RPC 401, avoids redirect issues)
+- [x] Create `McpServiceProvider` with `UserResolver` for local server auth
+- [x] Add `mcp` rate limiter in `AppServiceProvider` (60/min)
+- [x] Create `ApiTokenManager` Livewire component + view (create, revoke, copy tokens)
+- [x] Add `/admin/api-tokens` route
+- [x] Add "AI Agent Access" sidebar nav link with `key` icon
+- [x] Write `QvtServerAuthTest`: 401 unauth, 403 non-admin, 200 admin
+- [x] Run `pint` — clean
+
+### Phase 2: Customer & Product Read Tools — ✅ COMPLETE
+- [x] `ListCustomersTool` — paginated, search by name/email/phone, `per_page`/`page`, returns `data[]` + `pagination`
+- [x] `GetCustomerTool` — `id` param, returns full customer with vehicles, enquiries, quotes, orders + `url`
+- [x] `SearchCustomersTool` — `query` param, paginated, returns matching customers + `pagination`
+- [x] `ListProductsTool` — filter by `category_id`/`is_active`, paginated, returns `data[]` + `pagination`
+- [x] `GetProductTool` — `id` param, returns product with category + suppliers (including `internal_trade_price`) + `url`
+- [x] `SearchProductsTool` — `query` param, filter by `category_id`, paginated, returns matching products + `pagination`
+- [x] All 6 tools registered in `QvtServer::$tools`
+- [x] All 6 tools implement `shouldRegister()` with `hasRole('admin')`
+- [x] All 6 tools annotated with `#[IsReadOnly(true)]`
+- [x] All 6 tools define `outputSchema()` for chat-forward compatibility
+- [x] `handle()` return type widened to `Response|ResponseFactory` to support `Response::structured()`
+- [x] Created `SupplierFactory` and `VehicleFactory` for testing
+- [x] `CustomerToolTest`: 9 tests (pagination, URL inclusion, search, validation, full record, missing ID error, search match, read-only, role gating)
+- [x] `ProductToolTest`: 7 tests (pagination, category filter, active filter, product with suppliers, trade price inclusion, search, read-only)
+- [x] Updated `QvtServerAuthTest` to assert 6 tools are registered for admin users
+- [x] Run `pint` — clean
+- [x] All MCP tests passing: **19 tests, 96 assertions**
+
+---
+
+## Remaining Implementation Phases
 
 ### Phase 3: Customer & Quote Write Tools
 1. `create-customer`, `update-customer`
