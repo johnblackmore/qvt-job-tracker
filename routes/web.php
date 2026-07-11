@@ -16,4 +16,5 @@ require __DIR__.'/auth.php';
 require __DIR__.'/customers.php';
 require __DIR__.'/products.php';
 require __DIR__.'/quotes.php';
+require __DIR__.'/orders.php';
 require __DIR__.'/email.php';

@@ -59,8 +59,9 @@
                     </a>
 
                     <a
-                        href="#"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors opacity-50 cursor-not-allowed"
+                        href="{{ route('orders.index') }}"
+                        wire:navigate
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('orders.*') ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
                     >
                         <x-lucide-clipboard-list class="w-5 h-5 shrink-0" />
                         Orders

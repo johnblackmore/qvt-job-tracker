@@ -41,6 +41,12 @@
                     <x-lucide-pencil class="w-4 h-4" />
                     Edit
                 </a>
+                @if($quote->status === 'accepted')
+                    <button wire:click="convertToOrder" class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 transition-colors">
+                        <x-lucide-clipboard-plus class="w-4 h-4" />
+                        Convert to Order
+                    </button>
+                @endif
             </div>
         </div>
     </div>

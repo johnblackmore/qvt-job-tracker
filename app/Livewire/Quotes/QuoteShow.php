@@ -60,6 +60,11 @@ class QuoteShow extends Component
         }
     }
 
+    public function convertToOrder(): void
+    {
+        $this->redirect(route('orders.create-from-quote', $this->quote->id), navigate: true);
+    }
+
     public function render()
     {
         $templates = EmailTemplate::where('is_active', true)->orderBy('name')->get();

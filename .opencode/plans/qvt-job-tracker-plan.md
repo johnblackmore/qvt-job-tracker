@@ -144,11 +144,16 @@ emails_sent
 9. `emails_sent` table tracks all outgoing emails with status and Postmark metadata
 10. Sidebar navigation activated for Email Templates section
 
-### Phase 6: Orders
-1. Convert accepted quote to order
-2. Order status workflow
-3. Deposit tracking
-4. Schedule installation dates
+### Phase 6: Orders (COMPLETE)
+1. Orders migration and `Order` model with customer/quote/staff relationships
+2. Order status workflow: pending → deposit_paid → scheduled → in_progress → completed → cancelled
+3. Order CRUD: list (searchable, status-filtered, deposit progress bars), create, edit, show
+4. Deposit tracking: deposit_required, deposit_paid, balance_due, deposit percent progress bar
+5. Installation scheduling via `scheduled_date` field
+6. Auto-set `completed_at` timestamp when status changed to completed
+7. Convert accepted quote to order — one-click from quote show page pre-fills customer, total, and 30% deposit
+8. Sidebar navigation activated for Orders section
+9. Order show page displays financial summary, schedule card, linked quote, and customer info
 
 ### Phase 7: Polish
 1. Responsive design pass
