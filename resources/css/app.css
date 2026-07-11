@@ -1,0 +1,27 @@
+@import 'tailwindcss';
+@plugin 'daisyui';
+
+@theme {
+    --font-sans: 'Inter', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --color-primary: #059669;
+    --color-primary-content: #ffffff;
+    --color-secondary: #334155;
+    --color-secondary-content: #ffffff;
+    --color-accent: #2563eb;
+    --color-accent-content: #ffffff;
+    --color-neutral: #f8fafc;
+    --color-neutral-content: #334155;
+    --color-base-100: #ffffff;
+    --color-base-200: #f8fafc;
+    --color-base-300: #e2e8f0;
+    --color-base-content: #334155;
+    --color-info: #3b82f6;
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-error: #ef4444;
+}
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../views/**/*.blade.php';
