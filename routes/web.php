@@ -14,3 +14,4 @@ Route::view('profile', 'profile')
 
 require __DIR__.'/auth.php';
 require __DIR__.'/customers.php';
+require __DIR__.'/products.php';

@@ -89,7 +89,7 @@ emails_sent
 
 ## Implementation Phases
 
-### Phase 0: Foundation (IN PROGRESS)
+### Phase 0: Foundation (COMPLETE)
 1. Install Laravel 13 via Composer
 2. Configure `.env` (MySQL, Postmark, app name)
 3. Install Laravel Breeze (Livewire variant)
@@ -100,23 +100,27 @@ emails_sent
 8. Run migrations, create default admin user seeder
 9. Configure MCP (daisyUI GitMCP)
 
-### Phase 1: Staff Admin & Auth
+### Phase 1: Staff Admin & Auth (COMPLETE)
 1. Set up roles (`admin`, `installer`)
 2. Build dashboard overview (stats cards)
 3. Staff profile management
+4. QVT-branded login page with emerald styling
+5. Sidebar navigation (collapsible on mobile)
 
-### Phase 2: Customer Management
+### Phase 2: Customer Management (COMPLETE)
 1. Customers CRUD (Livewire table + form)
 2. Vehicle management (nested under customer)
 3. Enquiries CRUD + link to customer
 4. Customer search and filtering
+5. Live dashboard stats for customers and enquiries
 
-### Phase 3: Suppliers & Products Library
-1. Suppliers CRUD
-2. Product categories CRUD
-3. Products CRUD with retail pricing
-4. Product-supplier links with trade pricing
+### Phase 3: Suppliers & Products Library (COMPLETE)
+1. Suppliers CRUD — name, contact, email, phone, website, address, notes, active toggle
+2. Product categories CRUD — name, slug, description
+3. Products CRUD with retail pricing, stock tracking, SKU, category, active toggle
+4. Product-supplier links with trade pricing — multiple suppliers per product, preferred supplier flag, lead time, supplier SKU/URL
 5. Stock quantity tracking
+6. Sidebar navigation updated with active states for all sections
 
 ### Phase 4: Sample Quotes
 1. Sample quotes (templates) CRUD
