@@ -99,31 +99,31 @@
             <div>
                 <p class="font-medium text-slate-800 mb-1">OpenCode (Remote)</p>
                 <p>Add to <code class="text-xs bg-slate-100 px-1 py-0.5 rounded">.opencode/opencode.json</code>:</p>
-                <pre class="mt-2 rounded-lg bg-slate-900 p-3 text-xs text-slate-300 overflow-x-auto">{{
-    "mcp": {
-        "qvt-job-tracker": {
-            "type": "remote",
-            "url": "{{ url('/mcp/qvt') }}",
-            "headers": {
-                "Authorization": "Bearer &lt;your-token&gt;"
-            }
-        }
-    }
-}}</pre>
+                <pre class="mt-2 rounded-lg bg-slate-900 p-3 text-xs text-slate-300 overflow-x-auto">{{ json_encode([
+    'mcp' => [
+        'qvt-job-tracker' => [
+            'type' => 'remote',
+            'url' => url('/mcp/qvt'),
+            'headers' => [
+                'Authorization' => 'Bearer <your-token>',
+            ],
+        ],
+    ],
+], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</pre>
             </div>
 
             <div>
                 <p class="font-medium text-slate-800 mb-1">Claude Desktop (Local)</p>
                 <p>Add to <code class="text-xs bg-slate-100 px-1 py-0.5 rounded">claude_desktop_config.json</code>:</p>
-                <pre class="mt-2 rounded-lg bg-slate-900 p-3 text-xs text-slate-300 overflow-x-auto">{{
-    "mcpServers": {
-        "qvt-job-tracker": {
-            "command": "php",
-            "args": ["artisan", "mcp:start", "qvt", "--user={{ auth()->user()->email }}"],
-            "cwd": "{{ base_path() }}"
-        }
-    }
-}}</pre>
+                <pre class="mt-2 rounded-lg bg-slate-900 p-3 text-xs text-slate-300 overflow-x-auto">{{ json_encode([
+    'mcpServers' => [
+        'qvt-job-tracker' => [
+            'command' => 'php',
+            'args' => ['artisan', 'mcp:start', 'qvt', '--user='.auth()->user()->email],
+            'cwd' => base_path(),
+        ],
+    ],
+], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</pre>
             </div>
         </div>
     </div>
