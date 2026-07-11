@@ -65,6 +65,27 @@ class QvtServerAuthTest extends TestCase
         $response->assertOk();
         $tools = $response->json('result.tools');
         $this->assertNotEmpty($tools);
-        $this->assertCount(6, $tools);
+        $this->assertCount(13, $tools);
+    }
+
+    public function test_delete_customer_tool_has_destructive_annotation(): void
+    {
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+
+        $token = $admin->createToken('test-token')->plainTextToken;
+
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->postJson('/mcp/qvt', [
+                'jsonrpc' => '2.0',
+                'id' => 1,
+                'method' => 'tools/list',
+            ]);
+
+        $response->assertOk();
+        $tools = $response->json('result.tools');
+        $deleteTool = collect($tools)->first(fn (array $tool) => $tool['name'] === 'delete-customer-tool');
+        $this->assertNotNull($deleteTool);
+        $this->assertTrue($deleteTool['annotations']['destructiveHint'] ?? false);
     }
 }

@@ -497,7 +497,7 @@ The `[View John in Customer List]` button uses the `url` from the tool response.
 |-------|--------|---------------------|
 | **Phase 1: Foundation & Auth** | ✅ Complete | `laravel/mcp` + `laravel/sanctum` installed, `QvtServer` created, `routes/ai.php` registered (web + local), `McpSanctumAuth` middleware, `mcp.sanctum` guard, `throttle:mcp` rate limiter, `--user=email` flag for local server, `ApiTokenManager` Livewire component with sidebar nav, `QvtServerAuthTest` (3 tests) |
 | **Phase 2: Customer & Product Read Tools** | ✅ Complete | `list-customers`, `get-customer`, `search-customers`, `list-products`, `get-product`, `search-products`. All `#[IsReadOnly(true)]`, all return `message` + `url` (or `data` + `pagination`). `get-product` includes `internal_trade_price`. `CustomerToolTest` (9 tests), `ProductToolTest` (7 tests) |
-| **Phase 3: Customer & Quote Write Tools** | ⏳ Pending | `create-customer`, `update-customer`, `create-quote`, `create-quote-from-template`, `add-quote-line-item`, `update-quote-status` |
+| **Phase 3: Customer & Quote Write Tools** | ✅ Complete | `create-customer`, `update-customer`, `delete-customer`, `create-quote`, `create-quote-from-template`, `add-quote-line-item`, `update-quote-status`. All with preview/confirmed pattern. `CustomerWriteToolTest` (11 tests), `QuoteWriteToolTest` (17 tests) |
 | **Phase 4: Order & Enquiry Tools** | ⏳ Pending | `create-order`, `update-order-status`, `update-deposit`, `schedule-installation`, `list-enquiries`, `create-enquiry`, `link-enquiry-to-customer` |
 | **Phase 5: Communication & PDF Tools** | ⏳ Pending | `send-quote-email`, `download-quote-pdf`, `respond-to-enquiry` |
 | **Phase 6: Dashboard & Reporting Tools** | ⏳ Pending | `get-dashboard-stats`, `get-quote-activity`, `get-weekly-summary`, resources, prompts |
@@ -543,17 +543,28 @@ The `[View John in Customer List]` button uses the `url` from the tool response.
 - [x] Run `pint` — clean
 - [x] All MCP tests passing: **19 tests, 96 assertions**
 
+### Phase 3: Customer & Quote Write Tools — ✅ COMPLETE
+- [x] `CreateCustomerTool` — `name`/`email`/`phone`/`address`/`notes`, `#[IsIdempotent]`, preview/confirmed, returns `customer` + `url`
+- [x] `UpdateCustomerTool` — `id` + partial fields, `#[IsIdempotent]`, preview/confirmed, preview lists field-by-field diff, returns `customer` + `url`
+- [x] `DeleteCustomerTool` — `id`, `#[IsDestructive]`, preview warns with linked record counts (vehicles/enquiries/quotes/orders), confirmed hard-deletes via cascade
+- [x] `CreateQuoteTool` — `customer_id`/`notes`/`valid_until`, auto-generates `Q-YYYYMMDD-XXXX` ref, `valid_until` defaults to +30 days, `staff_user_id` from auth user, status defaults to `draft`, returns `quote` + `url`
+- [x] `CreateQuoteFromTemplateTool` — `sample_quote_id` + `customer_id`, clones line items with current retail/trade prices from product + preferred supplier pivot, recalculates `grand_total`/`total_retail`/`total_trade`/`labour_total`, returns `quote` with `line_items_count`
+- [x] `AddQuoteLineItemTool` — `quote_id` + `line_type` (`product`/`labour`/`ad_hoc`), auto-populates `description`/`unit_retail_price`/`unit_trade_price` from product when `product_id` given, explicit params override auto-populated, recalculates quote totals after persist, returns `quote` with updated totals
+- [x] `UpdateQuoteStatusTool` — `id` + `status` (`draft`/`sent`/`accepted`/`declined`/`expired`), `#[IsIdempotent]`, stamps `sent_at`/`accepted_at`/`declined_at` on first transition to those statuses, idempotent (same status twice is a no-op)
+- [x] All 7 tools registered in `QvtServer::$tools` with domain grouping comments
+- [x] All 7 tools implement `shouldRegister()` with `hasRole('admin')`
+- [x] All 7 tools implement preview/confirmed pattern (default `preview=true`, `confirmed=false`)
+- [x] All write tools validate input and return human-readable `Response::error()` messages
+- [x] Created `SampleQuoteFactory` (with `HasFactory` on `SampleQuote` model)
+- [x] `CustomerWriteToolTest`: 11 tests (create preview, create confirmed, create missing name, create missing confirmation, update preview, update confirmed, update partial, update invalid id, delete preview, delete confirmed, role gating)
+- [x] `QuoteWriteToolTest`: 17 tests (create preview, create confirmed, create staff_user_id, create valid_until default, create invalid customer, template preview, template confirmed current prices, template recalculates totals, add line preview, add line confirmed, add line auto-populate, add line explicit override, add line invalid type, status preview, status confirmed sent_at, status accepted_at, status idempotent, status invalid value, role gating)
+- [x] Updated `QvtServerAuthTest` to assert 13 tools are registered + `destructiveHint` assertion for `DeleteCustomerTool`
+- [x] Run `pint` — clean
+- [x] All MCP tests passing: **50 tests, 299 assertions**
+
 ---
 
 ## Remaining Implementation Phases
-
-### Phase 3: Customer & Quote Write Tools
-1. `create-customer`, `update-customer`
-2. `create-quote`, `create-quote-from-template`
-3. `add-quote-line-item`
-4. `update-quote-status`
-5. Implement preview/confirmed pattern on all write tools
-6. Write tests: creation flows, status transitions, template cloning
 
 ### Phase 4: Order & Enquiry Tools
 1. `create-order`, `update-order-status`, `update-deposit`

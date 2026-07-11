@@ -2,12 +2,19 @@
 
 namespace App\Mcp\Servers;
 
+use App\Mcp\Tools\AddQuoteLineItemTool;
+use App\Mcp\Tools\CreateCustomerTool;
+use App\Mcp\Tools\CreateQuoteFromTemplateTool;
+use App\Mcp\Tools\CreateQuoteTool;
+use App\Mcp\Tools\DeleteCustomerTool;
 use App\Mcp\Tools\GetCustomerTool;
 use App\Mcp\Tools\GetProductTool;
 use App\Mcp\Tools\ListCustomersTool;
 use App\Mcp\Tools\ListProductsTool;
 use App\Mcp\Tools\SearchCustomersTool;
 use App\Mcp\Tools\SearchProductsTool;
+use App\Mcp\Tools\UpdateCustomerTool;
+use App\Mcp\Tools\UpdateQuoteStatusTool;
 use Laravel\Mcp\Server;
 use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -30,12 +37,24 @@ class QvtServer extends Server
 {
     /** @var array<int, class-string<Tool>> */
     protected array $tools = [
+        // Customer tools
         ListCustomersTool::class,
         GetCustomerTool::class,
         SearchCustomersTool::class,
+        CreateCustomerTool::class,
+        UpdateCustomerTool::class,
+        DeleteCustomerTool::class,
+
+        // Product tools
         ListProductsTool::class,
         GetProductTool::class,
         SearchProductsTool::class,
+
+        // Quote tools
+        CreateQuoteTool::class,
+        CreateQuoteFromTemplateTool::class,
+        AddQuoteLineItemTool::class,
+        UpdateQuoteStatusTool::class,
     ];
 
     /** @var array<int, class-string<Server\Resource>> */
