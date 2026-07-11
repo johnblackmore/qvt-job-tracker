@@ -60,12 +60,13 @@ class QvtServerAuthTest extends TestCase
                 'jsonrpc' => '2.0',
                 'id' => 1,
                 'method' => 'tools/list',
+                'params' => ['per_page' => 50],
             ]);
 
         $response->assertOk();
         $tools = $response->json('result.tools');
         $this->assertNotEmpty($tools);
-        $this->assertCount(13, $tools);
+        $this->assertCount(25, $tools);
     }
 
     public function test_delete_customer_tool_has_destructive_annotation(): void
@@ -80,6 +81,7 @@ class QvtServerAuthTest extends TestCase
                 'jsonrpc' => '2.0',
                 'id' => 1,
                 'method' => 'tools/list',
+                'params' => ['per_page' => 50],
             ]);
 
         $response->assertOk();

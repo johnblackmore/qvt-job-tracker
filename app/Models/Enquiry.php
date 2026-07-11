@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Enquiry extends Model
 {
+    use HasFactory;
+
     protected $fillable = ['customer_id', 'source', 'status', 'subject', 'message', 'responded_at', 'staff_user_id'];
 
     protected $casts = [

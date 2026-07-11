@@ -498,8 +498,8 @@ The `[View John in Customer List]` button uses the `url` from the tool response.
 | **Phase 1: Foundation & Auth** | ✅ Complete | `laravel/mcp` + `laravel/sanctum` installed, `QvtServer` created, `routes/ai.php` registered (web + local), `McpSanctumAuth` middleware, `mcp.sanctum` guard, `throttle:mcp` rate limiter, `--user=email` flag for local server, `ApiTokenManager` Livewire component with sidebar nav, `QvtServerAuthTest` (3 tests) |
 | **Phase 2: Customer & Product Read Tools** | ✅ Complete | `list-customers`, `get-customer`, `search-customers`, `list-products`, `get-product`, `search-products`. All `#[IsReadOnly(true)]`, all return `message` + `url` (or `data` + `pagination`). `get-product` includes `internal_trade_price`. `CustomerToolTest` (9 tests), `ProductToolTest` (7 tests) |
 | **Phase 3: Customer & Quote Write Tools** | ✅ Complete | `create-customer`, `update-customer`, `delete-customer`, `create-quote`, `create-quote-from-template`, `add-quote-line-item`, `update-quote-status`. All with preview/confirmed pattern. `CustomerWriteToolTest` (11 tests), `QuoteWriteToolTest` (17 tests) |
-| **Phase 4: Order & Enquiry Tools** | ⏳ Pending | `create-order`, `update-order-status`, `update-deposit`, `schedule-installation`, `list-enquiries`, `create-enquiry`, `link-enquiry-to-customer` |
-| **Phase 5: Communication & PDF Tools** | ⏳ Pending | `send-quote-email`, `download-quote-pdf`, `respond-to-enquiry` |
+| **Phase 4: Order & Enquiry Tools** | ✅ Complete | `create-order`, `update-order-status`, `update-deposit`, `schedule-installation`, `list-orders`, `get-order`, `list-enquiries`, `create-enquiry`, `link-enquiry-to-customer`, `respond-to-enquiry`. `OrderWriteToolTest` (10 tests), `OrderReadToolTest` (7 tests), `EnquiryWriteToolTest` (9 tests), `EnquiryReadToolTest` (5 tests) |
+| **Phase 5: Communication & PDF Tools** | ✅ Complete | `send-quote-email`, `download-quote-pdf`. `SendQuoteEmailToolTest` (10 tests), `DownloadQuotePdfToolTest` (7 tests) |
 | **Phase 6: Dashboard & Reporting Tools** | ⏳ Pending | `get-dashboard-stats`, `get-quote-activity`, `get-weekly-summary`, resources, prompts |
 | **Phase 7: Polish & Security Hardening** | ⏳ Pending | Rate limit audit, trade-price audit, confirmation messages, `IsDestructive` on deletes, full test suite, client config docs |
 
@@ -562,21 +562,48 @@ The `[View John in Customer List]` button uses the `url` from the tool response.
 - [x] Run `pint` — clean
 - [x] All MCP tests passing: **50 tests, 299 assertions**
 
+### Phase 4: Order & Enquiry Tools — ✅ COMPLETE
+- [x] `CreateOrderTool` — `customer_id` + optional `quote_id`, auto-generates `ORD-YYYYMMDD-XXXX`, pre-fills `total_amount`/`deposit_required` from quote (30% deposit), sets `quote.converted_order_id`, `staff_user_id` from auth, status=`pending`
+- [x] `UpdateOrderStatusTool` — `id` + `status` (`pending`/`deposit_paid`/`scheduled`/`in_progress`/`completed`/`cancelled`), `#[IsIdempotent]`, stamps `completed_at` on first transition to `completed`
+- [x] `UpdateDepositTool` — `id` + `deposit_paid`, recalculates `balance_due`, rejects `deposit_paid > total_amount`, auto-advances status to `deposit_paid` from `pending` when paid > 0, returns `deposit_percent`
+- [x] `ScheduleInstallationTool` — `id` + `scheduled_date` (`Y-m-d`, must be `>= today`), auto-advances status to `scheduled` from `pending`/`deposit_paid`
+- [x] `ListOrdersTool` — `#[IsReadOnly]`, filters by `status`/`customer_id`/`since`, paginated, each item includes `url` + `deposit_percent` + `balance_due`
+- [x] `GetOrderTool` — `#[IsReadOnly]`, `id` param, returns full order with `customer` + `quote` + `staff` + `emails_sent_count` + `deposit_percent` + `url`
+- [x] `ListEnquiriesTool` — `#[IsReadOnly]`, filters by `status`/`source`/`since`, paginated, each item includes `url` + `message_preview`
+- [x] `CreateEnquiryTool` — `message` (required) + optional `customer_id`/`subject`/`source` (default `web`), `staff_user_id` from auth, status=`new`
+- [x] `LinkEnquiryToCustomerTool` — `enquiry_id` + `customer_id`, allows overwrite of existing link, returns updated enquiry + `url`
+- [x] `RespondToEnquiryTool` — `#[IsIdempotent]`, `id` param, sets `status='responded'` + `responded_at=now()` (only on first call)
+- [x] All 10 tools registered in `QvtServer::$tools` with domain grouping comments
+- [x] All 10 tools implement `shouldRegister()` with `hasRole('admin')`
+- [x] All write tools implement preview/confirmed pattern
+- [x] Added `HasFactory` to `Order` and `Enquiry` models
+- [x] Created `OrderFactory` and `EnquiryFactory`
+- [x] `OrderWriteToolTest`: 10 tests (create preview, create confirmed, create ref auto-generate, create staff_user_id, create from quote prefill totals, create from quote sets converted_order_id, create invalid customer, status preview, status completed stamps, status invalid, deposit preview, deposit confirmed recalc, deposit auto-advances status, deposit rejects overpay, schedule preview, schedule confirmed advances, schedule rejects past date, role gating)
+- [x] `OrderReadToolTest`: 7 tests (list paginated, list url per item, list filter status, list filter customer_id, list filter since, get full record, get missing id, read-only)
+- [x] `EnquiryWriteToolTest`: 9 tests (create preview, create confirmed, create staff_user_id, create unlinked customer, create missing message, link preview, link confirmed, link overwrite, link invalid enquiry, respond preview, respond confirmed, respond idempotent, role gating)
+- [x] `EnquiryReadToolTest`: 5 tests (list paginated, list url, list filter status, list filter source, list filter since, read-only)
+- [x] Updated `QvtServerAuthTest` to assert 23 tools + pass `per_page: 50` to handle MCP cursor pagination (default 15)
+- [x] Run `pint` — clean
+- [x] All MCP tests passing: **95 tests, 542 assertions**
+
+### Phase 5: Communication & PDF Tools — ✅ COMPLETE
+- [x] `SendQuoteEmailTool` — `quote_id` + optional `template_id`/`custom_message`, preview/confirmed, calls `QuoteEmailService::sendQuote()` to generate PDF and send via `Mail` facade, creates `EmailSent` record, auto-advances quote from `draft` → `sent` and stamps `quote.sent_at`, catches mail failure → `EmailSent.status='failed'` + `Response::error`, customer with no email → `Response::error`
+- [x] `DownloadQuotePdfTool` — `#[IsReadOnly]`, `quote_id` param, generates PDF via `pdf.quote` view (customer-safe, no trade prices), returns download URL + filename + `size_bytes` (no binary in response)
+- [x] All 2 tools registered in `QvtServer::$tools` with domain grouping comments
+- [x] All 2 tools implement `shouldRegister()` with `hasRole('admin')`
+- [x] SendQuoteEmailTool implements preview/confirmed pattern
+- [x] DownloadQuotePdfTool annotated with `#[IsReadOnly]`
+- [x] Added `HasFactory` to `EmailTemplate` and `EmailSent` models
+- [x] Created `EmailTemplateFactory` and `EmailSentFactory`
+- [x] `SendQuoteEmailToolTest`: 10 tests (preview no db write, preview message includes customer/template/total, preview invalid quote, preview invalid template, confirmed creates EmailSent sent, confirmed auto-advances quote, confirmed works without template, customer no email error, mail failure returns error + marks failed, role gating)
+- [x] `DownloadQuotePdfToolTest`: 7 tests (returns valid JSON, URL resolves to pdf download route, filename naming convention, PDF no trade prices, missing quote id error, read-only no DB writes, role gating)
+- [x] Updated `QvtServerAuthTest` to assert 25 tools
+- [x] Run `pint` — clean
+- [x] All MCP tests passing: **112 tests, 624 assertions**
+
 ---
 
 ## Remaining Implementation Phases
-
-### Phase 4: Order & Enquiry Tools
-1. `create-order`, `update-order-status`, `update-deposit`
-2. `schedule-installation`
-3. `list-enquiries`, `create-enquiry`, `link-enquiry-to-customer`
-4. Write tests: order creation from quote, deposit math, status transitions
-
-### Phase 5: Communication & PDF Tools
-1. `send-quote-email`
-2. `download-quote-pdf`
-3. `respond-to-enquiry`
-4. Write tests: email tracking, PDF generation via MCP
 
 ### Phase 6: Dashboard & Reporting Tools
 1. `get-dashboard-stats`

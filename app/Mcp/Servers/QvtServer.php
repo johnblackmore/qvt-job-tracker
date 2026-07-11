@@ -4,16 +4,28 @@ namespace App\Mcp\Servers;
 
 use App\Mcp\Tools\AddQuoteLineItemTool;
 use App\Mcp\Tools\CreateCustomerTool;
+use App\Mcp\Tools\CreateEnquiryTool;
+use App\Mcp\Tools\CreateOrderTool;
 use App\Mcp\Tools\CreateQuoteFromTemplateTool;
 use App\Mcp\Tools\CreateQuoteTool;
 use App\Mcp\Tools\DeleteCustomerTool;
+use App\Mcp\Tools\DownloadQuotePdfTool;
 use App\Mcp\Tools\GetCustomerTool;
+use App\Mcp\Tools\GetOrderTool;
 use App\Mcp\Tools\GetProductTool;
+use App\Mcp\Tools\LinkEnquiryToCustomerTool;
 use App\Mcp\Tools\ListCustomersTool;
+use App\Mcp\Tools\ListEnquiriesTool;
+use App\Mcp\Tools\ListOrdersTool;
 use App\Mcp\Tools\ListProductsTool;
+use App\Mcp\Tools\RespondToEnquiryTool;
+use App\Mcp\Tools\ScheduleInstallationTool;
 use App\Mcp\Tools\SearchCustomersTool;
 use App\Mcp\Tools\SearchProductsTool;
+use App\Mcp\Tools\SendQuoteEmailTool;
 use App\Mcp\Tools\UpdateCustomerTool;
+use App\Mcp\Tools\UpdateDepositTool;
+use App\Mcp\Tools\UpdateOrderStatusTool;
 use App\Mcp\Tools\UpdateQuoteStatusTool;
 use Laravel\Mcp\Server;
 use Laravel\Mcp\Server\Attributes\Instructions;
@@ -55,6 +67,24 @@ class QvtServer extends Server
         CreateQuoteFromTemplateTool::class,
         AddQuoteLineItemTool::class,
         UpdateQuoteStatusTool::class,
+
+        // Order tools
+        ListOrdersTool::class,
+        GetOrderTool::class,
+        CreateOrderTool::class,
+        UpdateOrderStatusTool::class,
+        UpdateDepositTool::class,
+        ScheduleInstallationTool::class,
+
+        // Enquiry tools
+        ListEnquiriesTool::class,
+        CreateEnquiryTool::class,
+        LinkEnquiryToCustomerTool::class,
+        RespondToEnquiryTool::class,
+
+        // Communication tools
+        SendQuoteEmailTool::class,
+        DownloadQuotePdfTool::class,
     ];
 
     /** @var array<int, class-string<Server\Resource>> */
