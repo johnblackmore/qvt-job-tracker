@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Customer;
+use App\Models\Enquiry;
 use Livewire\Volt\Component;
 
 new class extends Component
@@ -11,11 +13,10 @@ new class extends Component
 
     public function mount(): void
     {
-        // Placeholder values until models are created in later phases
-        $this->customerCount = 0;
+        $this->customerCount = Customer::count();
+        $this->enquiryCount = Enquiry::whereIn('status', ['new', 'in_progress'])->count();
         $this->openQuoteCount = 0;
         $this->pendingOrderCount = 0;
-        $this->enquiryCount = 0;
     }
 }; ?>
 
@@ -27,7 +28,7 @@ new class extends Component
 
     {{-- Stat cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
-        <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+        <a href="{{ route('customers.index') }}" wire:navigate class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-emerald-300 transition-colors">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-slate-500">Customers</p>
@@ -37,7 +38,7 @@ new class extends Component
                     <x-lucide-users class="w-5 h-5 text-emerald-600" />
                 </div>
             </div>
-        </div>
+        </a>
 
         <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
             <div class="flex items-center justify-between">
@@ -63,17 +64,17 @@ new class extends Component
             </div>
         </div>
 
-        <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+        <a href="{{ route('enquiries.index') }}" wire:navigate class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-emerald-300 transition-colors">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-slate-500">New Enquiries</p>
+                    <p class="text-sm font-medium text-slate-500">Open Enquiries</p>
                     <p class="mt-1 text-2xl font-bold text-slate-900">{{ $enquiryCount }}</p>
                 </div>
                 <div class="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
                     <x-lucide-inbox class="w-5 h-5 text-purple-600" />
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 
     {{-- Quick actions --}}
@@ -82,7 +83,7 @@ new class extends Component
             <h2 class="text-base font-semibold text-slate-900">Quick Actions</h2>
         </div>
         <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <a href="#" class="group flex items-center gap-4 p-4 rounded-lg border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all">
+            <a href="{{ route('customers.create') }}" wire:navigate class="group flex items-center gap-4 p-4 rounded-lg border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all">
                 <div class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
                     <x-lucide-user-plus class="w-5 h-5 text-emerald-600" />
                 </div>
@@ -92,7 +93,7 @@ new class extends Component
                 </div>
             </a>
 
-            <a href="#" class="group flex items-center gap-4 p-4 rounded-lg border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all">
+            <a href="#" class="group flex items-center gap-4 p-4 rounded-lg border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all opacity-50 cursor-not-allowed">
                 <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
                     <x-lucide-file-plus class="w-5 h-5 text-blue-600" />
                 </div>
@@ -102,7 +103,7 @@ new class extends Component
                 </div>
             </a>
 
-            <a href="#" class="group flex items-center gap-4 p-4 rounded-lg border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all">
+            <a href="{{ route('enquiries.create') }}" wire:navigate class="group flex items-center gap-4 p-4 rounded-lg border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all">
                 <div class="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center group-hover:bg-purple-100 transition-colors">
                     <x-lucide-plus-circle class="w-5 h-5 text-purple-600" />
                 </div>

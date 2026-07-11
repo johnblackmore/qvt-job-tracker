@@ -41,8 +41,9 @@
                     </a>
 
                     <a
-                        href="#"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                        href="{{ route('customers.index') }}"
+                        wire:navigate
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('customers.*') ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
                     >
                         <x-lucide-users class="w-5 h-5 shrink-0" />
                         Customers
@@ -50,7 +51,7 @@
 
                     <a
                         href="#"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors opacity-50 cursor-not-allowed"
                     >
                         <x-lucide-file-text class="w-5 h-5 shrink-0" />
                         Quotes
@@ -58,7 +59,7 @@
 
                     <a
                         href="#"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors opacity-50 cursor-not-allowed"
                     >
                         <x-lucide-clipboard-list class="w-5 h-5 shrink-0" />
                         Orders
@@ -66,18 +67,19 @@
 
                     <a
                         href="#"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors opacity-50 cursor-not-allowed"
                     >
                         <x-lucide-package class="w-5 h-5 shrink-0" />
                         Products
                     </a>
 
                     <a
-                        href="#"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                        href="{{ route('enquiries.index') }}"
+                        wire:navigate
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('enquiries.*') ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
                     >
                         <x-lucide-mail class="w-5 h-5 shrink-0" />
-                        Emails
+                        Enquiries
                     </a>
                 </nav>
 
