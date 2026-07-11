@@ -55,6 +55,7 @@ class QuoteShow extends Component
             $this->quote->refresh();
             $this->sendStatus = 'sent';
             $this->showSendModal = false;
+            $this->dispatch('notify', message: 'Quote sent to customer.', type: 'success');
         } catch (\Exception $e) {
             $this->sendStatus = 'error: '.$e->getMessage();
         }

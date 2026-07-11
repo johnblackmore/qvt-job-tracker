@@ -78,6 +78,7 @@ class OrderForm extends Component
             Order::create($validated);
         }
 
+        $this->dispatch('notify', message: $this->order ? 'Order updated.' : 'Order created.', type: 'success');
         $this->redirect(route('orders.index'), navigate: true);
     }
 

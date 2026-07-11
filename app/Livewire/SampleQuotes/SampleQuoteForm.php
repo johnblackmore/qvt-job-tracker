@@ -109,6 +109,7 @@ class SampleQuoteForm extends Component
             SampleQuote::create($validated);
         }
 
+        $this->dispatch('notify', message: $this->sampleQuote ? 'Template updated.' : 'Template created.', type: 'success');
         $this->redirect(route('sample-quotes.index'), navigate: true);
     }
 

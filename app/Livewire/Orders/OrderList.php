@@ -20,6 +20,7 @@ class OrderList extends Component
     public function delete(int $id): void
     {
         Order::find($id)?->delete();
+        $this->dispatch('notify', message: 'Order deleted.', type: 'success');
     }
 
     public function render()

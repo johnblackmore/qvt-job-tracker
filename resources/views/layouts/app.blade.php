@@ -147,6 +147,34 @@
                     </div>
                 </header>
 
+                {{-- Toast notifications --}}
+                <div
+                    x-data="{ toasts: [], add(message, type = 'success') { this.toasts.push({ id: Date.now(), message, type }); setTimeout(() => this.remove(this.toasts[0]?.id), 4000); }, remove(id) { this.toasts = this.toasts.filter(t => t.id !== id); } }"
+                    x-on:notify.window="add($event.detail.message, $event.detail.type)"
+                    class="fixed top-4 right-4 z-[60] space-y-3 w-full max-w-sm pointer-events-none"
+                >
+                    <template x-for="toast in toasts" :key="toast.id">
+                        <div
+                            x-transition:enter="transition ease-out duration-300"
+                            x-transition:enter-start="translate-x-full opacity-0"
+                            x-transition:enter-end="translate-x-0 opacity-100"
+                            x-transition:leave="transition ease-in duration-200"
+                            x-transition:leave-start="translate-x-0 opacity-100"
+                            x-transition:leave-end="translate-x-full opacity-0"
+                            class="pointer-events-auto flex items-center gap-3 rounded-lg shadow-lg border px-4 py-3 text-sm font-medium"
+                            :class="toast.type === 'success' ? 'bg-white border-emerald-200 text-emerald-800' : toast.type === 'error' ? 'bg-white border-red-200 text-red-800' : 'bg-white border-slate-200 text-slate-800'"
+                        >
+                            <span x-show="toast.type === 'success'" class="text-emerald-500">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            </span>
+                            <span x-show="toast.type === 'error'" class="text-red-500">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </span>
+                            <span x-text="toast.message"></span>
+                        </div>
+                    </template>
+                </div>
+
                 {{-- Page content --}}
                 <main class="flex-1 overflow-y-auto p-4 lg:p-8">
                     {{ $slot }}

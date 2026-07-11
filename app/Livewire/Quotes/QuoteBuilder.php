@@ -221,6 +221,7 @@ class QuoteBuilder extends Component
             ]);
         }
 
+        $this->dispatch('notify', message: $this->quote ? 'Quote updated.' : 'Quote created.', type: 'success');
         $this->redirect(route('quotes.index'), navigate: true);
     }
 

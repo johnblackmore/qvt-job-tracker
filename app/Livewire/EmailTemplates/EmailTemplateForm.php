@@ -67,6 +67,7 @@ class EmailTemplateForm extends Component
             EmailTemplate::create($validated);
         }
 
+        $this->dispatch('notify', message: $this->template ? 'Template updated.' : 'Template created.', type: 'success');
         $this->redirect(route('email-templates.index'), navigate: true);
     }
 

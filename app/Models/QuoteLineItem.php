@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class QuoteLineItem extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'quote_id', 'line_type', 'product_id', 'product_supplier_id',
         'description', 'quantity', 'unit_retail_price', 'unit_trade_price',

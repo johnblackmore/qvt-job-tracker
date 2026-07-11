@@ -20,6 +20,7 @@ class QuoteList extends Component
     public function delete(int $id): void
     {
         Quote::find($id)?->delete();
+        $this->dispatch('notify', message: 'Quote deleted.', type: 'success');
     }
 
     public function render()

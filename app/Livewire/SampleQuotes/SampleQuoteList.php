@@ -17,12 +17,14 @@ class SampleQuoteList extends Component
         $quote = SampleQuote::find($id);
         if ($quote) {
             $quote->update(['is_active' => ! $quote->is_active]);
+            $this->dispatch('notify', message: 'Template status updated.', type: 'success');
         }
     }
 
     public function delete(int $id): void
     {
         SampleQuote::find($id)?->delete();
+        $this->dispatch('notify', message: 'Template deleted.', type: 'success');
     }
 
     public function render()

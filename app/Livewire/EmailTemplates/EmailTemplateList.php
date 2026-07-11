@@ -15,6 +15,7 @@ class EmailTemplateList extends Component
     public function delete(int $id): void
     {
         EmailTemplate::find($id)?->delete();
+        $this->dispatch('notify', message: 'Template deleted.', type: 'success');
     }
 
     public function render()
