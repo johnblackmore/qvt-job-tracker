@@ -122,17 +122,27 @@ emails_sent
 5. Stock quantity tracking
 6. Sidebar navigation updated with active states for all sections
 
-### Phase 4: Sample Quotes
-1. Sample quotes (templates) CRUD
-2. Clone sample quote to real quote
-3. Line item storage in JSON
+### Phase 4: Sample Quotes & Quote Builder (COMPLETE)
+1. Sample quotes (templates) CRUD — create, edit, list, delete
+2. Clone sample quote to real quote (via QuoteBuilder mount)
+3. Line item storage in JSON (SampleQuote model)
+4. Quote builder: pick from catalogue + ad-hoc + labour items
+5. Quote status workflow (draft → sent → accepted → declined → expired)
+6. Real quotes CRUD — list, create, edit, show views
+7. Trade/retail totals calculation with internal-only trade cost display
+8. Sidebar navigation activated for Quotes section
 
-### Phase 5: Quotes & Emails
-1. Quote builder: pick from catalogue + ad-hoc items
-2. Quote status workflow
-3. PDF generation for quotes
-4. Email templates CRUD
-5. Send quotes to customers via Postmark (retail prices only)
+### Phase 5: PDF & Emails (COMPLETE)
+1. PDF generation for quotes (retail prices only) — `barryvdh/laravel-dompdf` installed, A4 PDF with QVT branding
+2. PDF download and preview routes via `QuotePdfController`
+3. Email templates CRUD — name, slug, subject, HTML/plain text body, variables JSON, active toggle
+4. `EmailTemplate` model with `render()` method for variable substitution
+5. `QuoteEmailService` — generates PDF attachment, builds email from template or default view, sends via Postmark
+6. Quote show page with Preview PDF, Download PDF, Send Quote, and Edit actions
+7. Send Quote modal — select template, add custom message, send to customer email
+8. Auto-updates quote status from `draft` to `sent` when emailed
+9. `emails_sent` table tracks all outgoing emails with status and Postmark metadata
+10. Sidebar navigation activated for Email Templates section
 
 ### Phase 6: Orders
 1. Convert accepted quote to order

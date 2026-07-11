@@ -50,8 +50,9 @@
                     </a>
 
                     <a
-                        href="#"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors opacity-50 cursor-not-allowed"
+                        href="{{ route('quotes.index') }}"
+                        wire:navigate
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('quotes.*', 'sample-quotes.*') ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
                     >
                         <x-lucide-file-text class="w-5 h-5 shrink-0" />
                         Quotes
@@ -81,6 +82,15 @@
                     >
                         <x-lucide-mail class="w-5 h-5 shrink-0" />
                         Enquiries
+                    </a>
+
+                    <a
+                        href="{{ route('email-templates.index') }}"
+                        wire:navigate
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('email-templates.*') ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                    >
+                        <x-lucide-mail-plus class="w-5 h-5 shrink-0" />
+                        Email Templates
                     </a>
                 </nav>
 
