@@ -13,7 +13,9 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Tool;
+use Laravel\Mcp\Server\Tools\Annotations\IsIdempotent;
 
+#[IsIdempotent]
 #[Description('Send a quote to the customer by email with a PDF attachment. Optionally uses an email template. Auto-advances quote from draft to sent. Requires confirmation.')]
 class SendQuoteEmailTool extends Tool
 {

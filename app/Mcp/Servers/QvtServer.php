@@ -2,6 +2,11 @@
 
 namespace App\Mcp\Servers;
 
+use App\Mcp\Prompts\QuoteAssistantPrompt;
+use App\Mcp\Prompts\WeeklyReportGeneratorPrompt;
+use App\Mcp\Resources\CustomerProfileResource;
+use App\Mcp\Resources\OrderDetailsResource;
+use App\Mcp\Resources\QuoteDetailsResource;
 use App\Mcp\Tools\AddQuoteLineItemTool;
 use App\Mcp\Tools\CreateCustomerTool;
 use App\Mcp\Tools\CreateEnquiryTool;
@@ -11,8 +16,11 @@ use App\Mcp\Tools\CreateQuoteTool;
 use App\Mcp\Tools\DeleteCustomerTool;
 use App\Mcp\Tools\DownloadQuotePdfTool;
 use App\Mcp\Tools\GetCustomerTool;
+use App\Mcp\Tools\GetDashboardStatsTool;
 use App\Mcp\Tools\GetOrderTool;
 use App\Mcp\Tools\GetProductTool;
+use App\Mcp\Tools\GetQuoteActivityTool;
+use App\Mcp\Tools\GetWeeklySummaryTool;
 use App\Mcp\Tools\LinkEnquiryToCustomerTool;
 use App\Mcp\Tools\ListCustomersTool;
 use App\Mcp\Tools\ListEnquiriesTool;
@@ -85,11 +93,23 @@ class QvtServer extends Server
         // Communication tools
         SendQuoteEmailTool::class,
         DownloadQuotePdfTool::class,
+
+        // Dashboard & reporting tools
+        GetDashboardStatsTool::class,
+        GetQuoteActivityTool::class,
+        GetWeeklySummaryTool::class,
     ];
 
     /** @var array<int, class-string<Server\Resource>> */
-    protected array $resources = [];
+    protected array $resources = [
+        CustomerProfileResource::class,
+        QuoteDetailsResource::class,
+        OrderDetailsResource::class,
+    ];
 
     /** @var array<int, class-string<Prompt>> */
-    protected array $prompts = [];
+    protected array $prompts = [
+        QuoteAssistantPrompt::class,
+        WeeklyReportGeneratorPrompt::class,
+    ];
 }

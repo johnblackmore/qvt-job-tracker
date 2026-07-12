@@ -10,7 +10,9 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Tool;
+use Laravel\Mcp\Server\Tools\Annotations\IsIdempotent;
 
+#[IsIdempotent]
 #[Description('Link an existing enquiry to a customer record. Allows overwrite of an existing link. Requires confirmation.')]
 class LinkEnquiryToCustomerTool extends Tool
 {

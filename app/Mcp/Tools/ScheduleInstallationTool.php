@@ -9,7 +9,9 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Tool;
+use Laravel\Mcp\Server\Tools\Annotations\IsIdempotent;
 
+#[IsIdempotent]
 #[Description('Schedule or reschedule an installation date for an order. Validates the date is not in the past and may advance the order status. Requires confirmation.')]
 class ScheduleInstallationTool extends Tool
 {

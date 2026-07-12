@@ -66,7 +66,7 @@ class QvtServerAuthTest extends TestCase
         $response->assertOk();
         $tools = $response->json('result.tools');
         $this->assertNotEmpty($tools);
-        $this->assertCount(25, $tools);
+        $this->assertCount(28, $tools);
     }
 
     public function test_delete_customer_tool_has_destructive_annotation(): void
@@ -89,5 +89,45 @@ class QvtServerAuthTest extends TestCase
         $deleteTool = collect($tools)->first(fn (array $tool) => $tool['name'] === 'delete-customer-tool');
         $this->assertNotNull($deleteTool);
         $this->assertTrue($deleteTool['annotations']['destructiveHint'] ?? false);
+    }
+
+    public function test_admin_can_list_resources(): void
+    {
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+
+        $token = $admin->createToken('test-token')->plainTextToken;
+
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->postJson('/mcp/qvt', [
+                'jsonrpc' => '2.0',
+                'id' => 1,
+                'method' => 'resources/templates/list',
+            ]);
+
+        $response->assertOk();
+        $resources = $response->json('result.resourceTemplates');
+        $this->assertNotEmpty($resources);
+        $this->assertCount(3, $resources);
+    }
+
+    public function test_admin_can_list_prompts(): void
+    {
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+
+        $token = $admin->createToken('test-token')->plainTextToken;
+
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->postJson('/mcp/qvt', [
+                'jsonrpc' => '2.0',
+                'id' => 1,
+                'method' => 'prompts/list',
+            ]);
+
+        $response->assertOk();
+        $prompts = $response->json('result.prompts');
+        $this->assertNotEmpty($prompts);
+        $this->assertCount(2, $prompts);
     }
 }

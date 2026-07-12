@@ -500,8 +500,8 @@ The `[View John in Customer List]` button uses the `url` from the tool response.
 | **Phase 3: Customer & Quote Write Tools** | ✅ Complete | `create-customer`, `update-customer`, `delete-customer`, `create-quote`, `create-quote-from-template`, `add-quote-line-item`, `update-quote-status`. All with preview/confirmed pattern. `CustomerWriteToolTest` (11 tests), `QuoteWriteToolTest` (17 tests) |
 | **Phase 4: Order & Enquiry Tools** | ✅ Complete | `create-order`, `update-order-status`, `update-deposit`, `schedule-installation`, `list-orders`, `get-order`, `list-enquiries`, `create-enquiry`, `link-enquiry-to-customer`, `respond-to-enquiry`. `OrderWriteToolTest` (10 tests), `OrderReadToolTest` (7 tests), `EnquiryWriteToolTest` (9 tests), `EnquiryReadToolTest` (5 tests) |
 | **Phase 5: Communication & PDF Tools** | ✅ Complete | `send-quote-email`, `download-quote-pdf`. `SendQuoteEmailToolTest` (10 tests), `DownloadQuotePdfToolTest` (7 tests) |
-| **Phase 6: Dashboard & Reporting Tools** | ⏳ Pending | `get-dashboard-stats`, `get-quote-activity`, `get-weekly-summary`, resources, prompts |
-| **Phase 7: Polish & Security Hardening** | ⏳ Pending | Rate limit audit, trade-price audit, confirmation messages, `IsDestructive` on deletes, full test suite, client config docs |
+| **Phase 6: Dashboard & Reporting Tools** | ✅ Complete | `get-dashboard-stats`, `get-quote-activity`, `get-weekly-summary` + 3 resources (customer-profile, quote-details, order-details) + 2 prompts (quote-assistant, weekly-report-generator). `DashboardToolsTest` (12 tests), `ResourcesTest` (5 tests), `PromptsTest` (3 tests) |
+| **Phase 7: Polish & Security Hardening** | ✅ Complete | `#[IsIdempotent]` on 8 write tools; `TradePriceAuditTest` (13 tests across all read tools + resources); `RateLimitTest` (2 tests covering 60/min cap and per-user isolation); `ToolMetadataTest` (6 tests covering description/schema/message/url); fixed Sanctum `RequestGuard` user-caching bug in `McpSanctumAuth`; `docs/mcp-client-setup.md` (Claude Desktop, OpenCode, Cursor, curl). **155 tests, 1032 assertions** |
 
 ---
 
@@ -601,25 +601,38 @@ The `[View John in Customer List]` button uses the `url` from the tool response.
 - [x] Run `pint` — clean
 - [x] All MCP tests passing: **112 tests, 624 assertions**
 
----
+### Phase 6: Dashboard & Reporting Tools — ✅ COMPLETE
+- [x] `GetDashboardStatsTool` — `#[IsReadOnly]`, no params, returns 5 categories: `customers` (total + new this month), `quotes` (by status + accepted value this month), `orders` (by status + deposit collected), `enquiries` (by status + unlinked count), `revenue_pipeline` (sum of draft+sent quote totals)
+- [x] `GetQuoteActivityTool` — `#[IsReadOnly]`, `since`/`until` date params (default last 7 days), returns 4 activity counters (created/sent/accepted/declined) with totals + top 5 recent quotes with `url`
+- [x] `GetWeeklySummaryTool` — `#[IsReadOnly]`, no params (current week Mon-Sun), returns narrative message + structured weekly stats + top 3 customer highlights + pending follow-ups (quotes sent > 3 days ago)
+- [x] `CustomerProfileResource` — `qvt://customers/{id}` URI template, returns full customer with vehicles/enquiries/quotes/orders
+- [x] `QuoteDetailsResource` — `qvt://quotes/{id}` URI template, returns quote with line items (retail prices only — no trade prices), includes `url`
+- [x] `OrderDetailsResource` — `qvt://orders/{id}` URI template, returns full order with customer/quote/staff/emails count/deposit_percent
+- [x] `QuoteAssistantPrompt` — `tone` argument (professional/casual), returns system prompt for quote-related tasks
+- [x] `WeeklyReportGeneratorPrompt` — `week_starting` argument, returns template for generating weekly summaries
+- [x] All 3 tools registered in `QvtServer::$tools` with Dashboard section
+- [x] All 3 resources registered in `QvtServer::$resources` (NEW — first non-Tool primitives)
+- [x] All 2 prompts registered in `QvtServer::$prompts` (NEW)
+- [x] All 3 tools implement `shouldRegister()` with `hasRole('admin')`
+- [x] `DashboardToolsTest`: 12 tests (stats all categories, stats message date, activity date range filter, activity 4 types, activity default 7 days, activity top recent quotes with url, weekly summary narrative, weekly summary pending follow-ups, weekly summary top customers, all read-only, all admin-gated, both installer tests)
+- [x] `ResourcesTest`: 5 tests (customer-profile full record, quote-details retail only no trade prices, order-details with deposit_percent, invalid URI returns error, admin-gated)
+- [x] `PromptsTest`: 3 tests (quote-assistant professional tone, quote-assistant casual tone, weekly-report-generator with week_starting)
+- [x] Updated `QvtServerAuthTest` to assert 28 tools + added 2 new tests for `resources/templates/list` and `prompts/list`
+- [x] Discovered: resources implementing `HasUriTemplate` are treated as resource templates and listed via `resources/templates/list` (not `resources/list`)
+- [x] Run `pint` — clean
+- [x] All MCP tests passing: **134 tests, 720 assertions**
 
-## Remaining Implementation Phases
-
-### Phase 6: Dashboard & Reporting Tools
-1. `get-dashboard-stats`
-2. `get-quote-activity`
-3. `get-weekly-summary`
-4. Add resources (`customer-profile`, `quote-details`, `order-details`)
-5. Add prompts (`quote-assistant`, `weekly-report-generator`)
-6. Write tests: activity aggregation, narrative generation
-
-### Phase 7: Polish & Security Hardening
-1. Add rate limiting (`throttle:mcp`)
-2. Audit all tools for trade-price leakage
-3. Ensure all write tools have clear confirmation/error messages
-4. Add `IsDestructive` annotation to delete operations
-5. Full test suite run
-6. Document MCP client configuration for Claude, Cursor, OpenCode
+### Phase 7: Polish & Security Hardening — ✅ COMPLETE
+- [x] `#[IsIdempotent]` annotation added to 8 write tools that were missing it: `AddQuoteLineItemTool`, `CreateOrderTool`, `CreateQuoteTool`, `CreateQuoteFromTemplateTool`, `LinkEnquiryToCustomerTool`, `ScheduleInstallationTool`, `SendQuoteEmailTool`, `UpdateDepositTool`
+- [x] `CreateEnquiryTool` intentionally **left unannotated** — creating a new enquiry is non-idempotent (two calls = two records); the absence of the annotation signals this to the LLM
+- [x] `DeleteCustomerTool` already had `#[IsDestructive]` from Phase 3
+- [x] `TradePriceAuditTest` (13 tests): walks every read tool + resource and asserts that the JSON payload contains none of `unit_trade_price`, `line_total_trade`, `total_trade`, `trade_price`. Covers: `get-customer`, `list-customers`, `search-customers`, `list-products`, `search-products`, `list-orders`, `get-order`, `get-quote-activity`, `get-dashboard-stats`, `get-weekly-summary`, plus the 3 resources (`customer-profile`, `quote-details`, `order-details`)
+- [x] `RateLimitTest` (2 tests): 60 requests succeed, 61st returns 429; per-user isolation (user B unaffected by user A being throttled)
+- [x] `ToolMetadataTest` (6 tests): every tool has `description` and `inputSchema`; every write tool has `preview` + `confirmed` params; calling a tool without required args returns a clear MCP error; every read tool returns `message`; every get/list tool returns `url` (or `data[].url` for list tools) containing the app base URL
+- [x] Fixed Sanctum `RequestGuard` user-caching bug in `McpSanctumAuth`: replaced `Auth::guard('sanctum')->user()` (which caches the user across requests in the same test process) with a direct `PersonalAccessToken::findToken($token)->tokenable` lookup. Also added `$request->setUserResolver()` so the request-scoped user is correct for downstream middleware
+- [x] `docs/mcp-client-setup.md` written covering Claude Desktop (stdio), OpenCode (HTTP), Cursor (HTTP), and a generic curl walkthrough. Includes auth setup, common errors, tool list, and the preview/confirmed pattern
+- [x] Run `pint` — clean
+- [x] All MCP tests passing: **155 tests, 1032 assertions**
 
 ---
 

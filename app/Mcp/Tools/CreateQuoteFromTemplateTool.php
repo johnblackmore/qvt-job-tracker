@@ -13,7 +13,9 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Tool;
+use Laravel\Mcp\Server\Tools\Annotations\IsIdempotent;
 
+#[IsIdempotent]
 #[Description('Create a new quote by cloning a sample/template quote for a specific customer. Pulls current retail and trade prices. Requires confirmation.')]
 class CreateQuoteFromTemplateTool extends Tool
 {
