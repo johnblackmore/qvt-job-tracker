@@ -95,7 +95,7 @@
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
                 <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
                     <h2 class="text-base font-display font-semibold text-slate-900">Enquiries</h2>
-                    <a href="{{ route('enquiries.create', ['customer' => $customer->id]) }}" wire:navigate class="inline-flex items-center gap-1.5 text-sm font-medium text-copper hover:text-copper transition-colors">
+                    <a href="{{ route('enquiries.create', ['customerId' => $customer->id]) }}" wire:navigate class="inline-flex items-center gap-1.5 text-sm font-medium text-copper hover:text-copper transition-colors">
                         <x-lucide-plus class="w-4 h-4" />
                         Log Enquiry
                     </a>
@@ -131,6 +131,50 @@
                     </div>
                 @endif
             </div>
+
+            {{-- Quotes --}}
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+                <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                    <h2 class="text-base font-display font-semibold text-slate-900">Quotes</h2>
+                    <a href="{{ route('quotes.create', ['customerId' => $customer->id]) }}" wire:navigate class="inline-flex items-center gap-1.5 text-sm font-medium text-copper hover:text-copper transition-colors">
+                        <x-lucide-plus class="w-4 h-4" />
+                        Add Quote
+                    </a>
+                </div>
+                @if($customer->quotes->count() > 0)
+                    <div class="divide-y divide-slate-100">
+                        @foreach($customer->quotes as $quote)
+                            <a href="{{ route('quotes.show', $quote->id) }}" wire:navigate class="px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                                        <x-lucide-file-text class="w-5 h-5 text-blue-600" />
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-slate-900">{{ $quote->reference_number }}</p>
+                                        <p class="text-xs text-slate-500 mt-0.5">Created {{ $quote->created_at->format('d M Y') }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="text-sm font-medium text-slate-900">&pound;{{ number_format($quote->grand_total, 2) }}</span>
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
+                                        {{ $quote->status === 'draft' ? 'bg-slate-100 text-slate-700 border border-slate-200' : '' }}
+                                        {{ $quote->status === 'sent' ? 'bg-blue-50 text-blue-700 border border-blue-200' : '' }}
+                                        {{ $quote->status === 'accepted' ? 'bg-teal/10 text-teal-dark border border-teal/20' : '' }}
+                                        {{ $quote->status === 'declined' ? 'bg-red-50 text-red-700 border border-red-200' : '' }}
+                                        {{ $quote->status === 'converted' ? 'bg-amber-50 text-amber-700 border border-amber-200' : '' }}
+                                    ">
+                                        {{ ucfirst($quote->status) }}
+                                    </span>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="p-8 text-center">
+                        <p class="text-sm text-slate-500">No quotes for this customer yet.</p>
+                    </div>
+                @endif
+            </div>
         </div>
 
         {{-- Right column --}}
@@ -158,7 +202,7 @@
                 </div>
                 <div class="flex items-center justify-between py-2">
                     <span class="text-sm text-slate-500">Quotes</span>
-                    <span class="text-sm font-medium text-slate-900">0</span>
+                    <span class="text-sm font-medium text-slate-900">{{ $customer->quotes->count() }}</span>
                 </div>
             </div>
         </div>

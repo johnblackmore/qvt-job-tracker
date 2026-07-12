@@ -71,9 +71,7 @@ class QuoteBuilder extends Component
             }
         }
 
-        if ($customerId) {
-            $this->customer_id = $customerId;
-        }
+        $this->customer_id = $customerId ?? (request()->query('customerId') ? (int) request()->query('customerId') : null);
     }
 
     public function addProductLine(int $productId): void

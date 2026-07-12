@@ -29,8 +29,10 @@ class EnquiryForm extends Component
             $this->status = $this->enquiry->status;
             $this->subject = $this->enquiry->subject ?? '';
             $this->message = $this->enquiry->message;
-        } elseif ($customerId) {
-            $this->customer_id = $customerId;
+        }
+
+        if (! $this->customer_id) {
+            $this->customer_id = $customerId ?? (request()->query('customerId') ? (int) request()->query('customerId') : null);
         }
     }
 

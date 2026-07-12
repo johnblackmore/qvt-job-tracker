@@ -11,7 +11,7 @@ class CustomerShow extends Component
 
     public function mount(int $id): void
     {
-        $this->customer = Customer::with(['vehicles', 'enquiries'])->findOrFail($id);
+        $this->customer = Customer::with(['vehicles', 'enquiries', 'quotes'])->findOrFail($id);
     }
 
     public function render()
