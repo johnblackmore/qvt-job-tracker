@@ -24,3 +24,4 @@ require __DIR__.'/products.php';
 require __DIR__.'/quotes.php';
 require __DIR__.'/orders.php';
 require __DIR__.'/email.php';
+require __DIR__.'/chat.php';

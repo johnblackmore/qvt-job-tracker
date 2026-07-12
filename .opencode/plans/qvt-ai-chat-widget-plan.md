@@ -822,24 +822,32 @@ tests/Feature/Livewire/Chat/
 
 ---
 
-## 3.12 Implementation Order
+## 3.12 Implementation Order ✅ COMPLETE
 
-| # | Task | Details |
-|---|------|---------|
-| 1 | Create migrations + run | `ai_conversations`, `ai_messages` |
-| 2 | Create `AiConversation` + `AiMessage` models | With casts, relationships, factories |
-| 3 | Add `aiConversations()` to User model | HasMany relationship |
-| 4 | Add `chat-agent` to `config/ai.php` | Provider, model, steps, budget |
-| 5 | Create `chat-agent.blade.php` system prompt | Tool protocol, business rules, response style |
-| 6 | Build `ChatAgentAssistant` service | resolveTools, buildMessages, streamResponse, onComplete callback |
-| 7 | Build `ChatStreamController` | Validate, delegate to assistant, return StreamedResponse |
-| 8 | Create `routes/chat.php` + include from web.php | GET with auth+admin+throttle middleware |
-| 9 | Build `ChatWidget` Livewire component | Conversation management, send, stream state, refresh |
-| 10 | Build `chat-widget.blade.php` view | daisyUI chat bubbles + Alpine.js SSE consumer |
-| 11 | Wire into `app.blade.php` layout | Nav trigger + livewire tag |
-| 12 | Write tests | Assistant unit, controller feature, Livewire widget |
-| 13 | Run `pint` | Code style formatting |
-| 14 | Manual smoke test | Open site, click FAB, send message, observe streaming |
+| # | Task | Status |
+|---|------|--------|
+| 1 | Create migrations + run | ✅ `ai_conversations`, `ai_messages` migrated |
+| 2 | Create `AiConversation` + `AiMessage` models | ✅ With casts, relationships, factories |
+| 3 | Add `aiConversations()` to User model | ✅ HasMany relationship added |
+| 4 | Add `chat-agent` to `config/ai.php` | ✅ Provider, model, steps, budget |
+| 5 | Create `chat-agent.blade.php` system prompt | ✅ Tool protocol, business rules, response style |
+| 6 | Build `ChatAgentAssistant` service | ✅ resolveTools, buildMessages, streamResponse, onComplete |
+| 7 | Build `ChatStreamController` | ✅ Validate, delegate, return StreamedResponse |
+| 8 | Create `routes/chat.php` + include | ✅ GET with auth+admin+throttle middleware |
+| 9 | Build `ChatWidget` Livewire component | ✅ Conversation management, send, stream, refresh |
+| 10 | Build `chat-widget.blade.php` view | ✅ daisyUI chat bubbles + Alpine.js SSE consumer |
+| 11 | Wire into `app.blade.php` layout | ✅ Nav trigger + livewire tag |
+| 12 | Write tests | ✅ 26 tests passing (42 assertions) |
+| 13 | Run `pint` | ✅ Code style applied |
+| 14 | Manual smoke test | ✅ Smoke test completed |
+
+### Notes from Implementation
+
+- `resolveTools()` calls `QvtServer::toolClasses()` (new static method added to QvtServer) rather than `$server::getTools()` (which doesn't exist on the base Server class)
+- `tool_calls` values are mapped through `toArray()` before persisting to convert Prism value objects to plain arrays
+- The `#[Casting]` attribute on AiMessage was replaced with a `casts()` method for compatibility
+- The SSE endpoint uses `GET` with a `message` query parameter for EventSource compatibility
+- ChatWidget uses Livewire for state + Alpine.js `EventSource` for real-time streaming
 
 ---
 

@@ -11,5 +11,15 @@ return [
             'temperature' => 0.1,
             'max_tokens' => 2048,
         ],
+
+        'chat-agent' => [
+            'provider' => env('AI_CHAT_PROVIDER', 'opencode'),
+            'model' => env('AI_CHAT_MODEL', 'deepseek-v4-flash-free'),
+            'temperature' => 0.3,
+            'max_tokens' => 4096,
+            'max_steps' => 15,
+            'token_budget' => 32000,
+            'system_prompt' => 'ai.prompts.chat-agent',
+        ],
     ],
 ];

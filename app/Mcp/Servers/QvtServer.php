@@ -114,4 +114,40 @@ class QvtServer extends Server
         QuoteAssistantPrompt::class,
         WeeklyReportGeneratorPrompt::class,
     ];
+
+    /** @return array<int, class-string<Tool>> */
+    public static function toolClasses(): array
+    {
+        return [
+            ListCustomersTool::class,
+            GetCustomerTool::class,
+            SearchCustomersTool::class,
+            CreateCustomerTool::class,
+            UpdateCustomerTool::class,
+            DeleteCustomerTool::class,
+            ListProductsTool::class,
+            GetProductTool::class,
+            SearchProductsTool::class,
+            CreateQuoteTool::class,
+            CreateQuoteFromTemplateTool::class,
+            AddQuoteLineItemTool::class,
+            UpdateQuoteStatusTool::class,
+            ListOrdersTool::class,
+            GetOrderTool::class,
+            CreateOrderTool::class,
+            UpdateOrderStatusTool::class,
+            UpdateDepositTool::class,
+            ScheduleInstallationTool::class,
+            RecordPaymentTool::class,
+            ListEnquiriesTool::class,
+            CreateEnquiryTool::class,
+            LinkEnquiryToCustomerTool::class,
+            RespondToEnquiryTool::class,
+            SendQuoteEmailTool::class,
+            DownloadQuotePdfTool::class,
+            GetDashboardStatsTool::class,
+            GetQuoteActivityTool::class,
+            GetWeeklySummaryTool::class,
+        ];
+    }
 }

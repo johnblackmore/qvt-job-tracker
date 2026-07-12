@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Prism\Prism\Exceptions\PrismException;
 use Prism\Prism\PrismManager;
-use Prism\Prism\Providers\OpenAI\OpenAI;
+use Prism\Prism\Providers\DeepSeek\DeepSeek;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,11 +24,9 @@ class AppServiceProvider extends ServiceProvider
                     );
                 }
 
-                return new OpenAI(
+                return new DeepSeek(
                     apiKey: $config['api_key'],
                     url: $config['url'],
-                    organization: null,
-                    project: null,
                 );
             });
 
