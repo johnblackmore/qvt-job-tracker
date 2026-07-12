@@ -11,9 +11,13 @@ class EnquiryForm extends Component
     public ?Enquiry $enquiry = null;
 
     public ?int $customer_id = null;
+
     public string $source = 'web';
+
     public string $status = 'new';
+
     public string $subject = '';
+
     public string $message = '';
 
     public function mount(?int $enquiryId = null, ?int $customerId = null): void
@@ -54,6 +58,7 @@ class EnquiryForm extends Component
     public function render()
     {
         $customers = Customer::orderBy('name')->get();
+
         return view('livewire.enquiries.enquiry-form', compact('customers'));
     }
 }

@@ -9,13 +9,19 @@ use Livewire\Component;
 class VehicleForm extends Component
 {
     public Customer $customer;
+
     public ?Vehicle $vehicle = null;
 
     public string $make = '';
+
     public string $model = '';
+
     public string $registration = '';
+
     public string $year = '';
+
     public string $type = '';
+
     public string $notes = '';
 
     public function mount(int $customerId, ?int $vehicleId = null): void

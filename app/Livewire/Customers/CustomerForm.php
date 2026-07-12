@@ -10,9 +10,13 @@ class CustomerForm extends Component
     public ?Customer $customer = null;
 
     public string $name = '';
+
     public string $email = '';
+
     public string $phone = '';
+
     public string $address = '';
+
     public string $notes = '';
 
     public function mount(?int $customerId = null): void

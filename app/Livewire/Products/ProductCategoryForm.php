@@ -11,6 +11,7 @@ class ProductCategoryForm extends Component
     public ?ProductCategory $category = null;
 
     public string $name = '';
+
     public string $description = '';
 
     public function mount(?int $categoryId = null): void

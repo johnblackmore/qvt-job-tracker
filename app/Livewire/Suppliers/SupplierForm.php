@@ -10,12 +10,19 @@ class SupplierForm extends Component
     public ?Supplier $supplier = null;
 
     public string $name = '';
+
     public string $contact_name = '';
+
     public string $email = '';
+
     public string $phone = '';
+
     public string $website = '';
+
     public string $address = '';
+
     public string $notes = '';
+
     public bool $is_active = true;
 
     public function mount(?int $supplierId = null): void

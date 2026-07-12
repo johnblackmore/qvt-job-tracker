@@ -12,12 +12,19 @@ class ProductForm extends Component
     public ?Product $product = null;
 
     public string $sku = '';
+
     public string $name = '';
+
     public string $description = '';
+
     public ?int $category_id = null;
+
     public string $retail_price = '';
+
     public int $stock_qty = 0;
+
     public bool $is_active = true;
+
     public string $notes = '';
 
     public array $supplierLinks = [];

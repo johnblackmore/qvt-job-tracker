@@ -11,6 +11,7 @@ class EnquiryList extends Component
     use WithPagination;
 
     public string $search = '';
+
     public string $status = '';
 
     public function markResponded(int $id): void
@@ -37,10 +38,10 @@ class EnquiryList extends Component
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('subject', 'like', "%{$this->search}%")
-                      ->orWhere('message', 'like', "%{$this->search}%")
-                      ->orWhereHas('customer', function ($cq) {
-                          $cq->where('name', 'like', "%{$this->search}%");
-                      });
+                        ->orWhere('message', 'like', "%{$this->search}%")
+                        ->orWhereHas('customer', function ($cq) {
+                            $cq->where('name', 'like', "%{$this->search}%");
+                        });
                 });
             })
             ->when($this->status, function ($query) {
