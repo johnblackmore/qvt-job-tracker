@@ -62,7 +62,7 @@ new class extends Component
                 required
                 autofocus
                 autocomplete="name"
-                class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3.5 py-2.5"
+                class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5"
             />
             <x-input-error :messages="$errors->get('name')" class="mt-1.5" />
         </div>
@@ -75,7 +75,7 @@ new class extends Component
                 type="email"
                 required
                 autocomplete="username"
-                class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3.5 py-2.5"
+                class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5"
             />
             <x-input-error :messages="$errors->get('email')" class="mt-1.5" />
 
@@ -88,7 +88,7 @@ new class extends Component
                         </button>
                     </p>
                     @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 text-sm font-medium text-emerald-600">
+                        <p class="mt-2 text-sm font-medium text-copper">
                             A new verification link has been sent to your email address.
                         </p>
                     @endif
@@ -100,13 +100,13 @@ new class extends Component
             <button
                 type="submit"
                 wire:loading.attr="disabled"
-                class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors"
+                class="inline-flex items-center gap-2 rounded-lg bg-copper px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark focus:outline-none focus:ring-2 focus:ring-copper focus:ring-offset-2 transition-colors"
             >
                 <span wire:loading.remove>Save changes</span>
                 <span wire:loading>Saving...</span>
             </button>
 
-            <x-action-message class="text-sm text-emerald-600 font-medium" on="profile-updated">
+            <x-action-message class="text-sm text-copper font-medium" on="profile-updated">
                 Saved successfully.
             </x-action-message>
         </div>

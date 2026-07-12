@@ -1,19 +1,19 @@
 <div>
     <div class="mb-8">
         <div class="flex items-center gap-2 mb-2">
-            <a href="{{ route('quotes.index') }}" wire:navigate class="text-sm text-slate-500 hover:text-emerald-600 transition-colors">Quotes</a>
+            <a href="{{ route('quotes.index') }}" wire:navigate class="text-sm text-slate-500 hover:text-copper transition-colors">Quotes</a>
             <x-lucide-chevron-right class="w-4 h-4 text-slate-400" />
             <span class="text-sm text-slate-900 font-medium font-mono">{{ $quote->reference_number }}</span>
         </div>
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <h1 class="text-2xl font-semibold text-slate-900 tracking-tight">Quote {{ $quote->reference_number }}</h1>
+                <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">Quote {{ $quote->reference_number }}</h1>
                 <div class="mt-1 flex items-center gap-3 text-sm text-slate-500">
                     <span>{{ $quote->customer->name }}</span>
                     <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
                         {{ $quote->status === 'draft' ? 'bg-slate-100 text-slate-600 border border-slate-200' : '' }}
                         {{ $quote->status === 'sent' ? 'bg-blue-50 text-blue-700 border border-blue-200' : '' }}
-                        {{ $quote->status === 'accepted' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : '' }}
+                        {{ $quote->status === 'accepted' ? 'bg-teal/10 text-teal-dark border border-teal/20' : '' }}
                         {{ $quote->status === 'declined' ? 'bg-red-50 text-red-700 border border-red-200' : '' }}
                         {{ $quote->status === 'expired' ? 'bg-amber-50 text-amber-700 border border-amber-200' : '' }}
                     ">
@@ -33,7 +33,7 @@
                     <x-lucide-download class="w-4 h-4" />
                     PDF
                 </a>
-                <button wire:click="openSendModal" class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 transition-colors">
+                <button wire:click="openSendModal" class="inline-flex items-center gap-2 rounded-lg bg-copper px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark transition-colors">
                     <x-lucide-send class="w-4 h-4" />
                     Send Quote
                 </button>
@@ -42,7 +42,7 @@
                     Edit
                 </a>
                 @if($quote->status === 'accepted')
-                    <button wire:click="convertToOrder" class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 transition-colors">
+                    <button wire:click="convertToOrder" class="inline-flex items-center gap-2 rounded-lg bg-copper px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark transition-colors">
                         <x-lucide-clipboard-plus class="w-4 h-4" />
                         Convert to Order
                     </button>
@@ -52,7 +52,7 @@
     </div>
 
     @if($sendStatus)
-        <div class="mb-4 rounded-lg px-4 py-3 text-sm {{ str_starts_with($sendStatus, 'sent') ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200' }}">
+        <div class="mb-4 rounded-lg px-4 py-3 text-sm {{ str_starts_with($sendStatus, 'sent') ? 'bg-teal/10 text-teal-dark border border-teal/20' : 'bg-red-50 text-red-700 border border-red-200' }}">
             {{ $sendStatus }}
         </div>
     @endif
@@ -62,7 +62,7 @@
             {{-- Line items --}}
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
                 <div class="px-6 py-4 border-b border-slate-200">
-                    <h2 class="text-base font-semibold text-slate-900">Quote Items</h2>
+                    <h2 class="text-base font-display font-semibold text-slate-900">Quote Items</h2>
                 </div>
                 <div class="divide-y divide-slate-100">
                     @foreach($quote->lineItems as $item)
@@ -129,7 +129,7 @@
                 </div>
                 <div class="flex items-center justify-between py-3">
                     <span class="text-base font-semibold text-slate-900">Grand total</span>
-                    <span class="text-base font-bold text-emerald-700">£{{ number_format($quote->grand_total, 2) }}</span>
+                    <span class="text-base font-bold text-copper-light">£{{ number_format($quote->grand_total, 2) }}</span>
                 </div>
                 <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between">
                     <span class="text-xs text-slate-400">Trade cost (internal)</span>
@@ -159,7 +159,7 @@
 
                     <div>
                         <label for="template" class="block text-sm font-medium text-slate-700 mb-1.5">Email template (optional)</label>
-                        <select wire:model="selectedTemplateId" id="template" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3.5 py-2.5">
+                        <select wire:model="selectedTemplateId" id="template" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5">
                             <option value="">Default quote email</option>
                             @foreach($templates as $t)
                                 <option value="{{ $t->id }}">{{ $t->name }}</option>
@@ -169,13 +169,13 @@
 
                     <div>
                         <label for="customMessage" class="block text-sm font-medium text-slate-700 mb-1.5">Custom message (optional)</label>
-                        <textarea wire:model="customMessage" id="customMessage" rows="3" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3.5 py-2.5" placeholder="Add a personal note to the customer..."></textarea>
+                        <textarea wire:model="customMessage" id="customMessage" rows="3" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5" placeholder="Add a personal note to the customer..."></textarea>
                     </div>
                 </div>
 
                 <div class="flex items-center justify-end gap-3 pt-2">
                     <button wire:click="closeSendModal" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Cancel</button>
-                    <button wire:click="sendQuote" wire:loading.attr="disabled" class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 transition-colors">
+                    <button wire:click="sendQuote" wire:loading.attr="disabled" class="inline-flex items-center gap-2 rounded-lg bg-copper px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark transition-colors">
                         <span wire:loading.remove>Send Quote</span>
                         <span wire:loading>Sending...</span>
                     </button>

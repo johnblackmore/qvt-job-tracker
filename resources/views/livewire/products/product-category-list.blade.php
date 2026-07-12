@@ -1,10 +1,10 @@
 <div>
     <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-semibold text-slate-900 tracking-tight">Product Categories</h1>
+            <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">Product Categories</h1>
             <p class="mt-1 text-sm text-slate-500">Organise your product library</p>
         </div>
-        <a href="{{ route('products.categories.create') }}" wire:navigate class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 transition-colors">
+        <a href="{{ route('products.categories.create') }}" wire:navigate class="inline-flex items-center gap-2 rounded-lg bg-copper px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark transition-colors">
             <x-lucide-folder-plus class="w-4 h-4" />
             Add Category
         </a>
@@ -13,7 +13,7 @@
     <div class="mb-6">
         <div class="relative max-w-md">
             <x-lucide-search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input wire:model.live.debounce.300ms="search" type="text" placeholder="Search categories..." class="w-full rounded-lg border-slate-300 text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:ring-emerald-500 text-sm pl-9 pr-4 py-2.5" />
+            <input wire:model.live.debounce.300ms="search" type="text" placeholder="Search categories..." class="w-full rounded-lg border-slate-300 text-slate-900 placeholder-slate-400 focus:border-copper focus:ring-copper text-sm pl-9 pr-4 py-2.5" />
         </div>
     </div>
 
@@ -46,7 +46,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-2">
-                                        <a href="{{ route('products.categories.edit', $category) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors">
+                                        <a href="{{ route('products.categories.edit', $category) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors">
                                             <x-lucide-pencil class="w-4 h-4" />
                                         </a>
                                         <button wire:click="delete({{ $category->id }})" wire:confirm="Delete this category? Products in this category will be unassigned." class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">

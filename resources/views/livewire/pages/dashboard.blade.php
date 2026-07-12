@@ -22,20 +22,21 @@ new class extends Component
 
 <div>
     <div class="mb-8">
-        <h1 class="text-2xl font-semibold text-slate-900 tracking-tight">Dashboard</h1>
+        <p class="text-xs font-display font-semibold uppercase tracking-widest text-copper mb-1">Operations</p>
+        <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">Dashboard</h1>
         <p class="mt-1 text-sm text-slate-500">Welcome back, {{ Auth::user()->name }}</p>
     </div>
 
     {{-- Stat cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
-        <a href="{{ route('customers.index') }}" wire:navigate class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-emerald-300 transition-colors">
+        <a href="{{ route('customers.index') }}" wire:navigate class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-copper/30 transition-colors">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-slate-500">Customers</p>
                     <p class="mt-1 text-2xl font-bold text-slate-900">{{ $customerCount }}</p>
                 </div>
-                <div class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center">
-                    <x-lucide-users class="w-5 h-5 text-emerald-600" />
+                <div class="w-10 h-10 rounded-lg bg-copper/10 flex items-center justify-center">
+                    <x-lucide-users class="w-5 h-5 text-copper" />
                 </div>
             </div>
         </a>
@@ -64,7 +65,7 @@ new class extends Component
             </div>
         </div>
 
-        <a href="{{ route('enquiries.index') }}" wire:navigate class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-emerald-300 transition-colors">
+        <a href="{{ route('enquiries.index') }}" wire:navigate class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-copper/30 transition-colors">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-slate-500">Open Enquiries</p>
@@ -80,12 +81,12 @@ new class extends Component
     {{-- Quick actions --}}
     <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
         <div class="px-6 py-4 border-b border-slate-200">
-            <h2 class="text-base font-semibold text-slate-900">Quick Actions</h2>
+            <h2 class="text-base font-display font-semibold text-slate-900">Quick Actions</h2>
         </div>
         <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <a href="{{ route('customers.create') }}" wire:navigate class="group flex items-center gap-4 p-4 rounded-lg border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all">
-                <div class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
-                    <x-lucide-user-plus class="w-5 h-5 text-emerald-600" />
+            <a href="{{ route('customers.create') }}" wire:navigate class="group flex items-center gap-4 p-4 rounded-lg border border-slate-200 hover:border-copper/30 hover:bg-copper/10/50 transition-all">
+                <div class="w-10 h-10 rounded-lg bg-copper/10 flex items-center justify-center group-hover:bg-copper/15 transition-colors">
+                    <x-lucide-user-plus class="w-5 h-5 text-copper" />
                 </div>
                 <div>
                     <p class="text-sm font-medium text-slate-900">Add Customer</p>
@@ -93,7 +94,7 @@ new class extends Component
                 </div>
             </a>
 
-            <a href="#" class="group flex items-center gap-4 p-4 rounded-lg border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all opacity-50 cursor-not-allowed">
+            <a href="#" class="group flex items-center gap-4 p-4 rounded-lg border border-slate-200 hover:border-copper/30 hover:bg-copper/10/50 transition-all opacity-50 cursor-not-allowed">
                 <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
                     <x-lucide-file-plus class="w-5 h-5 text-blue-600" />
                 </div>
@@ -103,7 +104,7 @@ new class extends Component
                 </div>
             </a>
 
-            <a href="{{ route('enquiries.create') }}" wire:navigate class="group flex items-center gap-4 p-4 rounded-lg border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50 transition-all">
+            <a href="{{ route('enquiries.create') }}" wire:navigate class="group flex items-center gap-4 p-4 rounded-lg border border-slate-200 hover:border-copper/30 hover:bg-copper/10/50 transition-all">
                 <div class="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center group-hover:bg-purple-100 transition-colors">
                     <x-lucide-plus-circle class="w-5 h-5 text-purple-600" />
                 </div>
@@ -118,7 +119,7 @@ new class extends Component
     {{-- Empty states placeholder --}}
     <div class="mt-8 bg-white rounded-xl border border-slate-200 shadow-sm">
         <div class="px-6 py-4 border-b border-slate-200">
-            <h2 class="text-base font-semibold text-slate-900">Recent Activity</h2>
+            <h2 class="text-base font-display font-semibold text-slate-900">Recent Activity</h2>
         </div>
         <div class="p-12 text-center">
             <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">

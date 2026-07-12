@@ -13,7 +13,7 @@
         <div class="min-h-screen flex flex-col justify-center items-center px-4">
             <div class="mb-8 text-center">
                 <a href="/" wire:navigate class="inline-flex flex-col items-center gap-2">
-                    <div class="w-16 h-16 rounded-xl bg-emerald-600 flex items-center justify-center shadow-lg">
+                    <div class="w-16 h-16 rounded-xl bg-copper flex items-center justify-center shadow-lg">
                         <x-lucide-bolt class="w-9 h-9 text-white" />
                     </div>
                     <span class="text-xl font-bold text-slate-900 tracking-tight">Quantock Van Tech</span>

@@ -1,10 +1,10 @@
 <div>
     <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-semibold text-slate-900 tracking-tight">Orders</h1>
+            <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">Orders</h1>
             <p class="mt-1 text-sm text-slate-500">Manage customer installations and jobs</p>
         </div>
-        <a href="{{ route('orders.create') }}" wire:navigate class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 transition-colors">
+        <a href="{{ route('orders.create') }}" wire:navigate class="inline-flex items-center gap-2 rounded-lg bg-copper px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark transition-colors">
             <x-lucide-clipboard-plus class="w-4 h-4" />
             New Order
         </a>
@@ -13,9 +13,9 @@
     <div class="mb-6 flex flex-col sm:flex-row gap-3">
         <div class="relative max-w-md flex-1">
             <x-lucide-search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input wire:model.live.debounce.300ms="search" type="text" placeholder="Search by reference or customer..." class="w-full rounded-lg border-slate-300 text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:ring-emerald-500 text-sm pl-9 pr-4 py-2.5" />
+            <input wire:model.live.debounce.300ms="search" type="text" placeholder="Search by reference or customer..." class="w-full rounded-lg border-slate-300 text-slate-900 placeholder-slate-400 focus:border-copper focus:ring-copper text-sm pl-9 pr-4 py-2.5" />
         </div>
-        <select wire:model.live="status" class="rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3 py-2.5">
+        <select wire:model.live="status" class="rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3 py-2.5">
             <option value="">All statuses</option>
             <option value="pending">Pending</option>
             <option value="deposit_paid">Deposit Paid</option>
@@ -45,7 +45,7 @@
                         @foreach($orders as $order)
                             <tr class="hover:bg-slate-50 transition-colors">
                                 <td class="px-6 py-4">
-                                    <a href="{{ route('orders.show', $order) }}" wire:navigate class="font-medium text-slate-900 hover:text-emerald-600 transition-colors font-mono text-xs">
+                                    <a href="{{ route('orders.show', $order) }}" wire:navigate class="font-medium text-slate-900 hover:text-copper transition-colors font-mono text-xs">
                                         {{ $order->reference_number }}
                                     </a>
                                     @if($order->quote)
@@ -61,7 +61,7 @@
                                         {{ $order->status === 'deposit_paid' ? 'bg-blue-50 text-blue-700 border border-blue-200' : '' }}
                                         {{ $order->status === 'scheduled' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : '' }}
                                         {{ $order->status === 'in_progress' ? 'bg-amber-50 text-amber-700 border border-amber-200' : '' }}
-                                        {{ $order->status === 'completed' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : '' }}
+                                        {{ $order->status === 'completed' ? 'bg-teal/10 text-teal-dark border border-teal/20' : '' }}
                                         {{ $order->status === 'cancelled' ? 'bg-red-50 text-red-700 border border-red-200' : '' }}
                                     ">
                                         {{ ucwords(str_replace('_', ' ', $order->status)) }}
@@ -75,7 +75,7 @@
                                         £{{ number_format($order->deposit_paid, 2) }} / £{{ number_format($order->deposit_required, 2) }}
                                     </div>
                                     <div class="w-full bg-slate-100 rounded-full h-1.5 mt-1.5 overflow-hidden">
-                                        <div class="bg-emerald-500 h-1.5 rounded-full transition-all" style="width: {{ min($order->deposit_percent, 100) }}%"></div>
+                                        <div class="bg-copper/100 h-1.5 rounded-full transition-all" style="width: {{ min($order->deposit_percent, 100) }}%"></div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 text-xs text-slate-500">
@@ -83,7 +83,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-2">
-                                        <a href="{{ route('orders.edit', $order) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors">
+                                        <a href="{{ route('orders.edit', $order) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors">
                                             <x-lucide-pencil class="w-4 h-4" />
                                         </a>
                                         <button wire:click="delete({{ $order->id }})" wire:confirm="Delete this order?" class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">

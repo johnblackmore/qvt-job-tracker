@@ -1,10 +1,10 @@
 <div>
     <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-semibold text-slate-900 tracking-tight">Customers</h1>
+            <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">Customers</h1>
             <p class="mt-1 text-sm text-slate-500">Manage your customer records and their vehicles</p>
         </div>
-        <a href="{{ route('customers.create') }}" wire:navigate class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 transition-colors">
+        <a href="{{ route('customers.create') }}" wire:navigate class="inline-flex items-center gap-2 rounded-lg bg-copper px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark transition-colors">
             <x-lucide-user-plus class="w-4 h-4" />
             Add Customer
         </a>
@@ -17,7 +17,7 @@
                 wire:model.live.debounce.300ms="search"
                 type="text"
                 placeholder="Search by name, email, or phone..."
-                class="w-full rounded-lg border-slate-300 text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:ring-emerald-500 text-sm pl-9 pr-4 py-2.5"
+                class="w-full rounded-lg border-slate-300 text-slate-900 placeholder-slate-400 focus:border-copper focus:ring-copper text-sm pl-9 pr-4 py-2.5"
             />
         </div>
     </div>
@@ -40,7 +40,7 @@
                         @foreach($customers as $customer)
                             <tr class="hover:bg-slate-50 transition-colors">
                                 <td class="px-6 py-4">
-                                    <a href="{{ route('customers.show', $customer) }}" wire:navigate class="font-medium text-slate-900 hover:text-emerald-600 transition-colors">
+                                    <a href="{{ route('customers.show', $customer) }}" wire:navigate class="font-medium text-slate-900 hover:text-copper transition-colors">
                                         {{ $customer->name }}
                                     </a>
                                 </td>
@@ -71,7 +71,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-2">
-                                        <a href="{{ route('customers.edit', $customer) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors">
+                                        <a href="{{ route('customers.edit', $customer) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors">
                                             <x-lucide-pencil class="w-4 h-4" />
                                         </a>
                                         <button

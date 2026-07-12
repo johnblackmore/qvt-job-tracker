@@ -30,40 +30,16 @@ This is a **staff-only admin application** (Phase 1). Customers do not log in or
 
 ## Design System
 
-### Mode
-- **Light mode ONLY** for the initial build.
-- All daisyUI components should use light theme variants (no `dark:` prefixes unless explicitly requested).
+Refer to [`DESIGN.md`](DESIGN.md) for the full design system (colours, typography, components, layout patterns).
 
-### Colour Palette
-```
-Primary:    emerald-600 (#059669)  — Buttons, links, active states, focus rings
-Background: white / slate-50       — Page and card backgrounds
-Text:       slate-700 / slate-900  — Body text and headings
-Accent:     blue-600               — Informational elements
-Warning:    amber-500              — Status badges, warnings
-Danger:     red-600                — Destructive actions, errors
-Success:    emerald-500            — Success states
-```
-
-### Typography
-- Font family: `Inter`, `system-ui`, `-apple-system`, `sans-serif`
-- Headings: `font-semibold`, `tracking-tight`
-- Body: `text-slate-700`, `leading-relaxed`
-
-### Spacing & Radius
-- Cards: `rounded-xl`, `shadow-sm`, `border border-slate-200`
-- Buttons: `rounded-lg`
-- Inputs: `rounded-lg`, focus ring `ring-emerald-500`
-- Tables: Compact padding, striped rows, `rounded-xl` container
-
-### Layout
-- **Sidebar navigation** (collapsible on mobile) + main content area.
-- Dashboard home with stat cards in a grid.
-- Content pages use max-width containers with generous padding.
-
-### Iconography
-- Use **Lucide** icons exclusively.
-- Icon size: `w-5 h-5` for inline, `w-6 h-6` for navigation.
+### Quick Reference
+- **Primary accent:** copper (`#B45309`) — CTAs, active nav, focus rings, links.
+- **Secondary accent:** teal (`#0F766E`) — success badges, trust signals.
+- **Display font:** Space Grotesk (headings, buttons, labels).
+- **Body font:** Inter.
+- **Light mode ONLY** — no dark mode utilities.
+- **Iconography:** Lucide only (`w-5 h-5` inline, `w-6 h-6` nav).
+- **No `emerald-*` or dark mode classes** should appear.
 
 ---
 

@@ -1,13 +1,13 @@
 <div>
     <div class="mb-8">
         <div class="flex items-center gap-2 mb-2">
-            <a href="{{ route('orders.index') }}" wire:navigate class="text-sm text-slate-500 hover:text-emerald-600 transition-colors">Orders</a>
+            <a href="{{ route('orders.index') }}" wire:navigate class="text-sm text-slate-500 hover:text-copper transition-colors">Orders</a>
             <x-lucide-chevron-right class="w-4 h-4 text-slate-400" />
             <span class="text-sm text-slate-900 font-medium font-mono">{{ $order->reference_number }}</span>
         </div>
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <h1 class="text-2xl font-semibold text-slate-900 tracking-tight">Order {{ $order->reference_number }}</h1>
+                <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">Order {{ $order->reference_number }}</h1>
                 <div class="mt-1 flex items-center gap-3 text-sm text-slate-500">
                     <span>{{ $order->customer->name }}</span>
                     <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
@@ -15,7 +15,7 @@
                         {{ $order->status === 'deposit_paid' ? 'bg-blue-50 text-blue-700 border border-blue-200' : '' }}
                         {{ $order->status === 'scheduled' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : '' }}
                         {{ $order->status === 'in_progress' ? 'bg-amber-50 text-amber-700 border border-amber-200' : '' }}
-                        {{ $order->status === 'completed' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : '' }}
+                        {{ $order->status === 'completed' ? 'bg-teal/10 text-teal-dark border border-teal/20' : '' }}
                         {{ $order->status === 'cancelled' ? 'bg-red-50 text-red-700 border border-red-200' : '' }}
                     ">
                         {{ ucwords(str_replace('_', ' ', $order->status)) }}
@@ -24,7 +24,7 @@
                         <span class="text-xs">Scheduled {{ $order->scheduled_date->format('d M Y') }}</span>
                     @endif
                     @if($order->completed_at)
-                        <span class="text-xs text-emerald-600">Completed {{ $order->completed_at->format('d M Y') }}</span>
+                        <span class="text-xs text-copper">Completed {{ $order->completed_at->format('d M Y') }}</span>
                     @endif
                 </div>
             </div>
@@ -53,7 +53,7 @@
                     </div>
                     <div>
                         <p class="text-xs text-slate-500 uppercase tracking-wide">Balance due</p>
-                        <p class="text-xl font-bold {{ $order->balance_due <= 0 ? 'text-emerald-600' : 'text-slate-900' }} mt-1">£{{ number_format($order->balance_due, 2) }}</p>
+                        <p class="text-xl font-bold {{ $order->balance_due <= 0 ? 'text-copper' : 'text-slate-900' }} mt-1">£{{ number_format($order->balance_due, 2) }}</p>
                     </div>
                 </div>
 
@@ -63,7 +63,7 @@
                         <span class="text-xs font-semibold text-slate-900">{{ $order->deposit_percent }}%</span>
                     </div>
                     <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
-                        <div class="bg-emerald-500 h-2.5 rounded-full transition-all" style="width: {{ min($order->deposit_percent, 100) }}%"></div>
+                        <div class="bg-copper/100 h-2.5 rounded-full transition-all" style="width: {{ min($order->deposit_percent, 100) }}%"></div>
                     </div>
                     <p class="text-xs text-slate-500 mt-1.5">
                         £{{ number_format($order->deposit_paid, 2) }} paid of £{{ number_format($order->deposit_required, 2) }} required
@@ -79,7 +79,7 @@
                             <p class="text-sm font-medium text-slate-900">{{ $order->quote->reference_number }}</p>
                             <p class="text-xs text-slate-500 mt-0.5">£{{ number_format($order->quote->grand_total, 2) }} — {{ $order->quote->status }}</p>
                         </div>
-                        <a href="{{ route('quotes.show', $order->quote) }}" wire:navigate class="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors">
+                        <a href="{{ route('quotes.show', $order->quote) }}" wire:navigate class="inline-flex items-center gap-1.5 text-sm font-medium text-copper hover:text-copper transition-colors">
                             <x-lucide-arrow-right class="w-4 h-4" />
                             View quote
                         </a>
@@ -123,7 +123,7 @@
                     @if($order->completed_at)
                         <div class="flex items-center justify-between">
                             <span class="text-sm text-slate-500">Completed</span>
-                            <span class="text-sm font-medium text-emerald-700">{{ $order->completed_at->format('d M Y') }}</span>
+                            <span class="text-sm font-medium text-copper">{{ $order->completed_at->format('d M Y') }}</span>
                         </div>
                     @endif
                 </div>

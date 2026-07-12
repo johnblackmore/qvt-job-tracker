@@ -1,6 +1,6 @@
 <div class="max-w-2xl">
     <div class="mb-8">
-        <h1 class="text-2xl font-semibold text-slate-900 tracking-tight">
+        <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">
             {{ $customer ? 'Edit Customer' : 'Add Customer' }}
         </h1>
         <p class="mt-1 text-sm text-slate-500">
@@ -16,7 +16,7 @@
                 id="name"
                 type="text"
                 required
-                class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3.5 py-2.5"
+                class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5"
                 placeholder="John Smith"
             />
             @error('name') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
@@ -29,7 +29,7 @@
                     wire:model="email"
                     id="email"
                     type="email"
-                    class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3.5 py-2.5"
+                    class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5"
                     placeholder="john@example.com"
                 />
                 @error('email') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
@@ -41,7 +41,7 @@
                     wire:model="phone"
                     id="phone"
                     type="tel"
-                    class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3.5 py-2.5"
+                    class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5"
                     placeholder="01984 600327"
                 />
                 @error('phone') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
@@ -54,7 +54,7 @@
                 wire:model="address"
                 id="address"
                 rows="3"
-                class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3.5 py-2.5"
+                class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5"
                 placeholder="Williton, West Somerset"
             ></textarea>
             @error('address') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
@@ -66,7 +66,7 @@
                 wire:model="notes"
                 id="notes"
                 rows="3"
-                class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3.5 py-2.5"
+                class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5"
                 placeholder="Any additional notes about this customer..."
             ></textarea>
             @error('notes') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
@@ -76,7 +76,7 @@
             <button
                 type="submit"
                 wire:loading.attr="disabled"
-                class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors"
+                class="inline-flex items-center gap-2 rounded-lg bg-copper px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark focus:outline-none focus:ring-2 focus:ring-copper focus:ring-offset-2 transition-colors"
             >
                 <span wire:loading.remove>{{ $customer ? 'Save Changes' : 'Create Customer' }}</span>
                 <span wire:loading>Saving...</span>

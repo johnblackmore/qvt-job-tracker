@@ -20,7 +20,7 @@ new #[Layout('layouts.guest')] class extends Component
 
 <div class="p-8">
     <div class="mb-6">
-        <h1 class="text-2xl font-semibold text-slate-900 tracking-tight">Welcome back</h1>
+        <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">Welcome back</h1>
         <p class="mt-1 text-sm text-slate-500">Sign in to your staff account</p>
     </div>
 
@@ -36,7 +36,7 @@ new #[Layout('layouts.guest')] class extends Component
                 required
                 autofocus
                 autocomplete="username"
-                class="w-full rounded-lg border-slate-300 text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3.5 py-2.5"
+                class="w-full rounded-lg border-slate-300 text-slate-900 placeholder-slate-400 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5"
                 placeholder="admin@quantockvantech.com"
             />
             <x-input-error :messages="$errors->get('form.email')" class="mt-1.5" />
@@ -50,7 +50,7 @@ new #[Layout('layouts.guest')] class extends Component
                 type="password"
                 required
                 autocomplete="current-password"
-                class="w-full rounded-lg border-slate-300 text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3.5 py-2.5"
+                class="w-full rounded-lg border-slate-300 text-slate-900 placeholder-slate-400 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5"
                 placeholder="••••••••"
             />
             <x-input-error :messages="$errors->get('form.password')" class="mt-1.5" />
@@ -61,7 +61,7 @@ new #[Layout('layouts.guest')] class extends Component
                 <input
                     wire:model="form.remember"
                     type="checkbox"
-                    class="rounded border-slate-300 text-emerald-600 shadow-sm focus:ring-emerald-500 size-4"
+                    class="rounded border-slate-300 text-copper shadow-sm focus:ring-copper size-4"
                 />
                 <span class="text-sm text-slate-600">Remember me</span>
             </label>
@@ -70,7 +70,7 @@ new #[Layout('layouts.guest')] class extends Component
                 <a
                     href="{{ route('password.request') }}"
                     wire:navigate
-                    class="text-sm font-medium text-emerald-600 hover:text-emerald-700"
+                    class="text-sm font-medium text-copper hover:text-copper"
                 >
                     Forgot password?
                 </a>
@@ -80,7 +80,7 @@ new #[Layout('layouts.guest')] class extends Component
         <button
             type="submit"
             wire:loading.attr="disabled"
-            class="w-full flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors"
+            class="w-full flex items-center justify-center gap-2 rounded-lg bg-copper px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark focus:outline-none focus:ring-2 focus:ring-copper focus:ring-offset-2 transition-colors"
         >
             <span wire:loading.remove>Sign in</span>
             <span wire:loading>Signing in...</span>

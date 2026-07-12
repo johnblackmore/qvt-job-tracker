@@ -20,7 +20,7 @@
             >
                 {{-- Logo --}}
                 <div class="flex items-center gap-3 h-16 px-6 border-b border-slate-200 shrink-0">
-                    <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center">
+                    <div class="w-8 h-8 rounded-lg bg-copper flex items-center justify-center">
                         <x-lucide-bolt class="w-5 h-5 text-white" />
                     </div>
                     <div class="flex flex-col">
@@ -34,7 +34,7 @@
                     <a
                         href="{{ route('dashboard') }}"
                         wire:navigate
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('dashboard') ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('dashboard') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
                     >
                         <x-lucide-layout-dashboard class="w-5 h-5 shrink-0" />
                         Dashboard
@@ -43,7 +43,7 @@
                     <a
                         href="{{ route('customers.index') }}"
                         wire:navigate
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('customers.*') ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('customers.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
                     >
                         <x-lucide-users class="w-5 h-5 shrink-0" />
                         Customers
@@ -52,7 +52,7 @@
                     <a
                         href="{{ route('quotes.index') }}"
                         wire:navigate
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('quotes.*', 'sample-quotes.*') ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('quotes.*', 'sample-quotes.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
                     >
                         <x-lucide-file-text class="w-5 h-5 shrink-0" />
                         Quotes
@@ -61,7 +61,7 @@
                     <a
                         href="{{ route('orders.index') }}"
                         wire:navigate
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('orders.*') ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('orders.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
                     >
                         <x-lucide-clipboard-list class="w-5 h-5 shrink-0" />
                         Orders
@@ -70,7 +70,7 @@
                     <a
                         href="{{ route('products.index') }}"
                         wire:navigate
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('products.*') ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('products.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
                     >
                         <x-lucide-package class="w-5 h-5 shrink-0" />
                         Products
@@ -79,7 +79,7 @@
                     <a
                         href="{{ route('enquiries.index') }}"
                         wire:navigate
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('enquiries.*') ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('enquiries.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
                     >
                         <x-lucide-mail class="w-5 h-5 shrink-0" />
                         Enquiries
@@ -88,7 +88,7 @@
                     <a
                         href="{{ route('email-templates.index') }}"
                         wire:navigate
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('email-templates.*') ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('email-templates.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
                     >
                         <x-lucide-mail-plus class="w-5 h-5 shrink-0" />
                         Email Templates
@@ -97,7 +97,7 @@
                     <a
                         href="{{ route('admin.api-tokens') }}"
                         wire:navigate
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.api-tokens') ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.api-tokens') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
                     >
                         <x-lucide-key class="w-5 h-5 shrink-0" />
                         AI Agent Access
@@ -107,8 +107,8 @@
                 {{-- User menu --}}
                 <div class="border-t border-slate-200 p-3 shrink-0">
                     <div class="flex items-center gap-3 px-3 py-2">
-                        <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-                            <span class="text-xs font-semibold text-emerald-700">{{ substr(Auth::user()->name, 0, 1) }}</span>
+                        <div class="w-8 h-8 rounded-full bg-copper/15 flex items-center justify-center shrink-0">
+                            <span class="text-xs font-semibold text-copper-dark">{{ substr(Auth::user()->name, 0, 1) }}</span>
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-medium text-slate-900 truncate">{{ Auth::user()->name }}</p>
@@ -150,7 +150,7 @@
                     </button>
 
                     <div class="flex items-center gap-4">
-                        <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-copper/10 text-copper border border-copper/20">
                             {{ Auth::user()->getRoleNames()->first() ?? 'Staff' }}
                         </span>
                     </div>
@@ -171,9 +171,9 @@
                             x-transition:leave-start="translate-x-0 opacity-100"
                             x-transition:leave-end="translate-x-full opacity-0"
                             class="pointer-events-auto flex items-center gap-3 rounded-lg shadow-lg border px-4 py-3 text-sm font-medium"
-                            :class="toast.type === 'success' ? 'bg-white border-emerald-200 text-emerald-800' : toast.type === 'error' ? 'bg-white border-red-200 text-red-800' : 'bg-white border-slate-200 text-slate-800'"
+                            :class="toast.type === 'success' ? 'bg-white border-teal/20 text-teal-dark' : toast.type === 'error' ? 'bg-white border-red-200 text-red-800' : 'bg-white border-slate-200 text-slate-800'"
                         >
-                            <span x-show="toast.type === 'success'" class="text-emerald-500">
+                            <span x-show="toast.type === 'success'" class="text-teal">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                             </span>
                             <span x-show="toast.type === 'error'" class="text-red-500">

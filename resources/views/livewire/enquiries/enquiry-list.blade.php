@@ -1,10 +1,10 @@
 <div>
     <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-semibold text-slate-900 tracking-tight">Enquiries</h1>
+            <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">Enquiries</h1>
             <p class="mt-1 text-sm text-slate-500">Track and manage customer enquiries</p>
         </div>
-        <a href="{{ route('enquiries.create') }}" wire:navigate class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 transition-colors">
+        <a href="{{ route('enquiries.create') }}" wire:navigate class="inline-flex items-center gap-2 rounded-lg bg-copper px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark transition-colors">
             <x-lucide-plus-circle class="w-4 h-4" />
             Log Enquiry
         </a>
@@ -13,9 +13,9 @@
     <div class="mb-6 flex flex-col sm:flex-row gap-3">
         <div class="relative max-w-md flex-1">
             <x-lucide-search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input wire:model.live.debounce.300ms="search" type="text" placeholder="Search enquiries..." class="w-full rounded-lg border-slate-300 text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:ring-emerald-500 text-sm pl-9 pr-4 py-2.5" />
+            <input wire:model.live.debounce.300ms="search" type="text" placeholder="Search enquiries..." class="w-full rounded-lg border-slate-300 text-slate-900 placeholder-slate-400 focus:border-copper focus:ring-copper text-sm pl-9 pr-4 py-2.5" />
         </div>
-        <select wire:model.live="status" class="rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3 py-2.5">
+        <select wire:model.live="status" class="rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3 py-2.5">
             <option value="">All statuses</option>
             <option value="new">New</option>
             <option value="in_progress">In Progress</option>
@@ -34,7 +34,7 @@
                                 <div class="flex items-center gap-2 mb-1">
                                     <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
                                         {{ $enquiry->status === 'new' ? 'bg-amber-50 text-amber-700 border border-amber-200' : '' }}
-                                        {{ $enquiry->status === 'responded' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : '' }}
+                                        {{ $enquiry->status === 'responded' ? 'bg-teal/10 text-teal-dark border border-teal/20' : '' }}
                                         {{ $enquiry->status === 'in_progress' ? 'bg-blue-50 text-blue-700 border border-blue-200' : '' }}
                                         {{ $enquiry->status === 'closed' ? 'bg-slate-100 text-slate-600 border border-slate-200' : '' }}
                                     ">
@@ -44,7 +44,7 @@
                                     <span class="text-xs text-slate-400">{{ $enquiry->source }}</span>
                                 </div>
                                 @if($enquiry->customer)
-                                    <p class="text-sm font-medium text-emerald-600">{{ $enquiry->customer->name }}</p>
+                                    <p class="text-sm font-medium text-copper">{{ $enquiry->customer->name }}</p>
                                 @else
                                     <p class="text-sm font-medium text-slate-500">Unlinked enquiry</p>
                                 @endif
@@ -55,11 +55,11 @@
                             </div>
                             <div class="flex items-center gap-1 shrink-0">
                                 @if($enquiry->status === 'new' || $enquiry->status === 'in_progress')
-                                    <button wire:click="markResponded({{ $enquiry->id }})" class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors" title="Mark as responded">
+                                    <button wire:click="markResponded({{ $enquiry->id }})" class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors" title="Mark as responded">
                                         <x-lucide-check-circle class="w-4 h-4" />
                                     </button>
                                 @endif
-                                <a href="{{ route('enquiries.edit', $enquiry) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors">
+                                <a href="{{ route('enquiries.edit', $enquiry) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors">
                                     <x-lucide-pencil class="w-4 h-4" />
                                 </a>
                                 <button wire:click="delete({{ $enquiry->id }})" wire:confirm="Delete this enquiry?" class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">

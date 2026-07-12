@@ -9,7 +9,7 @@
     <body class="font-sans text-slate-700 antialiased bg-slate-50">
         <div class="min-h-screen flex flex-col justify-center items-center px-4">
             <div class="text-center mb-8">
-                <div class="w-20 h-20 rounded-xl bg-emerald-600 flex items-center justify-center shadow-lg mx-auto mb-4">
+                <div class="w-20 h-20 rounded-xl bg-copper flex items-center justify-center shadow-lg mx-auto mb-4">
                     <x-lucide-bolt class="w-10 h-10 text-white" />
                 </div>
                 <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Quantock Van Tech</h1>
@@ -20,7 +20,7 @@
             @auth
                 <a
                     href="{{ route('dashboard') }}"
-                    class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors"
+                    class="inline-flex items-center gap-2 rounded-lg bg-copper px-6 py-3 text-sm font-display font-semibold text-white shadow-sm hover:bg-copper-dark focus:outline-none focus:ring-2 focus:ring-copper focus:ring-offset-2 transition-colors"
                 >
                     <x-lucide-layout-dashboard class="w-4 h-4" />
                     Go to Dashboard
@@ -28,7 +28,7 @@
             @else
                 <a
                     href="{{ route('login') }}"
-                    class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors"
+                    class="inline-flex items-center gap-2 rounded-lg bg-copper px-6 py-3 text-sm font-display font-semibold text-white shadow-sm hover:bg-copper-dark focus:outline-none focus:ring-2 focus:ring-copper focus:ring-offset-2 transition-colors"
                 >
                     <x-lucide-log-in class="w-4 h-4" />
                     Staff Sign In

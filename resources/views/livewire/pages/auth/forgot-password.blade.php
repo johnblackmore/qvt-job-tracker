@@ -38,7 +38,7 @@ new #[Layout('layouts.guest')] class extends Component
 
 <div class="p-8">
     <div class="mb-6">
-        <h1 class="text-2xl font-semibold text-slate-900 tracking-tight">Forgot your password?</h1>
+        <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">Forgot your password?</h1>
         <p class="mt-1 text-sm text-slate-500">No problem. Enter your email and we'll send you a reset link.</p>
     </div>
 

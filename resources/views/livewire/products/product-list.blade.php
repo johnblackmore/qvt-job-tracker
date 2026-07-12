@@ -1,10 +1,10 @@
 <div>
     <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-semibold text-slate-900 tracking-tight">Products</h1>
+            <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">Products</h1>
             <p class="mt-1 text-sm text-slate-500">Component library with retail and trade pricing</p>
         </div>
-        <a href="{{ route('products.create') }}" wire:navigate class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 transition-colors">
+        <a href="{{ route('products.create') }}" wire:navigate class="inline-flex items-center gap-2 rounded-lg bg-copper px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark transition-colors">
             <x-lucide-package-plus class="w-4 h-4" />
             Add Product
         </a>
@@ -13,9 +13,9 @@
     <div class="mb-6 flex flex-col sm:flex-row gap-3">
         <div class="relative max-w-md flex-1">
             <x-lucide-search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input wire:model.live.debounce.300ms="search" type="text" placeholder="Search by name or SKU..." class="w-full rounded-lg border-slate-300 text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:ring-emerald-500 text-sm pl-9 pr-4 py-2.5" />
+            <input wire:model.live.debounce.300ms="search" type="text" placeholder="Search by name or SKU..." class="w-full rounded-lg border-slate-300 text-slate-900 placeholder-slate-400 focus:border-copper focus:ring-copper text-sm pl-9 pr-4 py-2.5" />
         </div>
-        <select wire:model.live="category" class="rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3 py-2.5">
+        <select wire:model.live="category" class="rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3 py-2.5">
             <option value="">All categories</option>
             @foreach($categories as $cat)
                 <option value="{{ $cat->id }}">{{ $cat->name }}</option>
@@ -41,7 +41,7 @@
                         @foreach($products as $product)
                             <tr class="hover:bg-slate-50 transition-colors">
                                 <td class="px-6 py-4">
-                                    <a href="{{ route('products.show', $product) }}" wire:navigate class="font-medium text-slate-900 hover:text-emerald-600 transition-colors">
+                                    <a href="{{ route('products.show', $product) }}" wire:navigate class="font-medium text-slate-900 hover:text-copper transition-colors">
                                         {{ $product->name }}
                                     </a>
                                     <div class="text-xs text-slate-400 mt-0.5">{{ $product->sku }}</div>
@@ -59,7 +59,7 @@
                                     £{{ number_format($product->retail_price, 2) }}
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    <span class="inline-flex items-center rounded-full {{ $product->stock_qty > 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700' }} px-2.5 py-0.5 text-xs font-medium">
+                                    <span class="inline-flex items-center rounded-full {{ $product->stock_qty > 0 ? 'bg-teal/10 text-teal-dark' : 'bg-red-50 text-red-700' }} px-2.5 py-0.5 text-xs font-medium">
                                         {{ $product->stock_qty }}
                                     </span>
                                 </td>
@@ -70,7 +70,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-2">
-                                        <a href="{{ route('products.edit', $product) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors">
+                                        <a href="{{ route('products.edit', $product) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors">
                                             <x-lucide-pencil class="w-4 h-4" />
                                         </a>
                                         <button wire:click="delete({{ $product->id }})" wire:confirm="Delete this product? This will remove all supplier links." class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">

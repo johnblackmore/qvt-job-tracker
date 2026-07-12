@@ -1,6 +1,6 @@
 <div class="max-w-6xl">
     <div class="mb-8">
-        <h1 class="text-2xl font-semibold text-slate-900 tracking-tight">
+        <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">
             {{ $quote ? 'Edit Quote' : ($sampleQuote ? 'Clone from Template' : 'Create Quote') }}
         </h1>
         <p class="mt-1 text-sm text-slate-500">
@@ -11,12 +11,12 @@
     <form wire:submit="save" class="space-y-6">
         {{-- Quote details --}}
         <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-5">
-            <h2 class="text-base font-semibold text-slate-900">Quote Details</h2>
+            <h2 class="text-base font-display font-semibold text-slate-900">Quote Details</h2>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
                     <label for="customer_id" class="block text-sm font-medium text-slate-700 mb-1.5">Customer <span class="text-red-500">*</span></label>
-                    <select wire:model="customer_id" id="customer_id" required class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3.5 py-2.5">
+                    <select wire:model="customer_id" id="customer_id" required class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5">
                         <option value="">Select customer...</option>
                         @foreach($customers as $customer)
                             <option value="{{ $customer->id }}">{{ $customer->name }}</option>
@@ -26,14 +26,14 @@
                 </div>
                 <div>
                     <label for="reference_number" class="block text-sm font-medium text-slate-700 mb-1.5">Reference</label>
-                    <input wire:model="reference_number" id="reference_number" type="text" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3.5 py-2.5 font-mono" placeholder="Auto-generated if left blank" />
+                    <input wire:model="reference_number" id="reference_number" type="text" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5 font-mono" placeholder="Auto-generated if left blank" />
                 </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
                     <label for="status" class="block text-sm font-medium text-slate-700 mb-1.5">Status <span class="text-red-500">*</span></label>
-                    <select wire:model="status" id="status" required class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3.5 py-2.5">
+                    <select wire:model="status" id="status" required class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5">
                         <option value="draft">Draft</option>
                         <option value="sent">Sent</option>
                         <option value="accepted">Accepted</option>
@@ -43,13 +43,13 @@
                 </div>
                 <div>
                     <label for="valid_until" class="block text-sm font-medium text-slate-700 mb-1.5">Valid until</label>
-                    <input wire:model="valid_until" id="valid_until" type="date" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3.5 py-2.5" />
+                    <input wire:model="valid_until" id="valid_until" type="date" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5" />
                 </div>
             </div>
 
             <div>
                 <label for="notes" class="block text-sm font-medium text-slate-700 mb-1.5">Notes (internal)</label>
-                <textarea wire:model="notes" id="notes" rows="2" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3.5 py-2.5" placeholder="Internal notes about this quote..."></textarea>
+                <textarea wire:model="notes" id="notes" rows="2" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5" placeholder="Internal notes about this quote..."></textarea>
             </div>
         </div>
 
@@ -70,7 +70,7 @@
                                 @if($selectedCategory == $category->id)
                                     <div class="ml-3 space-y-0.5">
                                         @foreach($category->products as $product)
-                                            <button type="button" wire:click="addProductLine({{ $product->id }})" class="flex items-center gap-2 w-full px-2 py-1.5 text-xs text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 rounded transition-colors text-left">
+                                            <button type="button" wire:click="addProductLine({{ $product->id }})" class="flex items-center gap-2 w-full px-2 py-1.5 text-xs text-slate-600 hover:bg-copper/10 hover:text-copper rounded transition-colors text-left">
                                                 <x-lucide-plus class="w-3 h-3 shrink-0" />
                                                 <span class="truncate">{{ $product->name }}</span>
                                                 <span class="text-slate-400 shrink-0">£{{ number_format($product->retail_price, 2) }}</span>
@@ -122,21 +122,21 @@
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         <div class="sm:col-span-2">
                                             <label class="block text-xs font-medium text-slate-600 mb-1">Description</label>
-                                            <input wire:model="lineItems.{{ $index }}.description" type="text" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3 py-1.5" />
+                                            <input wire:model="lineItems.{{ $index }}.description" type="text" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3 py-1.5" />
                                         </div>
                                         <div>
                                             <label class="block text-xs font-medium text-slate-600 mb-1">Qty</label>
-                                            <input wire:model="lineItems.{{ $index }}.quantity" type="number" min="1" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3 py-1.5" />
+                                            <input wire:model="lineItems.{{ $index }}.quantity" type="number" min="1" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3 py-1.5" />
                                         </div>
                                         <div>
                                             <label class="block text-xs font-medium text-slate-600 mb-1">Retail (£)</label>
-                                            <input wire:model="lineItems.{{ $index }}.unit_retail_price" type="number" step="0.01" min="0" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3 py-1.5" />
+                                            <input wire:model="lineItems.{{ $index }}.unit_retail_price" type="number" step="0.01" min="0" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3 py-1.5" />
                                         </div>
                                     </div>
 
                                     <div>
                                         <label class="block text-xs font-medium text-slate-600 mb-1">Notes</label>
-                                        <input wire:model="lineItems.{{ $index }}.notes" type="text" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-emerald-500 focus:ring-emerald-500 text-sm px-3 py-1.5" placeholder="Optional notes..." />
+                                        <input wire:model="lineItems.{{ $index }}.notes" type="text" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3 py-1.5" placeholder="Optional notes..." />
                                     </div>
                                 </div>
                             @endforeach
@@ -163,7 +163,7 @@
                     </div>
                     <div class="flex items-center justify-between py-2">
                         <span class="text-base font-semibold text-slate-900">Grand total</span>
-                        <span class="text-base font-bold text-emerald-700">£{{ number_format($totals['grand'], 2) }}</span>
+                        <span class="text-base font-bold text-copper-light">£{{ number_format($totals['grand'], 2) }}</span>
                     </div>
                     <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between">
                         <span class="text-xs text-slate-400">Trade cost (internal only)</span>
@@ -174,7 +174,7 @@
         </div>
 
         <div class="flex items-center gap-4">
-            <button type="submit" wire:loading.attr="disabled" class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors">
+            <button type="submit" wire:loading.attr="disabled" class="inline-flex items-center gap-2 rounded-lg bg-copper px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark focus:outline-none focus:ring-2 focus:ring-copper focus:ring-offset-2 transition-colors">
                 <span wire:loading.remove>{{ $quote ? 'Save Changes' : 'Create Quote' }}</span>
                 <span wire:loading>Saving...</span>
             </button>

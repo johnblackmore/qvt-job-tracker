@@ -1,5 +1,5 @@
 <div class="max-w-2xl mx-auto space-y-6 p-6">
-    <h1 class="text-2xl font-semibold text-slate-900 tracking-tight">
+    <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">
         AI Agent Access
     </h1>
 
@@ -17,11 +17,11 @@
                 type="text"
                 wire:model="tokenName"
                 placeholder="e.g. OpenCode Desktop, Cursor Editor"
-                class="flex-1 rounded-lg border-slate-300 px-4 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                class="flex-1 rounded-lg border-slate-300 px-4 py-2 text-sm focus:border-copper focus:ring-copper"
             >
             <button
                 wire:click="createToken"
-                class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition"
+                class="rounded-lg bg-copper px-4 py-2 text-sm font-medium text-white hover:bg-copper-dark transition"
             >
                 Create Token
             </button>

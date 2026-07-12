@@ -7,19 +7,19 @@
     <style>
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #334155; background: #f8fafc; margin: 0; padding: 20px; }
         .container { max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .header { background: #059669; padding: 24px 28px; color: #fff; }
+        .header { background: #B45309; padding: 24px 28px; color: #fff; }
         .header h1 { margin: 0; font-size: 18px; font-weight: 600; }
         .header p { margin: 4px 0 0; font-size: 13px; opacity: 0.9; }
         .body { padding: 28px; }
         .greeting { font-size: 15px; margin-bottom: 16px; }
-        .message-box { background: #f8fafc; border-left: 3px solid #059669; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; border-radius: 0 4px 4px 0; }
+        .message-box { background: #f8fafc; border-left: 3px solid #B45309; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; border-radius: 0 4px 4px 0; }
         table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
         th { text-align: left; padding: 8px; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #64748b; font-size: 11px; text-transform: uppercase; }
         td { padding: 8px; border-bottom: 1px solid #f1f5f9; }
         .text-right { text-align: right; }
-        .total-row { font-weight: 700; font-size: 15px; color: #047857; border-top: 2px solid #059669; border-bottom: none; }
+        .total-row { font-weight: 700; font-size: 15px; color: #115E59; border-top: 2px solid #B45309; border-bottom: none; }
         .footer { background: #f8fafc; padding: 20px 28px; font-size: 12px; color: #64748b; text-align: center; }
-        .footer a { color: #059669; text-decoration: none; }
+        .footer a { color: #B45309; text-decoration: none; }
         .validity { background: #fffbeb; border: 1px solid #fef3c7; padding: 10px 14px; border-radius: 6px; font-size: 12px; color: #92400e; margin-top: 16px; }
     </style>
 </head>

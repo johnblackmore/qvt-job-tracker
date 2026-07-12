@@ -35,7 +35,7 @@ new #[Layout('layouts.guest')] class extends Component
 
 <div class="p-8">
     <div class="mb-6">
-        <h1 class="text-2xl font-semibold text-slate-900 tracking-tight">Confirm your password</h1>
+        <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">Confirm your password</h1>
         <p class="mt-1 text-sm text-slate-500">This is a secure area. Please confirm your password before continuing.</p>
     </div>
 

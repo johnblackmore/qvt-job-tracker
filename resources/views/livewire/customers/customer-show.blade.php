@@ -1,7 +1,7 @@
 <div>
     <div class="mb-8">
         <div class="flex items-center gap-2 mb-2">
-            <a href="{{ route('customers.index') }}" wire:navigate class="text-sm text-slate-500 hover:text-emerald-600 transition-colors">
+            <a href="{{ route('customers.index') }}" wire:navigate class="text-sm text-slate-500 hover:text-copper transition-colors">
                 Customers
             </a>
             <x-lucide-chevron-right class="w-4 h-4 text-slate-400" />
@@ -9,7 +9,7 @@
         </div>
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <h1 class="text-2xl font-semibold text-slate-900 tracking-tight">{{ $customer->name }}</h1>
+                <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">{{ $customer->name }}</h1>
                 <div class="mt-1 flex items-center gap-3 text-sm text-slate-500">
                     @if($customer->email)
                         <span class="flex items-center gap-1">
@@ -46,8 +46,8 @@
             {{-- Vehicles --}}
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
                 <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-                    <h2 class="text-base font-semibold text-slate-900">Vehicles</h2>
-                    <a href="{{ route('customers.vehicles.create', $customer) }}" wire:navigate class="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors">
+                    <h2 class="text-base font-display font-semibold text-slate-900">Vehicles</h2>
+                    <a href="{{ route('customers.vehicles.create', $customer) }}" wire:navigate class="inline-flex items-center gap-1.5 text-sm font-medium text-copper hover:text-copper transition-colors">
                         <x-lucide-plus class="w-4 h-4" />
                         Add Vehicle
                     </a>
@@ -73,7 +73,7 @@
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-1">
-                                    <a href="{{ route('customers.vehicles.edit', [$customer, $vehicle]) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors">
+                                    <a href="{{ route('customers.vehicles.edit', [$customer, $vehicle]) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors">
                                         <x-lucide-pencil class="w-4 h-4" />
                                     </a>
                                 </div>
@@ -83,7 +83,7 @@
                 @else
                     <div class="p-8 text-center">
                         <p class="text-sm text-slate-500">No vehicles registered for this customer yet.</p>
-                        <a href="{{ route('customers.vehicles.create', $customer) }}" wire:navigate class="mt-2 inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700">
+                        <a href="{{ route('customers.vehicles.create', $customer) }}" wire:navigate class="mt-2 inline-flex items-center gap-1 text-sm font-medium text-copper hover:text-copper">
                             <x-lucide-plus class="w-4 h-4" />
                             Add first vehicle
                         </a>
@@ -94,8 +94,8 @@
             {{-- Enquiries --}}
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
                 <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-                    <h2 class="text-base font-semibold text-slate-900">Enquiries</h2>
-                    <a href="{{ route('enquiries.create', ['customer' => $customer->id]) }}" wire:navigate class="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors">
+                    <h2 class="text-base font-display font-semibold text-slate-900">Enquiries</h2>
+                    <a href="{{ route('enquiries.create', ['customer' => $customer->id]) }}" wire:navigate class="inline-flex items-center gap-1.5 text-sm font-medium text-copper hover:text-copper transition-colors">
                         <x-lucide-plus class="w-4 h-4" />
                         Log Enquiry
                     </a>
@@ -108,7 +108,7 @@
                                     <div class="flex items-center gap-2">
                                         <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
                                             {{ $enquiry->status === 'new' ? 'bg-amber-50 text-amber-700 border border-amber-200' : '' }}
-                                            {{ $enquiry->status === 'responded' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : '' }}
+                                            {{ $enquiry->status === 'responded' ? 'bg-teal/10 text-teal-dark border border-teal/20' : '' }}
                                             {{ $enquiry->status === 'in_progress' ? 'bg-blue-50 text-blue-700 border border-blue-200' : '' }}
                                             {{ $enquiry->status === 'closed' ? 'bg-slate-100 text-slate-600 border border-slate-200' : '' }}
                                         ">

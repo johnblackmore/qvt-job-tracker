@@ -14,10 +14,10 @@
             background: #fff;
         }
         .container { max-width: 700px; margin: 0 auto; padding: 40px; }
-        .header { border-bottom: 2px solid #059669; padding-bottom: 20px; margin-bottom: 30px; }
+        .header { border-bottom: 2px solid #B45309; padding-bottom: 20px; margin-bottom: 30px; }
         .header-top { display: flex; justify-content: space-between; align-items: flex-start; }
         .brand { display: flex; align-items: center; gap: 10px; }
-        .brand-icon { width: 32px; height: 32px; background: #059669; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; }
+        .brand-icon { width: 32px; height: 32px; background: #B45309; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; }
         .brand-name { font-size: 18px; font-weight: 700; color: #0f172a; }
         .brand-tagline { font-size: 11px; color: #64748b; }
         .quote-meta { text-align: right; }
@@ -34,7 +34,7 @@
         }
         .status-draft { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
         .status-sent { background: #eff6ff; color: #1d4ed8; border: 1px solid #dbeafe; }
-        .status-accepted { background: #ecfdf5; color: #047857; border: 1px solid #d1fae5; }
+        .status-accepted { background: #f0fdfa; color: #115E59; border: 1px solid #ccfbf1; }
         .status-declined { background: #fef2f2; color: #b91c1c; border: 1px solid #fee2e2; }
         .status-expired { background: #fffbeb; color: #b45309; border: 1px solid #fef3c7; }
 
@@ -80,7 +80,7 @@
 
         .totals { margin-top: 16px; width: 280px; margin-left: auto; }
         .totals-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 12px; }
-        .totals-row.grand { border-top: 2px solid #059669; padding-top: 10px; margin-top: 4px; font-size: 14px; font-weight: 700; color: #047857; }
+        .totals-row.grand { border-top: 2px solid #B45309; padding-top: 10px; margin-top: 4px; font-size: 14px; font-weight: 700; color: #115E59; }
 
         .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 10px; color: #94a3b8; text-align: center; }
         .footer a { color: #64748b; text-decoration: none; }
