@@ -12,7 +12,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('customers', CustomerList::class)->name('customers.index');
     Route::get('customers/create', CustomerForm::class)->name('customers.create');
     Route::get('customers/{id}', CustomerShow::class)->name('customers.show');
-    Route::get('customers/{id}/edit', CustomerForm::class)->name('customers.edit');
+    Route::get('customers/{customerId}/edit', CustomerForm::class)->name('customers.edit');
     Route::get('customers/{customerId}/vehicles/create', VehicleForm::class)->name('customers.vehicles.create');
     Route::get('customers/{customerId}/vehicles/{vehicleId}/edit', VehicleForm::class)->name('customers.vehicles.edit');
 

@@ -12,7 +12,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('quotes/create', QuoteBuilder::class)->name('quotes.create');
     Route::get('quotes/create/from-sample/{sampleQuoteId}', QuoteBuilder::class)->name('quotes.create-from-sample');
     Route::get('quotes/{id}', QuoteShow::class)->name('quotes.show');
-    Route::get('quotes/{id}/edit', QuoteBuilder::class)->name('quotes.edit');
+    Route::get('quotes/{quoteId}/edit', QuoteBuilder::class)->name('quotes.edit');
 
     Route::get('sample-quotes', SampleQuoteList::class)->name('sample-quotes.index');
     Route::get('sample-quotes/create', SampleQuoteForm::class)->name('sample-quotes.create');

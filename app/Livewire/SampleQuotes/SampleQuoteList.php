@@ -12,6 +12,8 @@ class SampleQuoteList extends Component
 
     public string $search = '';
 
+    public ?SampleQuote $previewing = null;
+
     public function toggleActive(int $id): void
     {
         $quote = SampleQuote::find($id);
@@ -25,6 +27,17 @@ class SampleQuoteList extends Component
     {
         SampleQuote::find($id)?->delete();
         $this->dispatch('notify', message: 'Template deleted.', type: 'success');
+    }
+
+    public function preview(int $id): void
+    {
+        $this->previewing = SampleQuote::findOrFail($id);
+        $this->dispatch('open-modal', 'preview-template');
+    }
+
+    public function closePreview(): void
+    {
+        $this->dispatch('close-modal', 'preview-template');
     }
 
     public function render()

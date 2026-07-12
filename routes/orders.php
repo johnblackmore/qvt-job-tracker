@@ -10,5 +10,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('orders/create', OrderForm::class)->name('orders.create');
     Route::get('orders/create/from-quote/{quoteId}', OrderForm::class)->name('orders.create-from-quote');
     Route::get('orders/{id}', OrderShow::class)->name('orders.show');
-    Route::get('orders/{id}/edit', OrderForm::class)->name('orders.edit');
+    Route::get('orders/{orderId}/edit', OrderForm::class)->name('orders.edit');
 });
