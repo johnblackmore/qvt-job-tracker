@@ -50,6 +50,15 @@
                     </a>
 
                     <a
+                        href="{{ route('enquiries.index') }}"
+                        wire:navigate
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('enquiries.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                    >
+                        <x-lucide-mail class="w-5 h-5 shrink-0" />
+                        Enquiries
+                    </a>
+
+                    <a
                         href="{{ route('quotes.index') }}"
                         wire:navigate
                         class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('quotes.*', 'sample-quotes.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
@@ -70,19 +79,33 @@
                     <a
                         href="{{ route('products.index') }}"
                         wire:navigate
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('products.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('products.*') && !request()->routeIs('products.categories.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
                     >
                         <x-lucide-package class="w-5 h-5 shrink-0" />
                         Products
                     </a>
 
+                    <div class="border-t border-slate-200 my-3"></div>
+                    <div class="px-3 pb-1">
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Admin</span>
+                    </div>
+
                     <a
-                        href="{{ route('enquiries.index') }}"
+                        href="{{ route('products.categories.index') }}"
                         wire:navigate
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('enquiries.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('products.categories.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
                     >
-                        <x-lucide-mail class="w-5 h-5 shrink-0" />
-                        Enquiries
+                        <x-lucide-folder class="w-5 h-5 shrink-0" />
+                        Categories
+                    </a>
+
+                    <a
+                        href="{{ route('suppliers.index') }}"
+                        wire:navigate
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('suppliers.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                    >
+                        <x-lucide-building-2 class="w-5 h-5 shrink-0" />
+                        Suppliers
                     </a>
 
                     <a
