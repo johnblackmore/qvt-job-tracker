@@ -216,7 +216,7 @@
                 </div>
 
                 {{-- Page content --}}
-                <main class="flex-1 overflow-y-auto p-4 lg:p-8">
+                <main class="flex-1 overflow-y-auto p-4 lg:px-8 lg:pt-8 pb-20">
                     {{ $slot }}
                 </main>
             </div>
