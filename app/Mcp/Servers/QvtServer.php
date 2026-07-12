@@ -26,6 +26,7 @@ use App\Mcp\Tools\ListCustomersTool;
 use App\Mcp\Tools\ListEnquiriesTool;
 use App\Mcp\Tools\ListOrdersTool;
 use App\Mcp\Tools\ListProductsTool;
+use App\Mcp\Tools\RecordPaymentTool;
 use App\Mcp\Tools\RespondToEnquiryTool;
 use App\Mcp\Tools\ScheduleInstallationTool;
 use App\Mcp\Tools\SearchCustomersTool;
@@ -83,6 +84,7 @@ class QvtServer extends Server
         UpdateOrderStatusTool::class,
         UpdateDepositTool::class,
         ScheduleInstallationTool::class,
+        RecordPaymentTool::class,
 
         // Enquiry tools
         ListEnquiriesTool::class,

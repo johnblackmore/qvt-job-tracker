@@ -87,6 +87,46 @@
                 </div>
             @endif
 
+            @if($order->payments->count() > 0)
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-200">
+                        <h2 class="text-sm font-semibold text-slate-900">Payment History</h2>
+                    </div>
+                    <div class="divide-y divide-slate-100">
+                        @foreach($order->payments->sortByDesc('paid_at') as $payment)
+                            <div class="px-6 py-3 flex items-center justify-between gap-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center {{ $payment->method === 'bank_transfer' ? 'bg-blue-50' : ($payment->method === 'card' ? 'bg-purple-50' : ($payment->method === 'cash' ? 'bg-teal/10' : 'bg-slate-100')) }}">
+                                        @switch($payment->method)
+                                            @case('bank_transfer')
+                                                <x-lucide-landmark class="w-4 h-4 text-blue-600" />
+                                                @break
+                                            @case('card')
+                                                <x-lucide-credit-card class="w-4 h-4 text-purple-600" />
+                                                @break
+                                            @case('cash')
+                                                <x-lucide-banknote class="w-4 h-4 text-teal-dark" />
+                                                @break
+                                            @default
+                                                <x-lucide-circle-dollar class="w-4 h-4 text-slate-500" />
+                                        @endswitch
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-slate-900">£{{ number_format($payment->amount, 2) }}</p>
+                                        <p class="text-xs text-slate-500">{{ ucwords(str_replace('_', ' ', $payment->method)) }} · {{ $payment->paid_at->format('d M Y') }}</p>
+                                    </div>
+                                </div>
+                                <div class="text-right text-xs text-slate-500">
+                                    @if($payment->reference)
+                                        <p class="font-mono">{{ $payment->reference }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             @if($order->notes)
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
                     <h2 class="text-sm font-semibold text-slate-900 mb-3">Internal Notes</h2>

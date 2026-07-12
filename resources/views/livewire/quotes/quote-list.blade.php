@@ -78,6 +78,11 @@
                                         <a href="{{ route('quotes.pdf.download', $quote) }}" class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors" title="Download PDF">
                                             <x-lucide-download class="w-4 h-4" />
                                         </a>
+                                        @if($quote->status === 'accepted' && ! $quote->converted_order_id)
+                                            <button wire:click="convertToOrder({{ $quote->id }})" class="p-1.5 rounded-lg text-slate-400 hover:text-teal hover:bg-teal/10 transition-colors" title="Convert to order">
+                                                <x-lucide-clipboard-plus class="w-4 h-4" />
+                                            </button>
+                                        @endif
                                         <a href="{{ route('quotes.edit', $quote) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors">
                                             <x-lucide-pencil class="w-4 h-4" />
                                         </a>

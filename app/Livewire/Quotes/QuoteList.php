@@ -23,6 +23,12 @@ class QuoteList extends Component
         $this->dispatch('notify', message: 'Quote deleted.', type: 'success');
     }
 
+    public function convertToOrder(int $id): void
+    {
+        $quote = Quote::findOrFail($id);
+        $this->redirect(route('orders.create-from-quote', $quote->id), navigate: true);
+    }
+
     public function render()
     {
         $quotes = Quote::query()

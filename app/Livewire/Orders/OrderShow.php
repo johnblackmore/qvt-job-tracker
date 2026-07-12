@@ -11,7 +11,7 @@ class OrderShow extends Component
 
     public function mount(int $id): void
     {
-        $this->order = Order::with(['customer', 'quote', 'staff'])->findOrFail($id);
+        $this->order = Order::with(['customer', 'quote', 'staff', 'payments'])->findOrFail($id);
     }
 
     public function render()

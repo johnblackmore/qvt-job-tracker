@@ -46,6 +46,11 @@ class Order extends Model
         return $this->hasMany(EmailSent::class);
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
     public function getDepositPercentAttribute(): float
     {
         if ($this->deposit_required <= 0) {

@@ -29,10 +29,23 @@ class OrderForm extends Component
 
     public string $notes = '';
 
+    public array $payments = [];
+
+    public bool $showPaymentForm = false;
+
+    public string $newPaymentAmount = '';
+
+    public string $newPaymentMethod = 'bank_transfer';
+
+    public string $newPaymentReference = '';
+
+    public string $newPaymentDate = '';
+
     public function mount(?int $orderId = null, ?int $quoteId = null): void
     {
         if ($orderId) {
-            $this->order = Order::with(['customer', 'quote'])->findOrFail($orderId);
+            $this->order = Order::with(['customer', 'quote', 'payments'])->findOrFail($orderId);
+            $this->payments = $this->order->payments->toArray();
             $this->quote_id = $this->order->quote_id;
             $this->customer_id = $this->order->customer_id;
             $this->reference_number = $this->order->reference_number;
@@ -46,9 +59,13 @@ class OrderForm extends Component
             $quote = Quote::with('customer')->findOrFail($quoteId);
             $this->quote_id = $quote->id;
             $this->customer_id = $quote->customer_id;
-            $this->reference_number = 'ORD-'.now()->format('Ymd').'-'.strtoupper(substr(uniqid(), -4));
             $this->total_amount = (string) $quote->grand_total;
-            $this->deposit_required = (string) round($quote->grand_total * 0.3, 2);
+            $productCost = $quote->grand_total - $quote->labour_total;
+            $this->deposit_required = (string) round(max($quote->grand_total * 0.5, $productCost), 2);
+        }
+
+        if (! $orderId) {
+            $this->reference_number = 'ORD-'.now()->format('Ymd').'-'.strtoupper(substr(uniqid(), -4));
         }
     }
 
@@ -75,11 +92,82 @@ class OrderForm extends Component
         if ($this->order) {
             $this->order->update($validated);
         } else {
-            Order::create($validated);
+            $order = Order::create($validated);
+
+            if ($this->quote_id) {
+                Quote::where('id', $this->quote_id)->update(['converted_order_id' => $order->id]);
+            }
         }
 
         $this->dispatch('notify', message: $this->order ? 'Order updated.' : 'Order created.', type: 'success');
         $this->redirect(route('orders.index'), navigate: true);
+    }
+
+    public function openPaymentForm(): void
+    {
+        $this->showPaymentForm = true;
+        $this->newPaymentAmount = '';
+        $this->newPaymentMethod = 'bank_transfer';
+        $this->newPaymentReference = '';
+        $this->newPaymentDate = now()->format('Y-m-d');
+    }
+
+    public function closePaymentForm(): void
+    {
+        $this->showPaymentForm = false;
+        $this->reset('newPaymentAmount', 'newPaymentMethod', 'newPaymentReference', 'newPaymentDate');
+    }
+
+    public function recordPayment(): void
+    {
+        $this->validate([
+            'newPaymentAmount' => ['required', 'numeric', 'min:0.01'],
+            'newPaymentMethod' => ['required', 'in:bank_transfer,card,cash,other'],
+            'newPaymentReference' => ['nullable', 'string', 'max:255'],
+            'newPaymentDate' => ['required', 'date'],
+        ]);
+
+        $order = $this->order;
+        if (! $order) {
+            return;
+        }
+
+        $payment = $order->payments()->create([
+            'amount' => $this->newPaymentAmount,
+            'method' => $this->newPaymentMethod,
+            'reference' => $this->newPaymentReference ?: null,
+            'paid_at' => $this->newPaymentDate,
+            'notes' => null,
+            'recorded_by_user_id' => auth()->id(),
+        ]);
+
+        $totalPaid = $order->payments()->sum('amount');
+        $order->update(['deposit_paid' => $totalPaid]);
+
+        $this->payments = $order->payments()->orderByDesc('paid_at')->get()->toArray();
+        $this->deposit_paid = (string) $totalPaid;
+
+        $this->closePaymentForm();
+
+        $this->dispatch('notify', message: 'Payment recorded.', type: 'success');
+    }
+
+    public function removePayment(int $paymentId): void
+    {
+        $order = $this->order;
+        if (! $order) {
+            return;
+        }
+
+        $order->payments()->where('id', $paymentId)->delete();
+
+        $totalPaid = $order->payments()->sum('amount');
+        $order->update(['deposit_paid' => $totalPaid]);
+
+        $this->payments = $order->payments()->orderByDesc('paid_at')->get()->toArray();
+        $this->deposit_paid = (string) $totalPaid;
+
+        $this->dispatch('notify', message: 'Payment removed.', type: 'success');
     }
 
     public function render()

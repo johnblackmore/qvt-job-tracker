@@ -41,11 +41,16 @@
                     <x-lucide-pencil class="w-4 h-4" />
                     Edit
                 </a>
-                @if($quote->status === 'accepted')
+                @if($quote->status === 'accepted' && ! $quote->converted_order_id)
                     <button wire:click="convertToOrder" class="inline-flex items-center gap-2 rounded-lg bg-copper px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark transition-colors">
                         <x-lucide-clipboard-plus class="w-4 h-4" />
                         Convert to Order
                     </button>
+                @elseif($quote->converted_order_id)
+                    <a href="{{ route('orders.show', $quote->converted_order_id) }}" wire:navigate class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+                        <x-lucide-arrow-right class="w-4 h-4" />
+                        View Order
+                    </a>
                 @endif
             </div>
         </div>

@@ -94,7 +94,8 @@ class CreateOrderTool extends Tool
 
         $reference = 'ORD-'.now()->format('Ymd').'-'.strtoupper(Str::random(4));
         $totalAmount = $quote ? (float) $quote->grand_total : 0;
-        $depositRequired = $quote ? round($totalAmount * 0.3, 2) : 0;
+        $productCost = $quote ? ($quote->grand_total - $quote->labour_total) : 0;
+        $depositRequired = $quote ? round(max($totalAmount * 0.5, $productCost), 2) : 0;
         $balanceDue = $totalAmount;
 
         if ($isPreview && ! $isConfirmed) {
