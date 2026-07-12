@@ -251,7 +251,7 @@ class ProductForm extends Component
                 'supplier_sku' => $link['supplier_sku'] ?? null,
                 'supplier_product_url' => $link['supplier_product_url'] ?? null,
                 'is_preferred' => $link['is_preferred'] ?? false,
-                'lead_time_days' => $link['lead_time_days'] ?? null,
+                'lead_time_days' => ! empty($link['lead_time_days']) ? $link['lead_time_days'] : null,
                 'notes' => $link['notes'] ?? null,
             ];
         }
