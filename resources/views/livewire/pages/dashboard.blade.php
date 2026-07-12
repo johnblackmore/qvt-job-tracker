@@ -2,6 +2,8 @@
 
 use App\Models\Customer;
 use App\Models\Enquiry;
+use App\Models\Order;
+use App\Models\Quote;
 use Livewire\Volt\Component;
 
 new class extends Component
@@ -15,8 +17,8 @@ new class extends Component
     {
         $this->customerCount = Customer::count();
         $this->enquiryCount = Enquiry::whereIn('status', ['new', 'in_progress'])->count();
-        $this->openQuoteCount = 0;
-        $this->pendingOrderCount = 0;
+        $this->openQuoteCount = Quote::whereIn('status', ['draft', 'sent'])->count();
+        $this->pendingOrderCount = Order::whereIn('status', ['pending', 'deposit_paid'])->count();
     }
 }; ?>
 
@@ -94,7 +96,7 @@ new class extends Component
                 </div>
             </a>
 
-            <a href="#" class="group flex items-center gap-4 p-4 rounded-lg border border-slate-200 hover:border-copper/30 hover:bg-copper/10/50 transition-all opacity-50 cursor-not-allowed">
+            <a href="{{ route('quotes.create') }}" wire:navigate class="group flex items-center gap-4 p-4 rounded-lg border border-slate-200 hover:border-copper/30 hover:bg-copper/10/50 transition-all">
                 <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
                     <x-lucide-file-plus class="w-5 h-5 text-blue-600" />
                 </div>
@@ -116,17 +118,4 @@ new class extends Component
         </div>
     </div>
 
-    {{-- Empty states placeholder --}}
-    <div class="mt-8 bg-white rounded-xl border border-slate-200 shadow-sm">
-        <div class="px-6 py-4 border-b border-slate-200">
-            <h2 class="text-base font-display font-semibold text-slate-900">Recent Activity</h2>
-        </div>
-        <div class="p-12 text-center">
-            <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
-                <x-lucide-clock class="w-6 h-6 text-slate-400" />
-            </div>
-            <h3 class="text-sm font-medium text-slate-900">No recent activity</h3>
-            <p class="mt-1 text-sm text-slate-500">Activity will appear here once you start creating customers, quotes, and orders.</p>
-        </div>
-    </div>
 </div>

@@ -108,7 +108,7 @@
                                                 <x-lucide-banknote class="w-4 h-4 text-teal-dark" />
                                                 @break
                                             @default
-                                                <x-lucide-circle-dollar class="w-4 h-4 text-slate-500" />
+                                                <x-lucide-circle-dollar-sign class="w-4 h-4 text-slate-500" />
                                         @endswitch
                                     </div>
                                     <div>

@@ -80,7 +80,12 @@ class OrderForm extends Component
             'deposit_paid' => ['required', 'numeric', 'min:0'],
             'scheduled_date' => ['nullable', 'date'],
             'notes' => ['nullable', 'string'],
+            'quote_id' => ['nullable', 'exists:quotes,id'],
         ]);
+
+        if ($validated['scheduled_date'] === '' || $validated['scheduled_date'] === null) {
+            $validated['scheduled_date'] = null;
+        }
 
         $validated['balance_due'] = $validated['total_amount'] - $validated['deposit_paid'];
         $validated['staff_user_id'] = auth()->id();
