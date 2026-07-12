@@ -32,6 +32,7 @@ use App\Mcp\Tools\ScheduleInstallationTool;
 use App\Mcp\Tools\SearchCustomersTool;
 use App\Mcp\Tools\SearchProductsTool;
 use App\Mcp\Tools\SendQuoteEmailTool;
+use App\Mcp\Tools\SyncNetlifySubmissionsTool;
 use App\Mcp\Tools\UpdateCustomerTool;
 use App\Mcp\Tools\UpdateDepositTool;
 use App\Mcp\Tools\UpdateOrderStatusTool;
@@ -100,6 +101,9 @@ class QvtServer extends Server
         GetDashboardStatsTool::class,
         GetQuoteActivityTool::class,
         GetWeeklySummaryTool::class,
+
+        // Integration tools
+        SyncNetlifySubmissionsTool::class,
     ];
 
     /** @var array<int, class-string<Server\Resource>> */
@@ -148,6 +152,7 @@ class QvtServer extends Server
             GetDashboardStatsTool::class,
             GetQuoteActivityTool::class,
             GetWeeklySummaryTool::class,
+            SyncNetlifySubmissionsTool::class,
         ];
     }
 }

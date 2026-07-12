@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'netlify' => [
+        'api_token' => env('NETLIFY_API_TOKEN'),
+        'site_id' => env('NETLIFY_SITE_ID'),
+        'notification_email' => env('NOTIFICATION_EMAIL'),
+    ],
+
 ];
