@@ -170,28 +170,32 @@
                     </button>
                 </div>
 
-                @if(!$extractedData && !$isExtracting && !$extractionError)
-                    <div class="space-y-4">
+                @if(!$extractedData && !$extractionError)
+                    <div wire:loading.class="hidden" wire:target="extractFromUrl" class="space-y-4">
                         <p class="text-sm text-slate-600">Paste a supplier product URL to automatically extract product details.</p>
                         <div>
                             <label for="extractionUrl" class="block text-sm font-medium text-slate-700 mb-1.5">Product URL</label>
-                            <input wire:model="extractionUrl" id="extractionUrl" type="url" required class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5" placeholder="https://www.bimblesolar.com/victron/mppt-100-30" />
+                            <input wire:model="extractionUrl" id="extractionUrl" type="url" required wire:loading.attr="disabled" wire:target="extractFromUrl" wire:keydown.enter="extractFromUrl" x-init="$nextTick(() => $el.focus())" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5" placeholder="https://www.bimblesolar.com/victron/mppt-100-30" />
                             @error('extractionUrl') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
                         <button type="button" wire:click="extractFromUrl" wire:loading.attr="disabled" class="inline-flex items-center gap-2 rounded-lg bg-copper px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark focus:outline-none focus:ring-2 focus:ring-copper focus:ring-offset-2 transition-colors disabled:opacity-50">
-                            <x-lucide-search class="w-4 h-4" />
-                            Extract
+                            <span wire:loading.remove wire:target="extractFromUrl" class="inline-flex items-center gap-2">
+                                <x-lucide-search class="w-4 h-4" />
+                                Extract
+                            </span>
+                            <span wire:loading wire:target="extractFromUrl" class="inline-flex items-center gap-2">
+                                <span class="loading loading-spinner loading-xs"></span>
+                                Extracting...
+                            </span>
                         </button>
                     </div>
                 @endif
 
-                @if($isExtracting)
-                    <div class="flex flex-col items-center justify-center py-8 space-y-4">
-                        <span class="loading loading-spinner text-copper loading-md"></span>
-                        <p class="text-sm text-slate-600">Fetching product details...</p>
-                        <p class="text-xs text-slate-400">This may take a few seconds.</p>
-                    </div>
-                @endif
+                <div wire:loading wire:target="extractFromUrl" class="flex flex-col items-center justify-center py-8 space-y-4">
+                    <span class="loading loading-spinner text-copper loading-md"></span>
+                    <p class="text-sm text-slate-600">Fetching product details...</p>
+                    <p class="text-xs text-slate-400">This may take a few seconds.</p>
+                </div>
 
                 @if($extractedData && !$isExtracting)
                     <div class="space-y-4">
