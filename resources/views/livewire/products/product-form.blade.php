@@ -1,7 +1,15 @@
 <div class="max-w-4xl">
-    <div class="mb-8">
-        <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">{{ $product ? 'Edit Product' : 'Add Product' }}</h1>
-        <p class="mt-1 text-sm text-slate-500">{{ $product ? 'Update product and supplier pricing' : 'Create a new product with supplier links' }}</p>
+    <div class="mb-8 flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">{{ $product ? 'Edit Product' : 'Add Product' }}</h1>
+            <p class="mt-1 text-sm text-slate-500">{{ $product ? 'Update product and supplier pricing' : 'Create a new product with supplier links' }}</p>
+        </div>
+        @unless($product)
+            <button type="button" wire:click="openUrlModal" class="inline-flex items-center gap-1.5 rounded-lg border border-copper/30 bg-copper/5 px-4 py-2.5 text-sm font-medium text-copper hover:bg-copper/10 transition-colors">
+                <x-lucide-globe class="w-4 h-4" />
+                Create from URL
+            </button>
+        @endunless
     </div>
 
     <form wire:submit="save" class="space-y-6">
@@ -149,4 +157,110 @@
             <a href="{{ route('products.index') }}" wire:navigate class="text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors">Cancel</a>
         </div>
     </form>
+
+    {{-- Create from URL modal --}}
+    @if($showUrlModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div class="fixed inset-0 bg-black/40" wire:click="closeUrlModal"></div>
+            <div class="relative bg-white rounded-xl shadow-xl border border-slate-200 w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
+                <div class="flex items-center justify-between mb-5">
+                    <h3 class="text-lg font-display font-semibold text-slate-900">Extract Product from URL</h3>
+                    <button type="button" wire:click="closeUrlModal" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
+                        <x-lucide-x class="w-5 h-5" />
+                    </button>
+                </div>
+
+                @if(!$extractedData && !$isExtracting && !$extractionError)
+                    <div class="space-y-4">
+                        <p class="text-sm text-slate-600">Paste a supplier product URL to automatically extract product details.</p>
+                        <div>
+                            <label for="extractionUrl" class="block text-sm font-medium text-slate-700 mb-1.5">Product URL</label>
+                            <input wire:model="extractionUrl" id="extractionUrl" type="url" required class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5" placeholder="https://www.bimblesolar.com/victron/mppt-100-30" />
+                            @error('extractionUrl') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                        </div>
+                        <button type="button" wire:click="extractFromUrl" wire:loading.attr="disabled" class="inline-flex items-center gap-2 rounded-lg bg-copper px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark focus:outline-none focus:ring-2 focus:ring-copper focus:ring-offset-2 transition-colors disabled:opacity-50">
+                            <x-lucide-search class="w-4 h-4" />
+                            Extract
+                        </button>
+                    </div>
+                @endif
+
+                @if($isExtracting)
+                    <div class="flex flex-col items-center justify-center py-8 space-y-4">
+                        <span class="loading loading-spinner text-copper loading-md"></span>
+                        <p class="text-sm text-slate-600">Fetching product details...</p>
+                        <p class="text-xs text-slate-400">This may take a few seconds.</p>
+                    </div>
+                @endif
+
+                @if($extractedData && !$isExtracting)
+                    <div class="space-y-4">
+                        <div class="rounded-lg border border-teal/20 bg-teal/5 p-4 space-y-3">
+                            <div class="flex items-center gap-2 text-teal">
+                                <x-lucide-check-circle-2 class="w-5 h-5" />
+                                <span class="text-sm font-medium">Product details extracted</span>
+                            </div>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500">Name:</span>
+                                    <span class="text-slate-900 font-medium text-right max-w-[60%]">{{ $extractedData['name'] ?? '—' }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500">SKU:</span>
+                                    <span class="text-slate-900 font-mono text-right">{{ $extractedData['sku'] ?? '—' }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500">Retail price:</span>
+                                    <span class="text-slate-900 font-medium text-right">{{ isset($extractedData['retail_price']) ? '£'.number_format((float) $extractedData['retail_price'], 2) : '—' }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500">Category:</span>
+                                    <span class="text-slate-900 text-right">{{ $extractedData['category_name'] ?? '—' }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-500">Supplier:</span>
+                                    <span class="text-slate-900 text-right">{{ $extractedData['supplier_name'] ?? '—' }}</span>
+                                </div>
+                                @if(!empty($extractedData['supplier_sku']))
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-500">Supplier SKU:</span>
+                                        <span class="text-slate-900 font-mono text-right">{{ $extractedData['supplier_sku'] }}</span>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500">Review and edit the extracted data below before saving.</p>
+                        <div class="flex items-center gap-3">
+                            <button type="button" wire:click="applyExtractedData" class="inline-flex items-center gap-2 rounded-lg bg-copper px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark transition-colors">
+                                <x-lucide-check class="w-4 h-4" />
+                                Apply & Edit
+                            </button>
+                            <button type="button" wire:click="resetExtraction" class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+                                <x-lucide-refresh-cw class="w-4 h-4" />
+                                Start Over
+                            </button>
+                        </div>
+                    </div>
+                @endif
+
+                @if($extractionError)
+                    <div class="space-y-4">
+                        <div class="rounded-lg border border-red-200 bg-red-50 p-4">
+                            <div class="flex items-start gap-3">
+                                <x-lucide-alert-triangle class="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                                <div>
+                                    <p class="text-sm font-medium text-red-800">Extraction failed</p>
+                                    <p class="mt-1 text-sm text-red-700">{{ $extractionError }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" wire:click="resetExtraction" class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+                            <x-lucide-refresh-cw class="w-4 h-4" />
+                            Try Again
+                        </button>
+                    </div>
+                @endif
+            </div>
+        </div>
+    @endif
 </div>

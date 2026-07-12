@@ -5,6 +5,7 @@ namespace App\Livewire\Products;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Supplier;
+use App\Services\Ai\Assistants\ProductUrlAssistant;
 use Livewire\Component;
 
 class ProductForm extends Component
@@ -28,6 +29,16 @@ class ProductForm extends Component
     public string $notes = '';
 
     public array $supplierLinks = [];
+
+    public bool $showUrlModal = false;
+
+    public string $extractionUrl = '';
+
+    public ?array $extractedData = null;
+
+    public bool $isExtracting = false;
+
+    public ?string $extractionError = null;
 
     public function mount(?int $productId = null): void
     {
@@ -75,6 +86,125 @@ class ProductForm extends Component
         $this->supplierLinks = array_values($this->supplierLinks);
     }
 
+    public function openUrlModal(): void
+    {
+        $this->resetValidation('extractionUrl');
+        $this->extractionUrl = '';
+        $this->extractedData = null;
+        $this->extractionError = null;
+        $this->isExtracting = false;
+        $this->showUrlModal = true;
+    }
+
+    public function closeUrlModal(): void
+    {
+        $this->showUrlModal = false;
+        $this->extractionUrl = '';
+        $this->extractedData = null;
+        $this->extractionError = null;
+        $this->isExtracting = false;
+    }
+
+    public function resetExtraction(): void
+    {
+        $this->extractedData = null;
+        $this->extractionError = null;
+        $this->isExtracting = false;
+    }
+
+    public function extractFromUrl(): void
+    {
+        $this->validate([
+            'extractionUrl' => ['required', 'url', 'max:2048'],
+        ]);
+
+        $this->extractedData = null;
+        $this->extractionError = null;
+        $this->isExtracting = true;
+
+        set_time_limit(120);
+
+        try {
+            $assistant = app(ProductUrlAssistant::class);
+            $data = $assistant->extract($this->extractionUrl, auth()->user());
+
+            $this->extractedData = $data;
+        } catch (\Throwable $e) {
+            $this->extractionError = $e->getMessage();
+        } finally {
+            $this->isExtracting = false;
+        }
+    }
+
+    public function applyExtractedData(): void
+    {
+        if (! $this->extractedData) {
+            return;
+        }
+
+        $data = $this->extractedData;
+
+        if (! empty($data['name'])) {
+            $this->name = $data['name'];
+        }
+
+        if (! empty($data['sku'])) {
+            $this->sku = $data['sku'];
+        }
+
+        if (! empty($data['description'])) {
+            $this->description = $data['description'];
+        }
+
+        if (! empty($data['retail_price'])) {
+            $this->retail_price = (string) $data['retail_price'];
+        }
+
+        if (! empty($data['category_name'])) {
+            $categories = ProductCategory::orderBy('name')->get();
+            $matched = $categories->first(fn ($cat) => str_contains(
+                mb_strtolower($cat->name),
+                mb_strtolower($data['category_name'])
+            ) || str_contains(
+                mb_strtolower($data['category_name']),
+                mb_strtolower($cat->name)
+            ));
+
+            if ($matched) {
+                $this->category_id = $matched->id;
+            }
+        }
+
+        $supplierLink = [
+            'supplier_id' => '',
+            'trade_price' => '',
+            'supplier_sku' => $data['supplier_sku'] ?? '',
+            'supplier_product_url' => $this->extractionUrl,
+            'is_preferred' => true,
+            'lead_time_days' => '',
+            'notes' => '',
+        ];
+
+        if (! empty($data['supplier_name'])) {
+            $suppliers = Supplier::where('is_active', true)->orderBy('name')->get();
+            $matched = $suppliers->first(fn ($sup) => str_contains(
+                mb_strtolower($sup->name),
+                mb_strtolower($data['supplier_name'])
+            ) || str_contains(
+                mb_strtolower($data['supplier_name']),
+                mb_strtolower($sup->name)
+            ));
+
+            if ($matched) {
+                $supplierLink['supplier_id'] = $matched->id;
+            }
+        }
+
+        $this->supplierLinks = [$supplierLink];
+
+        $this->closeUrlModal();
+    }
+
     public function save(): void
     {
         $validated = $this->validate([
@@ -114,7 +244,6 @@ class ProductForm extends Component
             $product = Product::create($productData);
         }
 
-        // Sync supplier links
         $syncData = [];
         foreach ($validated['supplierLinks'] ?? [] as $link) {
             $syncData[$link['supplier_id']] = [
@@ -127,7 +256,6 @@ class ProductForm extends Component
             ];
         }
 
-        // Ensure only one preferred supplier
         $preferredCount = collect($syncData)->where('is_preferred', true)->count();
         if ($preferredCount > 1) {
             $firstPreferred = true;

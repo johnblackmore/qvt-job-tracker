@@ -36,7 +36,7 @@ OLLAMA_URL=http://localhost:11434
 
 # Assistant-specific overrides
 AI_URL_EXTRACTOR_PROVIDER=openrouter
-AI_URL_EXTRACTOR_MODEL=anthropic/claude-3.5-sonnet
+AI_URL_EXTRACTOR_MODEL=openrouter/free
 ```
 
 No need to add providers to `services.php` — Prism's config already handles them.
@@ -47,12 +47,12 @@ No need to add providers to `services.php` — Prism's config already handles th
 <?php
 return [
     'default_provider' => env('AI_DEFAULT_PROVIDER', 'openrouter'),
-    'default_model' => env('AI_DEFAULT_MODEL', 'anthropic/claude-3.5-sonnet'),
+    'default_model' => env('AI_DEFAULT_MODEL', 'openrouter/free'),
 
     'assistants' => [
         'product-url-extractor' => [
             'provider' => env('AI_URL_EXTRACTOR_PROVIDER', 'openrouter'),
-            'model' => env('AI_URL_EXTRACTOR_MODEL', 'anthropic/claude-3.5-sonnet'),
+            'model' => env('AI_URL_EXTRACTOR_MODEL', 'openrouter/free'),
             'temperature' => 0.1,
             'max_tokens' => 2048,
         ],
