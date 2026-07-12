@@ -3,6 +3,7 @@
         isOpen: $wire.$entangle('isOpen', true),
         isStreaming: false,
         streamingContent: '',
+        completedContent: '',
         currentToolName: null,
         currentConversationId: null,
         eventSource: null,
@@ -10,6 +11,11 @@
 
         init() {
             this.$watch('streamingContent', () => this.scrollToBottom());
+            this.$watch('isOpen', (val) => {
+                if (val) {
+                    this.$nextTick(() => this.$refs.messageInput?.focus());
+                }
+            });
         },
 
         startStream(conversationId) {
@@ -66,11 +72,16 @@
                 this.eventSource.close();
                 this.eventSource = null;
             }
+
+            this.completedContent = this.streamingContent;
             this.isStreaming = false;
+            this.streamingContent = '';
             this.currentToolName = null;
             this.currentConversationId = null;
 
-            $wire.set('isStreaming', false);
+            $wire.set('isStreaming', false).finally(() => {
+                this.completedContent = '';
+            });
         },
 
         scrollToBottom() {
@@ -93,7 +104,7 @@
         :class="{ 'rotate-45 bg-copper-dark': isOpen }"
         aria-label="Toggle AI Assistant"
     >
-        <x-lucide-message-square-more class="w-6 h-6" />
+        <x-lucide-bot class="w-6 h-6" />
     </button>
 
     {{-- Chat Panel --}}
@@ -207,6 +218,18 @@
                     <div class="chat-bubble bg-white border border-copper/30 text-slate-700 text-sm shadow-sm">
                         <div x-html="streamingContent" class="prose prose-sm max-w-none"></div>
                         <span class="inline-block w-2 h-4 bg-copper/50 ml-0.5 animate-pulse">&nbsp;</span>
+                    </div>
+                </div>
+
+                {{-- Completed stream content (shown until Livewire re-render replaces it) --}}
+                <div x-show="!isStreaming && completedContent" class="chat chat-start">
+                    <div class="chat-image avatar">
+                        <div class="w-8 h-8 rounded-full bg-copper/15 flex items-center justify-center">
+                            <x-lucide-bot class="w-4 h-4 text-copper" />
+                        </div>
+                    </div>
+                    <div class="chat-bubble bg-white border border-slate-200 text-slate-700 text-sm shadow-sm">
+                        <div x-html="completedContent" class="prose prose-sm max-w-none"></div>
                     </div>
                 </div>
 
