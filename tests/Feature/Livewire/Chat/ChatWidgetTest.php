@@ -24,6 +24,9 @@ class ChatWidgetTest extends TestCase
 
         $this->admin = User::factory()->create();
         $this->admin->assignRole('admin');
+
+        config()->set('ai.assistants.chat-agent.provider', 'opencode');
+        config()->set('ai.assistants.chat-agent.model', 'deepseek-v4-flash-free');
     }
 
     public function test_component_renders(): void

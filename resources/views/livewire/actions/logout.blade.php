@@ -1,24 +1,22 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
+use App\Actions\Logout;
 use Livewire\Volt\Component;
 
 new class extends Component
 {
-    public function logout(): void
+    public function logout(Logout $logout): void
     {
-        Auth::guard('web')->logout();
-        Session::invalidate();
-        Session::regenerateToken();
+        $logout();
+
         $this->redirect('/', navigate: true);
     }
 }; ?>
 
 <button
     wire:click="logout"
-    class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors w-full text-left"
+    class="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
 >
     <x-lucide-log-out class="w-4 h-4 shrink-0" />
-    Sign out
+    Log Out
 </button>

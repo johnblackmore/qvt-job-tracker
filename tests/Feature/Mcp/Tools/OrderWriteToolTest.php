@@ -131,6 +131,7 @@ class OrderWriteToolTest extends TestCase
         $quote = Quote::factory()->create([
             'customer_id' => $customer->id,
             'grand_total' => 1000.00,
+            'labour_total' => 700.00,
             'status' => 'accepted',
         ]);
 
@@ -147,7 +148,7 @@ class OrderWriteToolTest extends TestCase
         $order = Order::latest()->first();
         $this->assertNotNull($order);
         $this->assertEquals(1000.00, (float) $order->total_amount);
-        $this->assertEquals(300.00, (float) $order->deposit_required);
+        $this->assertEquals(500.00, (float) $order->deposit_required);
         $this->assertEquals(1000.00, (float) $order->balance_due);
         $this->assertEquals($quote->id, $order->quote_id);
     }
