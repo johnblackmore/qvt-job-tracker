@@ -117,14 +117,6 @@
                         Email Templates
                     </a>
 
-                    <button
-                        x-on:click="Livewire.dispatch('toggle-chat')"
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-slate-600 hover:bg-slate-100 hover:text-slate-900 w-full text-left"
-                    >
-                        <x-lucide-message-square-more class="w-5 h-5 shrink-0" />
-                        AI Assistant
-                    </button>
-
                     <a
                         href="{{ route('admin.ai.configs.index') }}"
                         wire:navigate
