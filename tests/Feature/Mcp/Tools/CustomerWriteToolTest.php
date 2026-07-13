@@ -257,7 +257,7 @@ class CustomerWriteToolTest extends TestCase
             $json->etc();
         });
 
-        $this->assertDatabaseMissing('customers', ['id' => $id]);
+        $this->assertSoftDeleted('customers', ['id' => $id]);
     }
 
     public function test_write_customer_tools_gated_by_admin_role(): void

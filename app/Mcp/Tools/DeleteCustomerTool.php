@@ -12,7 +12,7 @@ use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Tools\Annotations\IsDestructive;
 
 #[IsDestructive]
-#[Description('Permanently delete a customer record and all associated data (vehicles, enquiries, quotes, orders). This action is destructive and requires confirmation.')]
+#[Description('Soft delete a customer record. The record is hidden but can be restored if needed. All associated data (vehicles, enquiries, quotes, orders) will also be soft deleted. Requires confirmation.')]
 class DeleteCustomerTool extends Tool
 {
     public function schema(JsonSchema $schema): array
@@ -82,7 +82,7 @@ class DeleteCustomerTool extends Tool
 
             return Response::structured([
                 'status' => 'preview',
-                'message' => "⚠ This will permanently delete customer {$customer->name} and all associated data.{$linkedSummary}\n\nThis action cannot be undone. Are you sure?",
+                'message' => "⚠ This will soft delete customer {$customer->name} and all associated data.{$linkedSummary}\n\nThe record can be restored later if needed. Are you sure?",
                 'data' => [
                     'id' => $customer->id,
                     'name' => $customer->name,
@@ -100,7 +100,7 @@ class DeleteCustomerTool extends Tool
 
         return Response::structured([
             'status' => 'completed',
-            'message' => "Customer {$name} and all associated records have been permanently deleted.",
+            'message' => "Customer {$name} and all associated records have been soft deleted. They can be restored from the admin area if needed.",
             'deleted_id' => $id,
         ]);
     }
