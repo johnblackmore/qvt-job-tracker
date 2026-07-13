@@ -3,7 +3,9 @@
 namespace App\Services\Ai\Assistants;
 
 use App\Models\AiExtraction;
+use App\Models\AiModelConfig;
 use App\Models\User;
+use App\Settings\AiAssistantConfigSettings;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Prism\Prism\Enums\StructuredMode;
@@ -29,10 +31,17 @@ class ProductUrlAssistant
 
             $extraction->update(['prompt_data' => $text]);
 
-            $config = config('ai.assistants.product-url-extractor');
+            $fallback = config('ai.assistants.product-url-extractor');
+            $settings = app(AiAssistantConfigSettings::class);
+            $configRecord = $settings->product_url_extractor_config_id
+                ? AiModelConfig::find($settings->product_url_extractor_config_id)
+                : null;
+
+            $provider = $configRecord?->provider ?? $fallback['provider'];
+            $model = $configRecord?->model ?? $fallback['model'];
 
             $response = Prism::structured()
-                ->using($config['provider'], $config['model'])
+                ->using($provider, $model)
                 ->withSystemPrompt(view('ai.prompts.product-extraction')->render())
                 ->withPrompt($this->buildExtractionPrompt($text))
                 ->withSchema(new ObjectSchema(
@@ -49,8 +58,8 @@ class ProductUrlAssistant
                     ],
                 ))
                 ->usingStructuredMode(StructuredMode::Auto)
-                ->usingTemperature($config['temperature'])
-                ->withMaxTokens($config['max_tokens'])
+                ->usingTemperature($fallback['temperature'])
+                ->withMaxTokens($fallback['max_tokens'])
                 ->asStructured();
 
             $data = $response->structured ?? [];

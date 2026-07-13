@@ -151,6 +151,7 @@ When building UI components, consult the daisyUI GitMCP for component patterns a
 ### Composer
 ```bash
 composer require spatie/laravel-permission
+composer require spatie/laravel-settings
 composer require wildbit/postmark-php
 ```
 
@@ -213,14 +214,16 @@ When building or modifying staff admin functionality, agents must maintain parit
 ### MCP Directory Conventions
 
 - `app/Mcp/Servers/` — Server definitions
-- `app/Mcp/Tools/{Domain}/` — Grouped by business domain (Customers, Quotes, Orders, etc.)
+- `app/Mcp/Tools/{Domain}/` — Grouped by business domain (Customers, Quotes, Orders, AiConfig, etc.)
 - `app/Mcp/Resources/` — Read-only contextual data
 - `app/Mcp/Prompts/` — Reusable AI prompt templates
+- `app/Settings/` — spatie/laravel-settings classes for configurable settings
+- `database/settings/` — Settings migrations
 - `routes/ai.php` — MCP route registration
 
 ### Updating AGENTS.md
 
-If you add new business domains (e.g., Invoicing, Calendar), add the new tool category to the plan in `.opencode/plans/qvt-mcp-server-plan.md` and update this section.
+If you add new business domains (e.g., Invoicing, Calendar, AiConfig), add the new tool category to the plan in `.opencode/plans/qvt-mcp-server-plan.md` and update this section.
 
 ===
 

@@ -3,6 +3,8 @@
 namespace App\Livewire\Chat;
 
 use App\Models\AiConversation;
+use App\Models\AiModelConfig;
+use App\Settings\AiAssistantConfigSettings;
 use Illuminate\Contracts\View\View;
 use Livewire\Attribute\On;
 use Livewire\Component;
@@ -40,9 +42,14 @@ class ChatWidget extends Component
 
     public function startNewConversation(): void
     {
+        $settings = app(AiAssistantConfigSettings::class);
+        $configRecord = $settings->chat_agent_config_id
+            ? AiModelConfig::find($settings->chat_agent_config_id)
+            : null;
+
         $conversation = auth()->user()->aiConversations()->create([
-            'provider' => config('ai.assistants.chat-agent.provider'),
-            'model' => config('ai.assistants.chat-agent.model'),
+            'provider' => $configRecord?->provider ?? config('ai.assistants.chat-agent.provider'),
+            'model' => $configRecord?->model ?? config('ai.assistants.chat-agent.model'),
         ]);
 
         $this->activeConversationId = $conversation->id;

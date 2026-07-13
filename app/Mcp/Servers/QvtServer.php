@@ -8,6 +8,13 @@ use App\Mcp\Resources\CustomerProfileResource;
 use App\Mcp\Resources\OrderDetailsResource;
 use App\Mcp\Resources\QuoteDetailsResource;
 use App\Mcp\Tools\AddQuoteLineItemTool;
+use App\Mcp\Tools\AiConfig\CreateAiModelConfigTool;
+use App\Mcp\Tools\AiConfig\DeleteAiModelConfigTool;
+use App\Mcp\Tools\AiConfig\GetAiAssistantConfigSettingsTool;
+use App\Mcp\Tools\AiConfig\GetAiModelConfigTool;
+use App\Mcp\Tools\AiConfig\ListAiModelConfigsTool;
+use App\Mcp\Tools\AiConfig\UpdateAiAssistantConfigSettingsTool;
+use App\Mcp\Tools\AiConfig\UpdateAiModelConfigTool;
 use App\Mcp\Tools\CreateCustomerTool;
 use App\Mcp\Tools\CreateEnquiryTool;
 use App\Mcp\Tools\CreateOrderTool;
@@ -104,6 +111,15 @@ class QvtServer extends Server
 
         // Integration tools
         SyncNetlifySubmissionsTool::class,
+
+        // AI Config tools
+        ListAiModelConfigsTool::class,
+        GetAiModelConfigTool::class,
+        CreateAiModelConfigTool::class,
+        UpdateAiModelConfigTool::class,
+        DeleteAiModelConfigTool::class,
+        GetAiAssistantConfigSettingsTool::class,
+        UpdateAiAssistantConfigSettingsTool::class,
     ];
 
     /** @var array<int, class-string<Server\Resource>> */
@@ -153,6 +169,13 @@ class QvtServer extends Server
             GetQuoteActivityTool::class,
             GetWeeklySummaryTool::class,
             SyncNetlifySubmissionsTool::class,
+            ListAiModelConfigsTool::class,
+            GetAiModelConfigTool::class,
+            CreateAiModelConfigTool::class,
+            UpdateAiModelConfigTool::class,
+            DeleteAiModelConfigTool::class,
+            GetAiAssistantConfigSettingsTool::class,
+            UpdateAiAssistantConfigSettingsTool::class,
         ];
     }
 }

@@ -5,7 +5,9 @@ namespace App\Services\Ai\Assistants;
 use App\Mcp\Servers\QvtServer;
 use App\Models\AiConversation;
 use App\Models\AiMessage;
+use App\Models\AiModelConfig;
 use App\Models\User;
+use App\Settings\AiAssistantConfigSettings;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -36,19 +38,23 @@ class ChatAgentAssistant
             ]);
         }
 
-        $config = config('ai.assistants.chat-agent');
+        $fallback = config('ai.assistants.chat-agent');
+        $settings = app(AiAssistantConfigSettings::class);
+        $configRecord = $settings->chat_agent_config_id
+            ? AiModelConfig::find($settings->chat_agent_config_id)
+            : null;
 
-        $provider = $conversation->provider ?: $config['provider'];
-        $model = $conversation->model ?: $config['model'];
+        $provider = $conversation->provider ?: ($configRecord?->provider ?? $fallback['provider']);
+        $model = $conversation->model ?: ($configRecord?->model ?? $fallback['model']);
 
         $prism = Prism::text()
             ->using($provider, $model)
-            ->withSystemPrompt(view($config['system_prompt'])->render())
+            ->withSystemPrompt(view($fallback['system_prompt'])->render())
             ->withMessages($this->buildMessages($conversation))
             ->withTools($this->resolveTools())
-            ->withMaxSteps($config['max_steps'])
-            ->usingTemperature($config['temperature'])
-            ->withMaxTokens($config['max_tokens']);
+            ->withMaxSteps($fallback['max_steps'])
+            ->usingTemperature($fallback['temperature'])
+            ->withMaxTokens($fallback['max_tokens']);
 
         $onComplete = $this->onComplete($conversation);
 
