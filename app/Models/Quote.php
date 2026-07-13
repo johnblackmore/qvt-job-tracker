@@ -13,7 +13,7 @@ class Quote extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'customer_id', 'reference_number', 'status', 'total_retail', 'total_trade',
+        'customer_id', 'enquiry_id', 'reference_number', 'status', 'total_retail', 'total_trade',
         'labour_total', 'grand_total', 'notes', 'valid_until', 'sent_at',
         'accepted_at', 'declined_at', 'converted_order_id', 'staff_user_id',
     ];
@@ -32,6 +32,11 @@ class Quote extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function enquiry(): BelongsTo
+    {
+        return $this->belongsTo(Enquiry::class);
     }
 
     public function lineItems(): HasMany

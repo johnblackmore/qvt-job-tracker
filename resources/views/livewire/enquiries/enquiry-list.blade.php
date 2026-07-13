@@ -10,7 +10,7 @@
         </a>
     </div>
 
-    <div class="mb-6 flex flex-col sm:flex-row gap-3">
+    <div class="mb-6 flex flex-col sm:flex-row gap-3 flex-wrap">
         <div class="relative max-w-md flex-1">
             <x-lucide-search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input wire:model.live.debounce.300ms="search" type="text" placeholder="Search enquiries..." class="w-full rounded-lg border-slate-300 text-slate-900 placeholder-slate-400 focus:border-copper focus:ring-copper text-sm pl-9 pr-4 py-2.5" />
@@ -22,6 +22,14 @@
             <option value="responded">Responded</option>
             <option value="closed">Closed</option>
         </select>
+        <select wire:model.live="staffUserId" class="rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3 py-2.5">
+            <option value="">All staff</option>
+            @foreach($staffMembers as $staff)
+                <option value="{{ $staff->id }}">{{ $staff->name }}</option>
+            @endforeach
+        </select>
+        <input wire:model.live="dateFrom" type="date" class="rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3 py-2.5" title="From date" />
+        <input wire:model.live="dateTo" type="date" class="rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3 py-2.5" title="To date" />
     </div>
 
     <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
@@ -41,19 +49,35 @@
                                         {{ ucfirst(str_replace('_', ' ', $enquiry->status)) }}
                                     </span>
                                     <span class="text-xs text-slate-400">{{ $enquiry->created_at->format('d M Y') }}</span>
-                                    <span class="text-xs text-slate-400">{{ $enquiry->source }}</span>
+                                    <span class="text-xs text-slate-400">{{ ucfirst($enquiry->source) }}</span>
                                 </div>
-                                @if($enquiry->customer)
-                                    <p class="text-sm font-medium text-copper">{{ $enquiry->customer->name }}</p>
-                                @else
-                                    <p class="text-sm font-medium text-slate-500">Unlinked enquiry</p>
+                                <a href="{{ route('enquiries.show', $enquiry) }}" wire:navigate class="block">
+                                    @if($enquiry->customer)
+                                        <p class="text-sm font-medium text-copper">{{ $enquiry->customer->name }}</p>
+                                    @else
+                                        <p class="text-sm font-medium text-slate-500">Unlinked enquiry</p>
+                                    @endif
+                                    @if($enquiry->subject)
+                                        <p class="text-sm font-medium text-slate-900 mt-0.5">{{ $enquiry->subject }}</p>
+                                    @endif
+                                    <p class="text-sm text-slate-600 mt-0.5">{{ Str::limit($enquiry->message, 200) }}</p>
+                                </a>
+                                @if($enquiry->staff)
+                                    <p class="text-xs text-slate-400 mt-1">
+                                        Assigned to {{ $enquiry->staff->name }}
+                                        @if($enquiry->latestReply)
+                                            &middot; Last reply {{ $enquiry->latestReply->created_at->diffForHumans() }}
+                                        @endif
+                                    </p>
                                 @endif
-                                @if($enquiry->subject)
-                                    <p class="text-sm font-medium text-slate-900 mt-0.5">{{ $enquiry->subject }}</p>
-                                @endif
-                                <p class="text-sm text-slate-600 mt-0.5">{{ Str::limit($enquiry->message, 200) }}</p>
                             </div>
                             <div class="flex items-center gap-1 shrink-0">
+                                <select wire:change="assignStaff({{ $enquiry->id }}, $event.target.value)" class="text-xs rounded border-slate-200 text-slate-600 py-1 px-1.5 max-w-[100px]">
+                                    <option value="">Assign</option>
+                                    @foreach($staffMembers as $staff)
+                                        <option value="{{ $staff->id }}" @selected(optional($enquiry->staff)->id === $staff->id)>{{ $staff->name }}</option>
+                                    @endforeach
+                                </select>
                                 @if($enquiry->status === 'new' || $enquiry->status === 'in_progress')
                                     <button wire:click="markResponded({{ $enquiry->id }})" class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors" title="Mark as responded">
                                         <x-lucide-check-circle class="w-4 h-4" />

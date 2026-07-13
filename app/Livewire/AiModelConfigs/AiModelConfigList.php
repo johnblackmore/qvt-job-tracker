@@ -29,6 +29,11 @@ class AiModelConfigList extends Component
             $settings->product_url_extractor_config_id = null;
         }
 
+        if ($settings->enquiry_draft_assistant_config_id === $id) {
+            $assignedTo[] = 'Enquiry Draft Assistant';
+            $settings->enquiry_draft_assistant_config_id = null;
+        }
+
         $config->delete();
         $settings->save();
 
@@ -54,14 +59,22 @@ class AiModelConfigList extends Component
         match ($assistant) {
             'chat-agent' => $settings->chat_agent_config_id = $configId,
             'product-url-extractor' => $settings->product_url_extractor_config_id = $configId,
+            'enquiry-draft-assistant' => $settings->enquiry_draft_assistant_config_id = $configId,
             default => null,
         };
 
         $settings->save();
 
+        $label = match ($assistant) {
+            'chat-agent' => 'Chat Agent',
+            'product-url-extractor' => 'Product URL Extractor',
+            'enquiry-draft-assistant' => 'Enquiry Draft Assistant',
+            default => $assistant,
+        };
+
         session()->flash('flash', [
             'type' => 'success',
-            'message' => "{$config->label} assigned to {$assistant}.",
+            'message' => "{$config->label} assigned to {$label}.",
         ]);
     }
 
@@ -75,6 +88,7 @@ class AiModelConfigList extends Component
             'configs' => $configs,
             'assignedChatAgent' => $settings->chat_agent_config_id,
             'assignedUrlExtractor' => $settings->product_url_extractor_config_id,
+            'assignedDraftAssistant' => $settings->enquiry_draft_assistant_config_id,
         ]);
     }
 }

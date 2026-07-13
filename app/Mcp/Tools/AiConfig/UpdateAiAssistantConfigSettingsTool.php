@@ -25,6 +25,9 @@ class UpdateAiAssistantConfigSettingsTool extends Tool
             'product_url_extractor_config_id' => $schema->integer()
                 ->description('The AI model config ID to assign to the Product URL Extractor assistant. Pass 0 or omit to use env defaults.')
                 ->nullable(),
+            'enquiry_draft_assistant_config_id' => $schema->integer()
+                ->description('The AI model config ID to assign to the Enquiry Draft Assistant. Pass 0 or omit to use env defaults.')
+                ->nullable(),
             'preview' => $schema->boolean()
                 ->description('Set true to preview what will happen without saving.')
                 ->default(true),
@@ -55,6 +58,7 @@ class UpdateAiAssistantConfigSettingsTool extends Tool
         $validated = $request->validate([
             'chat_agent_config_id' => ['nullable', 'integer', 'exists:ai_model_configs,id'],
             'product_url_extractor_config_id' => ['nullable', 'integer', 'exists:ai_model_configs,id'],
+            'enquiry_draft_assistant_config_id' => ['nullable', 'integer', 'exists:ai_model_configs,id'],
             'preview' => ['boolean'],
             'confirmed' => ['boolean'],
         ]);
@@ -71,33 +75,39 @@ class UpdateAiAssistantConfigSettingsTool extends Tool
         $current = app(AiAssistantConfigSettings::class);
         $chatAgent = $validated['chat_agent_config_id'] ?? $current->chat_agent_config_id;
         $urlExtractor = $validated['product_url_extractor_config_id'] ?? $current->product_url_extractor_config_id;
+        $draftAssistant = $validated['enquiry_draft_assistant_config_id'] ?? $current->enquiry_draft_assistant_config_id;
 
         if ($isPreview && ! $isConfirmed) {
             return Response::structured([
                 'status' => 'preview',
                 'message' => "I will update assistant config assignments.\n\n".
                     "Chat Agent → {$this->resolveConfigName($chatAgent)}\n".
-                    "URL Extractor → {$this->resolveConfigName($urlExtractor)}\n\n".
+                    "URL Extractor → {$this->resolveConfigName($urlExtractor)}\n".
+                    "Enquiry Draft Assistant → {$this->resolveConfigName($draftAssistant)}\n\n".
                     'Is that correct?',
                 'assignments' => [
                     'chat_agent' => $chatAgent ? $this->resolveConfigName($chatAgent) : 'env defaults',
                     'product_url_extractor' => $urlExtractor ? $this->resolveConfigName($urlExtractor) : 'env defaults',
+                    'enquiry_draft_assistant' => $draftAssistant ? $this->resolveConfigName($draftAssistant) : 'env defaults',
                 ],
             ]);
         }
 
         $current->chat_agent_config_id = $chatAgent;
         $current->product_url_extractor_config_id = $urlExtractor;
+        $current->enquiry_draft_assistant_config_id = $draftAssistant;
         $current->save();
 
         return Response::structured([
             'status' => 'completed',
             'message' => "I have updated the assistant config assignments.\n\n".
                 "Chat Agent → {$this->resolveConfigName($chatAgent)}\n".
-                "URL Extractor → {$this->resolveConfigName($urlExtractor)}",
+                "URL Extractor → {$this->resolveConfigName($urlExtractor)}\n".
+                "Enquiry Draft Assistant → {$this->resolveConfigName($draftAssistant)}",
             'assignments' => [
                 'chat_agent' => $chatAgent ? $this->resolveConfigName($chatAgent) : 'env defaults',
                 'product_url_extractor' => $urlExtractor ? $this->resolveConfigName($urlExtractor) : 'env defaults',
+                'enquiry_draft_assistant' => $draftAssistant ? $this->resolveConfigName($draftAssistant) : 'env defaults',
             ],
         ]);
     }

@@ -16,14 +16,18 @@ use App\Mcp\Tools\AiConfig\ListAiModelConfigsTool;
 use App\Mcp\Tools\AiConfig\UpdateAiAssistantConfigSettingsTool;
 use App\Mcp\Tools\AiConfig\UpdateAiModelConfigTool;
 use App\Mcp\Tools\CreateCustomerTool;
+use App\Mcp\Tools\CreateEnquiryReplyTool;
 use App\Mcp\Tools\CreateEnquiryTool;
 use App\Mcp\Tools\CreateOrderTool;
+use App\Mcp\Tools\CreateQuoteFromEnquiryTool;
 use App\Mcp\Tools\CreateQuoteFromTemplateTool;
 use App\Mcp\Tools\CreateQuoteTool;
 use App\Mcp\Tools\DeleteCustomerTool;
 use App\Mcp\Tools\DownloadQuotePdfTool;
+use App\Mcp\Tools\GenerateEnquiryDraftTool;
 use App\Mcp\Tools\GetCustomerTool;
 use App\Mcp\Tools\GetDashboardStatsTool;
+use App\Mcp\Tools\GetEnquiryTool;
 use App\Mcp\Tools\GetOrderTool;
 use App\Mcp\Tools\GetProductTool;
 use App\Mcp\Tools\GetQuoteActivityTool;
@@ -31,10 +35,12 @@ use App\Mcp\Tools\GetWeeklySummaryTool;
 use App\Mcp\Tools\LinkEnquiryToCustomerTool;
 use App\Mcp\Tools\ListCustomersTool;
 use App\Mcp\Tools\ListEnquiriesTool;
+use App\Mcp\Tools\ListEnquiryRepliesTool;
 use App\Mcp\Tools\ListOrdersTool;
 use App\Mcp\Tools\ListProductsTool;
 use App\Mcp\Tools\RecordPaymentTool;
 use App\Mcp\Tools\RespondToEnquiryTool;
+use App\Mcp\Tools\SaveEnquiryDraftTool;
 use App\Mcp\Tools\ScheduleInstallationTool;
 use App\Mcp\Tools\SearchCustomersTool;
 use App\Mcp\Tools\SearchProductsTool;
@@ -96,9 +102,15 @@ class QvtServer extends Server
 
         // Enquiry tools
         ListEnquiriesTool::class,
+        GetEnquiryTool::class,
         CreateEnquiryTool::class,
         LinkEnquiryToCustomerTool::class,
         RespondToEnquiryTool::class,
+        CreateEnquiryReplyTool::class,
+        ListEnquiryRepliesTool::class,
+        CreateQuoteFromEnquiryTool::class,
+        GenerateEnquiryDraftTool::class,
+        SaveEnquiryDraftTool::class,
 
         // Communication tools
         SendQuoteEmailTool::class,
@@ -160,9 +172,15 @@ class QvtServer extends Server
             ScheduleInstallationTool::class,
             RecordPaymentTool::class,
             ListEnquiriesTool::class,
+            GetEnquiryTool::class,
             CreateEnquiryTool::class,
             LinkEnquiryToCustomerTool::class,
             RespondToEnquiryTool::class,
+            CreateEnquiryReplyTool::class,
+            ListEnquiryRepliesTool::class,
+            CreateQuoteFromEnquiryTool::class,
+            GenerateEnquiryDraftTool::class,
+            SaveEnquiryDraftTool::class,
             SendQuoteEmailTool::class,
             DownloadQuotePdfTool::class,
             GetDashboardStatsTool::class,

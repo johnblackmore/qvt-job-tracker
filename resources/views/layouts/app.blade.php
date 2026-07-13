@@ -120,10 +120,19 @@
                     <a
                         href="{{ route('admin.ai.configs.index') }}"
                         wire:navigate
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.ai.configs.*', 'admin.ai.assistant-settings') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.ai.configs.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
                     >
                         <x-lucide-cpu class="w-5 h-5 shrink-0" />
-                        AI Config
+                        AI Models
+                    </a>
+
+                    <a
+                        href="{{ route('admin.ai.assistant-settings') }}"
+                        wire:navigate
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.ai.assistant-settings') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                    >
+                        <x-lucide-bot class="w-5 h-5 shrink-0" />
+                        AI Assistants
                     </a>
 
                     <a

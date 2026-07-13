@@ -14,10 +14,13 @@ class EnquiryFactory extends Factory
     {
         return [
             'customer_id' => fake()->optional(0.7)->passthrough(Customer::factory()),
+            'email' => fake()->optional()->email(),
+            'phone' => fake()->optional()->phoneNumber(),
             'source' => fake()->randomElement(['web', 'phone', 'email', 'referral', 'other']),
             'status' => fake()->randomElement(['new', 'in_progress', 'responded', 'closed']),
             'subject' => fake()->optional()->sentence(3),
             'message' => fake()->paragraph(),
+            'internal_notes' => fake()->optional()->sentence(),
             'responded_at' => null,
             'staff_user_id' => null,
         ];

@@ -3,6 +3,8 @@
 namespace App\Livewire\Quotes;
 
 use App\Models\Customer;
+use App\Models\Enquiry;
+use App\Models\EnquiryActivityLog;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Quote;
@@ -29,7 +31,11 @@ class QuoteBuilder extends Component
 
     public string $selectedCategory = '';
 
-    public function mount(?int $quoteId = null, ?int $sampleQuoteId = null, ?int $customerId = null): void
+    public ?int $enquiry_id = null;
+
+    public ?int $enquiryId = null;
+
+    public function mount(?int $quoteId = null, ?int $sampleQuoteId = null, ?int $customerId = null, ?int $enquiryId = null): void
     {
         $this->valid_until = now()->addDays(30)->format('Y-m-d');
 
@@ -71,7 +77,16 @@ class QuoteBuilder extends Component
             }
         }
 
+        $this->enquiryId = $enquiryId ?? (request()->query('enquiryId') ? (int) request()->query('enquiryId') : null);
+
         $this->customer_id = $customerId ?? (request()->query('customerId') ? (int) request()->query('customerId') : null);
+
+        if (! $this->customer_id && $this->enquiryId) {
+            $enquiry = Enquiry::find($this->enquiryId);
+            if ($enquiry && $enquiry->customer_id) {
+                $this->customer_id = $enquiry->customer_id;
+            }
+        }
     }
 
     public function addProductLine(int $productId): void
@@ -189,6 +204,7 @@ class QuoteBuilder extends Component
             'grand_total' => $totals['grand'],
             'notes' => $validated['notes'] ?? null,
             'valid_until' => $validated['valid_until'] ?? null,
+            'enquiry_id' => $this->enquiryId,
             'staff_user_id' => auth()->id(),
         ];
 
@@ -198,6 +214,16 @@ class QuoteBuilder extends Component
             $quote->lineItems()->delete();
         } else {
             $quote = Quote::create($quoteData);
+        }
+
+        if ($this->enquiryId) {
+            EnquiryActivityLog::create([
+                'enquiry_id' => $this->enquiryId,
+                'staff_user_id' => auth()->id(),
+                'action' => 'quote_created',
+                'description' => 'Quote created: '.($quote->reference_number ?? '#'.$quote->id),
+                'metadata' => ['quote_id' => $quote->id, 'quote_reference' => $quote->reference_number],
+            ]);
         }
 
         foreach ($this->lineItems as $item) {

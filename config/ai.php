@@ -21,5 +21,12 @@ return [
             'token_budget' => 32000,
             'system_prompt' => 'ai.prompts.chat-agent',
         ],
+
+        'enquiry-draft-assistant' => [
+            'provider' => env('AI_DRAFT_PROVIDER', 'opencode'),
+            'model' => env('AI_DRAFT_MODEL', 'deepseek-v4-flash-free'),
+            'temperature' => 0.3,
+            'max_tokens' => 2048,
+        ],
     ],
 ];

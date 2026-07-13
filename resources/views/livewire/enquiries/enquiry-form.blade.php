@@ -22,6 +22,19 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
+                <label for="email" class="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
+                <input wire:model="email" id="email" type="email" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5" placeholder="customer@example.com" />
+                @error('email') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label for="phone" class="block text-sm font-medium text-slate-700 mb-1.5">Phone</label>
+                <input wire:model="phone" id="phone" type="text" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5" placeholder="07700 900000" />
+                @error('phone') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
                 <label for="source" class="block text-sm font-medium text-slate-700 mb-1.5">Source <span class="text-red-500">*</span></label>
                 <select wire:model="source" id="source" required class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5">
                     <option value="web">Website</option>
@@ -54,6 +67,12 @@
             <label for="message" class="block text-sm font-medium text-slate-700 mb-1.5">Message <span class="text-red-500">*</span></label>
             <textarea wire:model="message" id="message" rows="5" required class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5" placeholder="Details of the enquiry..."></textarea>
             @error('message') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+        </div>
+
+        <div>
+            <label for="internal_notes" class="block text-sm font-medium text-slate-700 mb-1.5">Internal Notes</label>
+            <textarea wire:model="internal_notes" id="internal_notes" rows="3" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5" placeholder="Staff-only notes (not visible to customer)..."></textarea>
+            @error('internal_notes') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
         </div>
 
         <div class="flex items-center gap-4 pt-2">

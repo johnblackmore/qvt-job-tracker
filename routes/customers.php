@@ -5,6 +5,7 @@ use App\Livewire\Customers\CustomerList;
 use App\Livewire\Customers\CustomerShow;
 use App\Livewire\Enquiries\EnquiryForm;
 use App\Livewire\Enquiries\EnquiryList;
+use App\Livewire\Enquiries\EnquiryShow;
 use App\Livewire\Vehicles\VehicleForm;
 use Illuminate\Support\Facades\Route;
 
@@ -18,5 +19,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('enquiries', EnquiryList::class)->name('enquiries.index');
     Route::get('enquiries/create', EnquiryForm::class)->name('enquiries.create');
+    Route::get('enquiries/{enquiryId}', EnquiryShow::class)->name('enquiries.show');
     Route::get('enquiries/{enquiryId}/edit', EnquiryForm::class)->name('enquiries.edit');
 });
