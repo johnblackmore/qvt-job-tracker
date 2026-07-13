@@ -5,7 +5,6 @@ namespace Tests\Feature\Netlify;
 use App\Models\Customer;
 use App\Models\Enquiry;
 use App\Models\ProcessedNetlifySubmission;
-use App\Models\User;
 use App\Services\NetlifyFormService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -49,7 +48,7 @@ class NetlifyFormSyncTest extends TestCase
         config(['services.netlify.api_token' => 'test-token']);
 
         Http::fake([
-            "https://api.netlify.com/api/v1/sites/*/submissions*" => Http::response([
+            'https://api.netlify.com/api/v1/sites/*/submissions*' => Http::response([
                 $this->mockSubmission(),
                 $this->mockSubmission(['id' => 'sub_2']),
             ]),
@@ -69,7 +68,7 @@ class NetlifyFormSyncTest extends TestCase
         config(['services.netlify.api_token' => 'test-token']);
 
         Http::fake([
-            "https://api.netlify.com/api/v1/sites/*/submissions*" => Http::response([
+            'https://api.netlify.com/api/v1/sites/*/submissions*' => Http::response([
                 $this->mockSubmission(),
             ]),
         ]);
@@ -94,7 +93,7 @@ class NetlifyFormSyncTest extends TestCase
         $this->assertEquals('new', $enquiry->status);
 
         $this->assertStringContainsString('Currently has no solar', $enquiry->message);
-            $this->assertStringContainsString('VanType: large-van', $enquiry->message);
+        $this->assertStringContainsString('VanType: large-van', $enquiry->message);
         $this->assertStringContainsString('Services: campervan-solar-panel-installation', $enquiry->message);
     }
 
@@ -110,7 +109,7 @@ class NetlifyFormSyncTest extends TestCase
         ]);
 
         Http::fake([
-            "https://api.netlify.com/api/v1/sites/*/submissions*" => Http::response([
+            'https://api.netlify.com/api/v1/sites/*/submissions*' => Http::response([
                 $this->mockSubmission(),
             ]),
         ]);
@@ -143,7 +142,7 @@ class NetlifyFormSyncTest extends TestCase
         ]);
 
         Http::fake([
-            "https://api.netlify.com/api/v1/sites/*/submissions*" => Http::response([$submission]),
+            'https://api.netlify.com/api/v1/sites/*/submissions*' => Http::response([$submission]),
         ]);
 
         config(['services.netlify.notification_email' => 'admin@example.com']);
@@ -176,7 +175,7 @@ class NetlifyFormSyncTest extends TestCase
         config(['services.netlify.api_token' => 'test-token']);
 
         Http::fake([
-            "https://api.netlify.com/api/v1/sites/*/submissions*" => Http::response(null, 500),
+            'https://api.netlify.com/api/v1/sites/*/submissions*' => Http::response(null, 500),
         ]);
 
         $service = app(NetlifyFormService::class);
@@ -194,7 +193,7 @@ class NetlifyFormSyncTest extends TestCase
         config(['services.netlify.api_token' => 'test-token']);
 
         Http::fake([
-            "https://api.netlify.com/api/v1/sites/*/submissions*" => Http::response([
+            'https://api.netlify.com/api/v1/sites/*/submissions*' => Http::response([
                 $this->mockSubmission([
                     'name' => 'No Email',
                     'email' => null,

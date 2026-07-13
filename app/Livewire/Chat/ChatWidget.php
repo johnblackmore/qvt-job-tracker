@@ -76,6 +76,17 @@ class ChatWidget extends Component
         $this->dispatch('start-streaming', conversationId: $this->activeConversationId);
     }
 
+    public function retryLastMessage(): void
+    {
+        if (! $this->activeConversationId) {
+            return;
+        }
+
+        $this->isStreaming = true;
+
+        $this->dispatch('start-streaming', conversationId: $this->activeConversationId);
+    }
+
     #[On('stream-completed')]
     public function refreshFromStream(): void
     {

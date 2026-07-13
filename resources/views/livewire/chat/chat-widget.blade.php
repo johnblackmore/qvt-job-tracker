@@ -8,6 +8,7 @@
         currentConversationId: null,
         eventSource: null,
         showConversations: false,
+        streamError: null,
 
         init() {
             this.$watch('streamingContent', () => this.scrollToBottom());
@@ -27,6 +28,7 @@
             this.isStreaming = true;
             this.streamingContent = '';
             this.currentToolName = null;
+            this.streamError = null;
 
             this.eventSource = new EventSource(`/admin/ai/chat/${conversationId}/stream`);
 
@@ -50,10 +52,10 @@
                 try {
                     const data = JSON.parse(e.data);
                     if (data.message) {
-                        this.streamingContent += `\n\n**Error:** ${data.message}\n\n`;
+                        this.streamError = data;
                     }
                 } catch {
-                    // Non-JSON error events from EventSource
+                    this.streamError = { error_type: 'connection_error', message: 'Connection lost. Please try again.', recoverable: true };
                 }
                 this.scrollToBottom();
             });
@@ -63,8 +65,20 @@
             });
 
             this.eventSource.onerror = () => {
+                if (this.isStreaming && !this.streamError) {
+                    this.streamError = { error_type: 'connection_error', message: 'Connection interrupted. Please check your connection and try again.', recoverable: true };
+                }
                 this.cleanupStream();
             };
+        },
+
+        retry() {
+            if (this.currentConversationId || $wire.activeConversationId) {
+                this.streamError = null;
+                this.streamingContent = '';
+                this.isStreaming = false;
+                $wire.call('retryLastMessage');
+            }
         },
 
         cleanupStream() {
@@ -208,8 +222,34 @@
                     @endif
                 @endforeach
 
+                {{-- Error message --}}
+                <div x-show="streamError" class="chat chat-start">
+                    <div class="chat-image avatar">
+                        <div class="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center">
+                            <x-lucide-alert-circle class="w-4 h-4 text-red-500" />
+                        </div>
+                    </div>
+                    <div class="chat-bubble bg-red-50 border border-red-200 text-red-700 text-sm shadow-sm">
+                        <p class="font-medium text-red-800" x-text="streamError?.message || 'An error occurred'"></p>
+                        <p class="text-xs text-red-500 mt-1" x-show="streamError?.error_type === 'rate_limit'">
+                            You can try sending your message again.
+                        </p>
+                        <p class="text-xs text-red-500 mt-1" x-show="streamError?.error_type === 'provider_overloaded'">
+                            The provider may be experiencing high demand.
+                        </p>
+                        <button
+                            x-show="streamError?.recoverable"
+                            class="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-red-700 hover:text-red-800 transition-colors"
+                            @click="retry()"
+                        >
+                            <x-lucide-refresh-cw class="w-3.5 h-3.5" />
+                            Try again
+                        </button>
+                    </div>
+                </div>
+
                 {{-- Live streaming message --}}
-                <div x-show="isStreaming" class="chat chat-start">
+                <div x-show="isStreaming && !streamError" class="chat chat-start">
                     <div class="chat-image avatar">
                         <div class="w-8 h-8 rounded-full bg-copper/15 flex items-center justify-center">
                             <x-lucide-bot class="w-4 h-4 text-copper" />

@@ -73,5 +73,9 @@ return [
             'url' => env('OPENCODE_URL', 'https://opencode.ai/zen/v1'),
             'api_key' => env('OPENCODE_API_KEY', ''),
         ],
+        'opencode-go' => [
+            'url' => env('OPENCODE_URL', 'https://opencode.ai/zen/go/v1'),
+            'api_key' => env('OPENCODE_API_KEY', ''),
+        ],
     ],
 ];

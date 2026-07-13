@@ -8,6 +8,11 @@ use App\Models\AiMessage;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Prism\Prism\Exceptions\PrismException;
+use Prism\Prism\Exceptions\PrismProviderOverloadedException;
+use Prism\Prism\Exceptions\PrismRateLimitedException;
+use Prism\Prism\Exceptions\PrismRequestTooLargeException;
 use Prism\Prism\Facades\Prism;
 use Prism\Prism\Streaming\Events\StreamEndEvent;
 use Prism\Prism\Streaming\Events\StreamEvent;
@@ -18,6 +23,7 @@ use Prism\Prism\Tool;
 use Prism\Prism\ValueObjects\Messages\AssistantMessage;
 use Prism\Prism\ValueObjects\Messages\UserMessage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Throwable;
 
 class ChatAgentAssistant
 {
@@ -44,9 +50,101 @@ class ChatAgentAssistant
             ->usingTemperature($config['temperature'])
             ->withMaxTokens($config['max_tokens']);
 
-        return $prism->asEventStreamResponse(
-            callback: $this->onComplete($conversation)
-        );
+        $onComplete = $this->onComplete($conversation);
+
+        return response()->stream(function () use ($prism, $onComplete): void {
+            $collectedEvents = new Collection;
+            $hasError = false;
+
+            try {
+                $events = $prism->asStream();
+
+                foreach ($events as $event) {
+                    $collectedEvents->push($event);
+
+                    if (connection_aborted() !== 0) {
+                        break;
+                    }
+
+                    echo vsprintf("event: %s\ndata: %s\n\n", [
+                        $event->type()->value,
+                        json_encode($event->toArray()),
+                    ]);
+
+                    if (ob_get_level() > 0) {
+                        ob_flush();
+                    }
+                    flush();
+                }
+            } catch (PrismRateLimitedException $e) {
+                $hasError = true;
+                Log::warning('AI chat rate limited', [
+                    'conversation_id' => $prism->conversation?->id ?? null,
+                    'message' => $e->getMessage(),
+                ]);
+
+                $this->sendErrorEvent('rate_limit', 'Rate limit reached. Please wait a moment and try again.');
+            } catch (PrismProviderOverloadedException $e) {
+                $hasError = true;
+                Log::warning('AI chat provider overloaded', [
+                    'message' => $e->getMessage(),
+                ]);
+
+                $this->sendErrorEvent('provider_overloaded', 'The AI service is temporarily unavailable. Please try again later.');
+            } catch (PrismRequestTooLargeException $e) {
+                $hasError = true;
+                Log::warning('AI chat request too large', [
+                    'message' => $e->getMessage(),
+                ]);
+
+                $this->sendErrorEvent('request_too_large', 'Your message is too long. Please shorten it and try again.');
+            } catch (PrismException $e) {
+                $hasError = true;
+                Log::error('AI chat provider error', [
+                    'message' => $e->getMessage(),
+                ]);
+
+                $this->sendErrorEvent('provider_error', 'Something went wrong with the AI service. Please try again.');
+            } catch (Throwable $e) {
+                $hasError = true;
+                Log::error('AI chat unexpected error', [
+                    'message' => $e->getMessage(),
+                ]);
+
+                $this->sendErrorEvent('unexpected_error', 'An unexpected error occurred. Please try again.');
+            }
+
+            if (! $hasError && $onComplete !== null) {
+                $onComplete($prism, $collectedEvents);
+            }
+
+            echo "event: stream_end\ndata: {\"done\": true}\n\n";
+            if (ob_get_level() > 0) {
+                ob_flush();
+            }
+            flush();
+        }, 200, [
+            'Content-Type' => 'text/event-stream',
+            'Cache-Control' => 'no-cache',
+            'X-Accel-Buffering' => 'no',
+            'Connection' => 'keep-alive',
+        ]);
+    }
+
+    protected function sendErrorEvent(string $type, string $message): void
+    {
+        echo vsprintf("event: error\ndata: %s\n\n", [
+            json_encode([
+                'error_type' => $type,
+                'message' => $message,
+                'recoverable' => true,
+            ]),
+        ]);
+
+        if (ob_get_level() > 0) {
+            ob_flush();
+        }
+        flush();
     }
 
     /** @return array<int, UserMessage|AssistantMessage> */
