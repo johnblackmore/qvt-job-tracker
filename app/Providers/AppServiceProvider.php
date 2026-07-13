@@ -30,6 +30,19 @@ class AppServiceProvider extends ServiceProvider
                 );
             });
 
+            $manager->extend('opencode-go', function ($app, $config) {
+                if (blank($config['api_key'] ?? '')) {
+                    throw PrismException::providerResponseError(
+                        'OpenCode Zen API key is not set. Set OPENCODE_API_KEY in your .env file.'
+                    );
+                }
+
+                return new DeepSeek(
+                    apiKey: $config['api_key'],
+                    url: $config['url'],
+                );
+            });
+
             return $manager;
         });
     }
