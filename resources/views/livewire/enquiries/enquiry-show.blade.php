@@ -188,11 +188,13 @@
 
                     <div class="flex items-center justify-between pt-2">
                         <div class="flex items-center gap-2">
-                            <button type="button" wire:click="generateAiDraft" wire:loading.attr="disabled" class="inline-flex items-center gap-2 rounded-lg border border-purple-300 px-4 py-2.5 text-sm font-medium text-purple-700 hover:bg-purple-50 transition-colors">
-                                <x-lucide-bot class="w-4 h-4" />
-                                <span wire:loading.remove wire:target="generateAiDraft">Generate AI Draft</span>
-                                <span wire:loading wire:target="generateAiDraft">Generating...</span>
-                            </button>
+                            <div wire:loading.class="aura text-purple-500 bg-purple-100 [--tw-duration:2000ms]" wire:target="generateAiDraft">
+                                <button type="button" wire:click="generateAiDraft" wire:loading.attr="disabled" wire:loading.class="bg-white" class="inline-flex items-center gap-2 rounded-lg border border-purple-300 px-4 py-2.5 text-sm font-medium text-purple-700 hover:bg-purple-50 transition-colors">
+                                    <x-lucide-bot class="w-4 h-4" />
+                                    <span wire:loading.remove wire:target="generateAiDraft">Generate AI Draft</span>
+                                    <span wire:loading wire:target="generateAiDraft" class="text-purple-900">Generating...</span>
+                                </button>
+                            </div>
                             @if($showAiDraft)
                                 <button type="button" wire:click="discardAiDraft" class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
                                     <x-lucide-x class="w-4 h-4" />
