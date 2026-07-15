@@ -21,13 +21,13 @@
 
             <div>
                 <label for="subject" class="block text-sm font-medium text-slate-700 mb-1.5">Subject <span class="text-red-500">*</span></label>
-                <input wire:model="subject" id="subject" type="text" required class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5" placeholder="Your Quote from Quantock Van Tech — {{ quote_reference }}" />
+                <input wire:model="subject" id="subject" type="text" required class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5" placeholder="Your Quote from Quantock Van Tech — @{{ quote_reference }}" />
                 @error('subject') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
 
             <div>
                 <label for="body_html" class="block text-sm font-medium text-slate-700 mb-1.5">Body (HTML) <span class="text-red-500">*</span></label>
-                <textarea wire:model="body_html" id="body_html" rows="12" required class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5 font-mono" placeholder="<p>Hi {{ customer_name }},</p>..."></textarea>
+                <textarea wire:model="body_html" id="body_html" rows="12" required class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5 font-mono" placeholder="<p>Hi @{{ customer_name }},</p>..."></textarea>
                 @error('body_html') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
 
