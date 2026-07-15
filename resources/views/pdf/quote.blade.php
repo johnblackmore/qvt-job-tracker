@@ -177,7 +177,7 @@
 
             <div class="totals">
                 <div class="totals-row">
-                    <span>Subtotal</span>
+                    <span>Products subtotal</span>
                     <span>£{{ number_format($quote->total_retail, 2) }}</span>
                 </div>
                 <div class="totals-row">

@@ -52,6 +52,7 @@ class ResourcesTest extends TestCase
             'customer_id' => $customer->id,
             'total_retail' => 500.00,
             'total_trade' => 300.00,
+            'labour_total' => 0,
             'grand_total' => 500.00,
         ]);
         QuoteLineItem::factory()->create([

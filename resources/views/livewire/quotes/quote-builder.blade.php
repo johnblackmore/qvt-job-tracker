@@ -154,7 +154,7 @@
                 @endphp
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
                     <div class="flex items-center justify-between py-2 border-b border-slate-100">
-                        <span class="text-sm text-slate-500">Subtotal (retail)</span>
+                        <span class="text-sm text-slate-500">Products subtotal</span>
                         <span class="text-sm font-medium text-slate-900">£{{ number_format($totals['retail'], 2) }}</span>
                     </div>
                     <div class="flex items-center justify-between py-2 border-b border-slate-100">

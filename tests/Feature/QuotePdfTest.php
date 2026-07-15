@@ -22,7 +22,7 @@ class QuotePdfTest extends TestCase
         $quote = Quote::factory()->create([
             'customer_id' => $customer->id,
             'status' => 'sent',
-            'total_retail' => 1200.00,
+            'total_retail' => 800.00,
             'labour_total' => 400.00,
             'grand_total' => 1200.00,
         ]);
@@ -51,6 +51,7 @@ class QuotePdfTest extends TestCase
             'customer_id' => $customer->id,
             'total_retail' => 1200.00,
             'total_trade' => 720.00,
+            'labour_total' => 0,
         ]);
 
         $response = $this->actingAs($user)->get(route('quotes.pdf.preview', $quote));

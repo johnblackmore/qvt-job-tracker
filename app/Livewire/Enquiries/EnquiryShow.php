@@ -4,6 +4,7 @@ namespace App\Livewire\Enquiries;
 
 use App\Models\Enquiry;
 use App\Models\EnquiryActivityLog;
+use App\Models\EnquiryReply;
 use App\Models\User;
 use App\Services\EnquiryAiAssistantService;
 use App\Services\EnquiryReplyService;
@@ -121,7 +122,7 @@ class EnquiryShow extends Component
     public function resendReply(int $replyId): void
     {
         try {
-            $originalReply = \App\Models\EnquiryReply::findOrFail($replyId);
+            $originalReply = EnquiryReply::findOrFail($replyId);
 
             $service = app(EnquiryReplyService::class);
             $service->resend($originalReply);

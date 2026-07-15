@@ -164,15 +164,16 @@ class QuoteBuilder extends Component
             $lineRetail = $qty * $retail;
             $lineTrade = $qty * $trade;
 
-            $totalRetail += $lineRetail;
             $totalTrade += $lineTrade;
 
             if (($item['line_type'] ?? 'product') === 'labour') {
                 $labourTotal += $lineRetail;
+            } else {
+                $totalRetail += $lineRetail;
             }
         }
 
-        $grandTotal = $totalRetail;
+        $grandTotal = $totalRetail + $labourTotal;
 
         return [
             'retail' => $totalRetail,

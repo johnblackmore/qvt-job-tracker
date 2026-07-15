@@ -114,6 +114,7 @@ class TradePriceAuditTest extends TestCase
             'customer_id' => $customer->id,
             'total_retail' => 1000,
             'total_trade' => 600,
+            'labour_total' => 0,
             'grand_total' => 1000,
         ]);
         QuoteLineItem::factory()->create([

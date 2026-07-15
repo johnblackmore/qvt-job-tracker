@@ -125,7 +125,7 @@
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
                 <h2 class="text-sm font-semibold text-slate-900 mb-3">Summary</h2>
                 <div class="flex items-center justify-between py-2 border-b border-slate-100">
-                    <span class="text-sm text-slate-500">Subtotal</span>
+                    <span class="text-sm text-slate-500">Products subtotal</span>
                     <span class="text-sm font-medium text-slate-900">£{{ number_format($quote->total_retail, 2) }}</span>
                 </div>
                 <div class="flex items-center justify-between py-2 border-b border-slate-100">

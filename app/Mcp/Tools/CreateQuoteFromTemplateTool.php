@@ -127,11 +127,12 @@ class CreateQuoteFromTemplateTool extends Tool
 
             $lineRetail = $qty * $retail;
             $lineTrade = $qty * $trade;
-            $previewRetail += $lineRetail;
             $previewTrade += $lineTrade;
 
             if ($lineType === 'labour') {
                 $previewLabour += $lineRetail;
+            } else {
+                $previewRetail += $lineRetail;
             }
 
             $previewItems[] = [
@@ -145,7 +146,7 @@ class CreateQuoteFromTemplateTool extends Tool
             ];
         }
 
-        $previewGrand = $previewRetail;
+        $previewGrand = $previewRetail + $previewLabour;
         $lineCount = count($previewItems);
 
         if ($isPreview && ! $isConfirmed) {

@@ -25,6 +25,7 @@ class TradePriceConfidentialityTest extends TestCase
             'status' => 'sent',
             'total_retail' => 1500.00,
             'total_trade' => 900.00,
+            'labour_total' => 0,
             'grand_total' => 1500.00,
         ]);
 

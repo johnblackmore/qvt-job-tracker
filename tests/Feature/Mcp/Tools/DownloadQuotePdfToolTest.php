@@ -98,6 +98,7 @@ class DownloadQuotePdfToolTest extends TestCase
             'reference_number' => 'Q-NOTRADE',
             'total_retail' => 500.00,
             'total_trade' => 300.00,
+            'labour_total' => 0,
         ]);
         QuoteLineItem::factory()->create([
             'quote_id' => $quote->id,

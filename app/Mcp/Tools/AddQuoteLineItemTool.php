@@ -132,10 +132,10 @@ class AddQuoteLineItemTool extends Tool
         $lineRetail = $qty * $retail;
         $lineTrade = $qty * $trade;
 
-        $newTotalRetail = (float) $quote->total_retail + $lineRetail;
+        $newTotalRetail = (float) $quote->total_retail + ($lineType === 'labour' ? 0 : $lineRetail);
         $newTotalTrade = (float) $quote->total_trade + $lineTrade;
         $newLabour = (float) $quote->labour_total + ($lineType === 'labour' ? $lineRetail : 0);
-        $newGrand = $newTotalRetail;
+        $newGrand = $newTotalRetail + $newLabour;
         $newLineCount = $quote->lineItems()->count() + 1;
 
         if ($isPreview && ! $isConfirmed) {
