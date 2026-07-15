@@ -127,7 +127,7 @@
                                         @endif
                                     </td>
                                     <td class="px-4 py-3 text-center text-slate-600">
-                                        {{ $item['line_type'] === 'labour' ? '—' : $qty }}
+                                        {{ $qty }}
                                     </td>
                                     <td class="px-4 py-3 text-right text-slate-600">
                                         £{{ number_format($unitPrice, 2) }}

@@ -79,7 +79,9 @@ class QuoteBuilder extends Component
 
         $this->enquiryId = $enquiryId ?? (request()->query('enquiryId') ? (int) request()->query('enquiryId') : null);
 
-        $this->customer_id = $customerId ?? (request()->query('customerId') ? (int) request()->query('customerId') : null);
+        if (! $this->customer_id) {
+            $this->customer_id = $customerId ?? (request()->query('customerId') ? (int) request()->query('customerId') : null);
+        }
 
         if (! $this->customer_id && $this->enquiryId) {
             $enquiry = Enquiry::find($this->enquiryId);

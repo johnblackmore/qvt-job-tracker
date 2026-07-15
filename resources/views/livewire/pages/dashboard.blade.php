@@ -43,7 +43,7 @@ new class extends Component
             </div>
         </a>
 
-        <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+        <a href="{{ route('quotes.index') }}" wire:navigate class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-copper/30 transition-colors block">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-slate-500">Open Quotes</p>
@@ -53,9 +53,9 @@ new class extends Component
                     <x-lucide-file-text class="w-5 h-5 text-blue-600" />
                 </div>
             </div>
-        </div>
+        </a>
 
-        <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+        <a href="{{ route('orders.index') }}" wire:navigate class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-copper/30 transition-colors block">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-slate-500">Pending Orders</p>
@@ -65,7 +65,7 @@ new class extends Component
                     <x-lucide-clipboard-list class="w-5 h-5 text-amber-600" />
                 </div>
             </div>
-        </div>
+        </a>
 
         <a href="{{ route('enquiries.index') }}" wire:navigate class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-copper/30 transition-colors">
             <div class="flex items-center justify-between">
