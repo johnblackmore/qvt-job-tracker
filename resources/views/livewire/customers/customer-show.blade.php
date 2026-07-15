@@ -103,7 +103,7 @@
                 @if($customer->enquiries->count() > 0)
                     <div class="divide-y divide-slate-100">
                         @foreach($customer->enquiries as $enquiry)
-                            <div class="px-6 py-4 hover:bg-slate-50 transition-colors">
+                            <a href="{{ route('enquiries.show', $enquiry) }}" wire:navigate class="block px-6 py-4 hover:bg-slate-50 transition-colors">
                                 <div class="flex items-center justify-between mb-1">
                                     <div class="flex items-center gap-2">
                                         <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
@@ -121,8 +121,8 @@
                                 @if($enquiry->subject)
                                     <p class="text-sm font-medium text-slate-900">{{ $enquiry->subject }}</p>
                                 @endif
-                                <p class="text-sm text-slate-600 mt-1">{{ $enquiry->message }}</p>
-                            </div>
+                                <p class="text-sm text-slate-600 mt-1 whitespace-pre-line">{{ $enquiry->message }}</p>
+                            </a>
                         @endforeach
                     </div>
                 @else

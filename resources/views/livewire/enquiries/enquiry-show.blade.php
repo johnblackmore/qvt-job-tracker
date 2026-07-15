@@ -56,13 +56,13 @@
                         {{ ucfirst(str_replace('_', ' ', $enquiry->status)) }}
                     </span>
                 </div>
-                <div class="bg-slate-50 rounded-lg p-4 text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
+                <div class="bg-slate-50 rounded-lg p-4 text-sm text-slate-700 whitespace-pre-line leading-relaxed">
                     {{ $enquiry->message }}
                 </div>
                 @if($enquiry->internal_notes)
                     <div class="mt-4 pt-4 border-t border-slate-200">
                         <p class="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">Internal Notes</p>
-                        <p class="text-sm text-slate-600 whitespace-pre-wrap">{{ $enquiry->internal_notes }}</p>
+                        <p class="text-sm text-slate-600 whitespace-pre-line">{{ $enquiry->internal_notes }}</p>
                     </div>
                 @endif
             </div>
@@ -89,7 +89,7 @@
                                         @if($reply->subject)
                                             <p class="font-medium text-slate-900 mb-1">{{ $reply->subject }}</p>
                                         @endif
-                                        <p class="whitespace-pre-wrap">{{ $reply->body }}</p>
+                                        <p class="whitespace-pre-line">{{ $reply->body }}</p>
                                     </div>
                                     <p class="text-xs text-slate-400 mt-1">
                                         {{ $reply->staff?->name ?? ($reply->direction === 'inbound' ? 'Customer' : 'Staff') }}
@@ -102,6 +102,9 @@
                                             &middot; Draft
                                         @elseif($reply->status === 'received')
                                             &middot; Received
+                                        @endif
+                                        @if($reply->direction === 'outbound' && ($reply->status === 'sent' || $reply->status === 'failed'))
+                                            <button wire:click="resendReply({{ $reply->id }})" class="text-copper hover:text-copper-dark underline ml-1">Resend</button>
                                         @endif
                                     </p>
                                 </div>
@@ -117,7 +120,7 @@
                                 <div class="max-w-[80%] text-right">
                                     <div class="inline-block rounded-lg px-4 py-3 text-sm bg-purple-50 border border-purple-200 text-slate-700">
                                         <p class="font-medium text-purple-700 mb-1">{{ $replySubject }}</p>
-                                        <p class="whitespace-pre-wrap">{{ $replyBody }}</p>
+                                        <p class="whitespace-pre-line">{{ $replyBody }}</p>
                                     </div>
                                     <div class="flex items-center justify-end gap-2 mt-1">
                                         <span class="text-xs text-slate-400">AI Draft</span>

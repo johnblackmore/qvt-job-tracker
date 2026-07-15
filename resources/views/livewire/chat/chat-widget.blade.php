@@ -192,7 +192,7 @@
                 @foreach($messages as $message)
                     @if($message->role === 'user')
                         <div class="chat chat-end">
-                            <div class="chat-bubble bg-copper text-white text-sm">
+                            <div class="chat-bubble bg-copper text-white text-sm whitespace-pre-line">
                                 {{ $message->content }}
                             </div>
                         </div>

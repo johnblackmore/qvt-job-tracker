@@ -60,7 +60,7 @@
                                     @if($enquiry->subject)
                                         <p class="text-sm font-medium text-slate-900 mt-0.5">{{ $enquiry->subject }}</p>
                                     @endif
-                                    <p class="text-sm text-slate-600 mt-0.5">{{ Str::limit($enquiry->message, 200) }}</p>
+                                    <p class="text-sm text-slate-600 mt-0.5 whitespace-pre-line">{{ Str::limit($enquiry->message, 200) }}</p>
                                 </a>
                                 @if($enquiry->staff)
                                     <p class="text-xs text-slate-400 mt-1">

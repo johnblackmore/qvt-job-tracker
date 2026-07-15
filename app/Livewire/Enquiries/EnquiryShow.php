@@ -118,6 +118,26 @@ class EnquiryShow extends Component
         }
     }
 
+    public function resendReply(int $replyId): void
+    {
+        try {
+            $originalReply = \App\Models\EnquiryReply::findOrFail($replyId);
+
+            $service = app(EnquiryReplyService::class);
+            $service->resend($originalReply);
+
+            $this->dispatch('notify', type: 'success', message: 'Reply resent successfully.');
+
+            $this->enquiry->refresh();
+            $this->enquiry->load([
+                'replies' => fn ($q) => $q->with('staff')->orderByDesc('created_at'),
+                'activityLogs' => fn ($q) => $q->with('staff'),
+            ]);
+        } catch (\Exception $e) {
+            $this->dispatch('notify', type: 'error', message: 'Failed to resend reply: '.$e->getMessage());
+        }
+    }
+
     public function markInProgress(): void
     {
         $this->enquiry->update(['status' => 'in_progress']);
