@@ -27,6 +27,9 @@ class MonzoAdapter implements BankingProvider
         $this->client = Http::baseUrl(self::BASE_URL)
             ->withToken($this->getAccessToken())
             ->acceptJson()
+            ->retry(3, 100, function ($exception) {
+                return $exception->response && in_array($exception->response->status(), [429, 500, 502, 503, 504]);
+            })
             ->throw();
     }
 

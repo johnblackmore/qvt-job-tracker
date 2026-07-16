@@ -2,7 +2,7 @@
 
 namespace App\Banking\Webhooks;
 
-use App\Banking\Services\BankingProviderManager;
+use App\Banking\Services\ReconciliationService;
 use App\Banking\Services\TransactionImportService;
 use App\Models\BankAccount;
 use Illuminate\Http\Request;
@@ -13,7 +13,7 @@ class MonzoWebhookController extends Controller
     public function __invoke(
         Request $request,
         TransactionImportService $importService,
-        BankingProviderManager $providerManager,
+        ReconciliationService $reconciliationService,
     ) {
         $payload = $request->all();
 
@@ -45,6 +45,8 @@ class MonzoWebhookController extends Controller
         if ($result !== 'imported') {
             return response('OK', 200);
         }
+
+        $reconciliationService->autoMatch();
 
         return response('OK', 200);
     }

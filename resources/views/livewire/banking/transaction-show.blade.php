@@ -80,6 +80,52 @@
                     </div>
                 </div>
             </div>
+
+            <div class="card bg-white border border-slate-200 shadow-sm">
+                <div class="card-body p-6">
+                    <h3 class="font-display font-semibold text-slate-700 mb-3">Receipts</h3>
+
+                    <div class="space-y-3 mb-4">
+                        @forelse($transaction->receipts as $receipt)
+                            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <x-lucide-file-image class="w-5 h-5 shrink-0 text-slate-400" />
+                                    <div class="min-w-0">
+                                        <p class="text-sm font-medium text-slate-700 truncate">{{ $receipt->original_filename }}</p>
+                                        <div class="flex items-center gap-2 text-xs text-slate-400">
+                                            <span>{{ number_format($receipt->file_size / 1024, 1) }} KB</span>
+                                            @if($receipt->sync_status === 'synced')
+                                                <span class="text-teal">Synced to Monzo</span>
+                                            @elseif($receipt->sync_status === 'failed')
+                                                <span class="text-red-500">Sync failed</span>
+                                            @elseif($receipt->sync_status === 'pending')
+                                                <span class="text-amber">Pending sync</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                <button wire:click="removeReceipt({{ $receipt->id }})" class="btn btn-ghost btn-xs text-slate-400 hover:text-red-500 shrink-0" title="Remove">
+                                    <x-lucide-trash-2 class="w-4 h-4" />
+                                </button>
+                            </div>
+                        @empty
+                            <p class="text-sm text-slate-400 text-center py-4">No receipts attached.</p>
+                        @endforelse
+                    </div>
+
+                    <div class="border-t border-slate-200 pt-4">
+                        <p class="text-xs text-slate-400 mb-2">Upload a receipt or invoice image (JPG, PNG, PDF — max 10MB)</p>
+                        <div class="flex items-center gap-3">
+                            <input type="file" wire:model="upload" accept="image/jpeg,image/png,image/gif,application/pdf" class="file-input file-input-bordered file-input-sm w-full max-w-xs text-sm" />
+                            <button wire:click="uploadReceipt" class="btn btn-primary btn-sm" wire:loading.attr="disabled">
+                                <x-lucide-upload class="w-4 h-4" />
+                                Upload
+                            </button>
+                        </div>
+                        @error('upload') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="space-y-6">

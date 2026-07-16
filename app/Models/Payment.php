@@ -11,8 +11,13 @@ class Payment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'order_id', 'amount', 'method', 'reference', 'paid_at', 'notes', 'recorded_by_user_id',
+        'order_id', 'amount', 'method', 'reference', 'paid_at', 'notes', 'recorded_by_user_id', 'bank_transaction_id',
     ];
+
+    public function bankTransaction(): BelongsTo
+    {
+        return $this->belongsTo(BankTransaction::class);
+    }
 
     protected $casts = [
         'amount' => 'decimal:2',

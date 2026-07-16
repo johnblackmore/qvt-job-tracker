@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class BankTransaction extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'bank_account_id',
         'provider_transaction_id',
@@ -23,6 +27,7 @@ class BankTransaction extends Model
         'metadata',
         'expense_category',
         'reconciliation_status',
+        'matched_payment_id',
         'imported_at',
     ];
 
@@ -34,6 +39,7 @@ class BankTransaction extends Model
         'is_load' => 'boolean',
         'metadata' => 'array',
         'imported_at' => 'datetime',
+        'matched_payment_id' => 'integer',
     ];
 
     public function bankAccount(): BelongsTo
@@ -44,6 +50,11 @@ class BankTransaction extends Model
     public function matchedPayment(): BelongsTo
     {
         return $this->belongsTo(Payment::class, 'matched_payment_id');
+    }
+
+    public function receipts(): HasMany
+    {
+        return $this->hasMany(Receipt::class);
     }
 
     public function scopeUnmatched($query)

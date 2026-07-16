@@ -192,6 +192,54 @@ When building Phase 1, keep data structures compatible with Phase 2 requirements
 
 ---
 
+---
+
+## Banking Integration
+
+The app has a **bank-agnostic banking integration layer** for importing transactions, reconciling payments, and managing receipts. Currently only Monzo is implemented.
+
+### Architecture
+
+| Layer | Location | Purpose |
+|-------|----------|---------|
+| **Contract** | `app/Banking/Contracts/BankingProvider.php` | Interface all providers implement |
+| **Adapter** | `app/Banking/Adapters/MonzoAdapter.php` | Monzo-specific implementation with OAuth token management |
+| **Manager** | `app/Banking/Services/BankingProviderManager.php` | Provider registry/factory |
+| **Models** | `app/Models/BankAccount.php`, `app/Models/BankTransaction.php`, `app/Models/Receipt.php` | Data layer |
+| **Services** | `app/Banking/Services/TransactionImportService.php`, `app/Banking/Services/ReconciliationService.php` | Business logic |
+| **Livewire** | `app/Livewire/Banking/` | Admin UI (TransactionList, TransactionShow, ReconciliationView) |
+| **MCP Tools** | `app/Mcp/Tools/Banking/` | AI agent banking operations |
+| **Webhooks** | `app/Banking/Webhooks/MonzoWebhookController.php` | Real-time transaction import |
+| **Jobs** | `app/Banking/Jobs/SyncReceiptToMonzo.php` | Async receipt sync |
+| **Routes** | `routes/banking.php` | All banking routes (web + webhook) |
+
+### Data Model
+
+- `bank_accounts` — Linked external accounts with encrypted OAuth tokens in `metadata`
+- `bank_transactions` — Normalised transactions with `amount` (negative=debit), `merchant_name`, `expense_category`, `reconciliation_status` (`unmatched`/`matched`/`ignored`), `matched_payment_id` FK
+- `receipts` — Receipt files linked to transactions with `sync_status` (`pending`/`synced`/`failed`)
+- `payments.bank_transaction_id` — FK linking payments to their matched transaction
+
+### Business Logic
+
+- **Transaction Import:** Webhook (`transaction.created`) + hourly `artisan banking:import` command. Deduplicates by `provider_transaction_id`. Maps Monzo categories (e.g., `eating_out` → `subsistence`, `shopping` → `stock`).
+- **Reconciliation:** Auto-match by amount (±£0.01) + 3-day window. Manual match via split-panel Livewire UI or MCP tools. Unlink support.
+- **Receipts:** Upload via Livewire UI, stored locally, async sync to Monzo Attachment API via queue job.
+
+### Expense Categories
+
+`stock`, `equipment`, `travel`, `fuel`, `subsistence`, `utilities`, `professional_fees`, `insurance`, `other`
+
+### Environment Config
+
+```env
+MONZO_CLIENT_ID=your_client_id
+MONZO_CLIENT_SECRET=your_client_secret
+MONZO_REDIRECT_URI=https://yourapp.com/monzo/callback
+```
+
+---
+
 ## MCP Server Maintenance Rules
 
 When building or modifying staff admin functionality, agents must maintain parity between the web UI and the MCP server interface.

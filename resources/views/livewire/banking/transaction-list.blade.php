@@ -1,7 +1,29 @@
 <div>
-    <div class="mb-6">
+    <div class="mb-6 flex items-center justify-between">
         <h1 class="text-2xl font-display font-bold text-slate-800">Bank Transactions</h1>
+        @if($bankAccounts->isNotEmpty())
+            <a href="{{ route('admin.banking.connect') }}" class="btn btn-primary btn-sm">
+                <x-lucide-plus class="w-4 h-4" />
+                Link Another Account
+            </a>
+        @endif
     </div>
+
+    @if($bankAccounts->isEmpty())
+        <div class="card bg-copper/5 border border-copper/20 shadow-sm mb-6">
+            <div class="card-body p-6 text-center">
+                <x-lucide-banknote class="w-12 h-12 mx-auto mb-3 text-copper/60" />
+                <h2 class="text-lg font-display font-semibold text-slate-700 mb-2">No Bank Accounts Linked</h2>
+                <p class="text-sm text-slate-500 mb-4 max-w-md mx-auto">
+                    Link your Monzo business account to automatically import transactions, reconcile payments, and attach receipts for a complete digital audit trail.
+                </p>
+                <a href="{{ route('admin.banking.connect') }}" class="btn btn-primary">
+                    <x-lucide-link-2 class="w-4 h-4" />
+                    Connect Monzo Account
+                </a>
+            </div>
+        </div>
+    @endif
 
     <div class="card bg-white border border-slate-200 shadow-sm mb-6">
         <div class="card-body p-4">

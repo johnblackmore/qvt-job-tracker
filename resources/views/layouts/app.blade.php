@@ -76,14 +76,24 @@
                         Orders
                     </a>
 
-                    <a
-                        href="{{ route('admin.banking.transactions') }}"
-                        wire:navigate
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.banking.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
-                    >
-                        <x-lucide-banknote class="w-5 h-5 shrink-0" />
-                        Banking
-                    </a>
+                    <div class="{{ request()->routeIs('admin.banking.*') ? 'bg-copper/10 rounded-lg' : '' }}">
+                        <a
+                            href="{{ route('admin.banking.transactions') }}"
+                            wire:navigate
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.banking.*') ? 'text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                        >
+                            <x-lucide-banknote class="w-5 h-5 shrink-0" />
+                            Banking
+                        </a>
+                        <a
+                            href="{{ route('admin.banking.connect') }}"
+                            wire:navigate
+                            class="flex items-center gap-3 pl-10 pr-3 py-1.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('admin.banking.connect') ? 'text-copper' : 'text-slate-400 hover:text-slate-600' }}"
+                        >
+                            <x-lucide-link-2 class="w-3.5 h-3.5 shrink-0" />
+                            Connect Account
+                        </a>
+                    </div>
 
                     <a
                         href="{{ route('products.index') }}"
