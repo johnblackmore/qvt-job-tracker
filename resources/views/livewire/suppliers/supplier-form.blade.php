@@ -54,6 +54,11 @@
             <label for="is_active" class="text-sm text-slate-700">Active supplier</label>
         </div>
 
+        <div class="flex items-center gap-3">
+            <input wire:model="default_trade_price_includes_vat" id="default_trade_price_includes_vat" type="checkbox" class="rounded border-slate-300 text-copper shadow-sm focus:ring-copper size-4" />
+            <label for="default_trade_price_includes_vat" class="text-sm text-slate-700">Trade prices include VAT by default</label>
+        </div>
+
         <div class="flex items-center gap-4 pt-2">
             <button type="submit" wire:loading.attr="disabled" class="inline-flex items-center gap-2 rounded-lg bg-copper px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark focus:outline-none focus:ring-2 focus:ring-copper focus:ring-offset-2 transition-colors">
                 <span wire:loading.remove>{{ $supplier ? 'Save Changes' : 'Create Supplier' }}</span>

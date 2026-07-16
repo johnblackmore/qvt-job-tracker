@@ -109,6 +109,14 @@
                                     <input wire:model="supplierLinks.{{ $index }}.trade_price" type="number" step="0.01" min="0" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3 py-2" placeholder="149.99" />
                                     @error("supplierLinks.{$index}.trade_price") <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                                 </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-600 mb-1">VAT rate</label>
+                                    <select wire:model="supplierLinks.{{ $index }}.vat_rate_type" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3 py-2">
+                                        <option value="standard">Standard (20%)</option>
+                                        <option value="reduced">Reduced (5%)</option>
+                                        <option value="zero">Zero (0%)</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -138,6 +146,11 @@
                             <div class="flex items-center gap-3">
                                 <input wire:model="supplierLinks.{{ $index }}.is_preferred" id="pref_{{ $index }}" type="checkbox" class="rounded border-slate-300 text-copper shadow-sm focus:ring-copper size-4" />
                                 <label for="pref_{{ $index }}" class="text-sm text-slate-700">Preferred supplier (default for quotes)</label>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <input wire:model="supplierLinks.{{ $index }}.trade_price_includes_vat" id="inc_vat_{{ $index }}" type="checkbox" class="rounded border-slate-300 text-copper shadow-sm focus:ring-copper size-4" />
+                                <label for="inc_vat_{{ $index }}" class="text-sm text-slate-700">Trade price includes VAT</label>
                             </div>
                         </div>
                     @endforeach

@@ -25,6 +25,8 @@ class SupplierForm extends Component
 
     public bool $is_active = true;
 
+    public bool $default_trade_price_includes_vat = false;
+
     public function mount(?int $supplierId = null): void
     {
         if ($supplierId) {
@@ -37,6 +39,7 @@ class SupplierForm extends Component
             $this->address = $this->supplier->address ?? '';
             $this->notes = $this->supplier->notes ?? '';
             $this->is_active = $this->supplier->is_active;
+            $this->default_trade_price_includes_vat = $this->supplier->default_trade_price_includes_vat;
         }
     }
 
@@ -51,6 +54,7 @@ class SupplierForm extends Component
             'address' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
             'is_active' => ['boolean'],
+            'default_trade_price_includes_vat' => ['boolean'],
         ]);
 
         if ($this->supplier) {

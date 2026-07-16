@@ -136,9 +136,15 @@
                     <span class="text-base font-semibold text-slate-900">Grand total</span>
                     <span class="text-base font-bold text-copper-light">£{{ number_format($quote->grand_total, 2) }}</span>
                 </div>
-                <div class="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between">
-                    <span class="text-xs text-slate-400">Trade cost (internal)</span>
-                    <span class="text-xs text-slate-400">£{{ number_format($quote->total_trade, 2) }}</span>
+                <div class="mt-2 pt-2 border-t border-slate-100 space-y-1">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-slate-400">Trade cost (excl. VAT)</span>
+                        <span class="text-xs text-slate-400">£{{ number_format($quote->total_trade, 2) }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-slate-400">True cost (incl. VAT paid)</span>
+                        <span class="text-xs text-slate-500 font-medium">£{{ number_format($quote->total_cost, 2) }}</span>
+                    </div>
                 </div>
             </div>
         </div>

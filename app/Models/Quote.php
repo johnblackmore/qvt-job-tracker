@@ -14,13 +14,14 @@ class Quote extends Model
 
     protected $fillable = [
         'customer_id', 'enquiry_id', 'reference_number', 'status', 'total_retail', 'total_trade',
-        'labour_total', 'grand_total', 'notes', 'valid_until', 'sent_at',
+        'total_cost', 'labour_total', 'grand_total', 'notes', 'valid_until', 'sent_at',
         'accepted_at', 'declined_at', 'converted_order_id', 'staff_user_id',
     ];
 
     protected $casts = [
         'total_retail' => 'decimal:2',
         'total_trade' => 'decimal:2',
+        'total_cost' => 'decimal:2',
         'labour_total' => 'decimal:2',
         'grand_total' => 'decimal:2',
         'valid_until' => 'date',

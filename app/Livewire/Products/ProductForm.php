@@ -57,6 +57,8 @@ class ProductForm extends Component
                 $this->supplierLinks[] = [
                     'supplier_id' => $supplier->id,
                     'trade_price' => (string) $supplier->pivot->trade_price,
+                    'trade_price_includes_vat' => (bool) $supplier->pivot->trade_price_includes_vat,
+                    'vat_rate_type' => $supplier->pivot->vat_rate_type ?? 'standard',
                     'supplier_sku' => $supplier->pivot->supplier_sku ?? '',
                     'supplier_product_url' => $supplier->pivot->supplier_product_url ?? '',
                     'is_preferred' => (bool) $supplier->pivot->is_preferred,
@@ -67,11 +69,23 @@ class ProductForm extends Component
         }
     }
 
-    public function addSupplierLink(): void
+    public function addSupplierLink(?int $supplierId = null): void
     {
+        $includesVat = false;
+        $vatRateType = 'standard';
+
+        if ($supplierId) {
+            $supplier = Supplier::find($supplierId);
+            if ($supplier) {
+                $includesVat = $supplier->default_trade_price_includes_vat;
+            }
+        }
+
         $this->supplierLinks[] = [
-            'supplier_id' => '',
+            'supplier_id' => $supplierId ?? '',
             'trade_price' => '',
+            'trade_price_includes_vat' => $includesVat,
+            'vat_rate_type' => $vatRateType,
             'supplier_sku' => '',
             'supplier_product_url' => '',
             'is_preferred' => false,
@@ -84,6 +98,17 @@ class ProductForm extends Component
     {
         unset($this->supplierLinks[$index]);
         $this->supplierLinks = array_values($this->supplierLinks);
+    }
+
+    public function updated($name, $value): void
+    {
+        if (preg_match('/^supplierLinks\.(\d+)\.supplier_id$/', $name, $matches)) {
+            $index = (int) $matches[1];
+            $supplier = Supplier::find($value);
+            if ($supplier) {
+                $this->supplierLinks[$index]['trade_price_includes_vat'] = $supplier->default_trade_price_includes_vat;
+            }
+        }
     }
 
     public function openUrlModal(): void
@@ -175,15 +200,7 @@ class ProductForm extends Component
             }
         }
 
-        $supplierLink = [
-            'supplier_id' => '',
-            'trade_price' => '',
-            'supplier_sku' => $data['supplier_sku'] ?? '',
-            'supplier_product_url' => $this->extractionUrl,
-            'is_preferred' => true,
-            'lead_time_days' => '',
-            'notes' => '',
-        ];
+        $matchedSupplierId = null;
 
         if (! empty($data['supplier_name'])) {
             $suppliers = Supplier::where('is_active', true)->orderBy('name')->get();
@@ -196,11 +213,22 @@ class ProductForm extends Component
             ));
 
             if ($matched) {
-                $supplierLink['supplier_id'] = $matched->id;
+                $matchedSupplierId = $matched->id;
             }
         }
 
-        $this->supplierLinks = [$supplierLink];
+        $this->supplierLinks = [];
+
+        if ($matchedSupplierId) {
+            $this->addSupplierLink($matchedSupplierId);
+        } else {
+            $this->addSupplierLink();
+        }
+
+        $index = 0;
+        $this->supplierLinks[$index]['supplier_sku'] = $data['supplier_sku'] ?? '';
+        $this->supplierLinks[$index]['supplier_product_url'] = $this->extractionUrl;
+        $this->supplierLinks[$index]['is_preferred'] = true;
 
         $this->closeUrlModal();
     }
@@ -219,6 +247,8 @@ class ProductForm extends Component
             'supplierLinks' => ['nullable', 'array'],
             'supplierLinks.*.supplier_id' => ['required_with:supplierLinks', 'exists:suppliers,id'],
             'supplierLinks.*.trade_price' => ['required_with:supplierLinks', 'numeric', 'min:0'],
+            'supplierLinks.*.trade_price_includes_vat' => ['boolean'],
+            'supplierLinks.*.vat_rate_type' => ['nullable', 'string', 'in:standard,reduced,zero'],
             'supplierLinks.*.supplier_sku' => ['nullable', 'string', 'max:255'],
             'supplierLinks.*.supplier_product_url' => ['nullable', 'url', 'max:255'],
             'supplierLinks.*.is_preferred' => ['boolean'],
@@ -248,6 +278,8 @@ class ProductForm extends Component
         foreach ($validated['supplierLinks'] ?? [] as $link) {
             $syncData[$link['supplier_id']] = [
                 'trade_price' => $link['trade_price'],
+                'trade_price_includes_vat' => $link['trade_price_includes_vat'] ?? false,
+                'vat_rate_type' => $link['vat_rate_type'] ?? 'standard',
                 'supplier_sku' => $link['supplier_sku'] ?? null,
                 'supplier_product_url' => $link['supplier_product_url'] ?? null,
                 'is_preferred' => $link['is_preferred'] ?? false,

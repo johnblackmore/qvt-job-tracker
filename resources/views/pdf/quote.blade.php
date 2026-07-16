@@ -201,7 +201,7 @@
         <div class="footer">
             <p><strong>Quantock Van Tech</strong> — Specialist campervan electrical installations in West Somerset</p>
             <p>https://quantockvantech.com | info@quantockvantech.com</p>
-            <p style="margin-top:8px; font-size:9px;">All prices include VAT where applicable. Terms and conditions available on request.</p>
+            <p style="margin-top:8px; font-size:9px;">All prices are the final amount payable. Quantock Van Tech is not VAT registered. Terms and conditions available on request.</p>
         </div>
     </div>
 </body>

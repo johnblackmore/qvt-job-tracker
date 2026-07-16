@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Quote;
 use App\Models\SampleQuote;
+use App\Services\VatService;
 use Livewire\Component;
 
 class QuoteBuilder extends Component
@@ -56,6 +57,8 @@ class QuoteBuilder extends Component
                     'quantity' => (string) $item->quantity,
                     'unit_retail_price' => (string) $item->unit_retail_price,
                     'unit_trade_price' => (string) $item->unit_trade_price,
+                    'trade_price_includes_vat' => false,
+                    'vat_rate_type' => 'standard',
                     'notes' => $item->notes ?? '',
                 ];
             }
@@ -72,6 +75,8 @@ class QuoteBuilder extends Component
                     'quantity' => (string) ($item['quantity'] ?? 1),
                     'unit_retail_price' => (string) ($item['unit_retail_price'] ?? 0),
                     'unit_trade_price' => (string) ($item['unit_trade_price'] ?? 0),
+                    'trade_price_includes_vat' => $item['trade_price_includes_vat'] ?? false,
+                    'vat_rate_type' => $item['vat_rate_type'] ?? 'standard',
                     'notes' => $item['notes'] ?? '',
                 ];
             }
@@ -100,6 +105,8 @@ class QuoteBuilder extends Component
 
         $preferredSupplier = $product->preferredSupplier();
         $tradePrice = $preferredSupplier ? $preferredSupplier->pivot->trade_price : 0;
+        $includesVat = $preferredSupplier ? (bool) $preferredSupplier->pivot->trade_price_includes_vat : false;
+        $vatRateType = $preferredSupplier?->pivot?->vat_rate_type ?? 'standard';
 
         $this->lineItems[] = [
             'line_type' => 'product',
@@ -109,6 +116,8 @@ class QuoteBuilder extends Component
             'quantity' => '1',
             'unit_retail_price' => (string) $product->retail_price,
             'unit_trade_price' => (string) $tradePrice,
+            'trade_price_includes_vat' => $includesVat,
+            'vat_rate_type' => $vatRateType,
             'notes' => '',
         ];
     }
@@ -123,6 +132,8 @@ class QuoteBuilder extends Component
             'quantity' => '1',
             'unit_retail_price' => '0',
             'unit_trade_price' => '0',
+            'trade_price_includes_vat' => false,
+            'vat_rate_type' => 'standard',
             'notes' => '',
         ];
     }
@@ -137,6 +148,8 @@ class QuoteBuilder extends Component
             'quantity' => '1',
             'unit_retail_price' => '0',
             'unit_trade_price' => '0',
+            'trade_price_includes_vat' => false,
+            'vat_rate_type' => 'standard',
             'notes' => '',
         ];
     }
@@ -156,7 +169,10 @@ class QuoteBuilder extends Component
     {
         $totalRetail = 0;
         $totalTrade = 0;
+        $totalCost = 0;
         $labourTotal = 0;
+
+        $vatService = app(VatService::class);
 
         foreach ($this->lineItems as $item) {
             $qty = (float) ($item['quantity'] ?? 1);
@@ -167,6 +183,11 @@ class QuoteBuilder extends Component
             $lineTrade = $qty * $trade;
 
             $totalTrade += $lineTrade;
+
+            $includesVat = (bool) ($item['trade_price_includes_vat'] ?? false);
+            $vatRateType = $item['vat_rate_type'] ?? 'standard';
+            $unitCost = $vatService->calculateTrueCost($trade, $includesVat, $vatRateType);
+            $totalCost += $qty * $unitCost;
 
             if (($item['line_type'] ?? 'product') === 'labour') {
                 $labourTotal += $lineRetail;
@@ -180,6 +201,7 @@ class QuoteBuilder extends Component
         return [
             'retail' => $totalRetail,
             'trade' => $totalTrade,
+            'cost' => $totalCost,
             'labour' => $labourTotal,
             'grand' => $grandTotal,
         ];
@@ -203,6 +225,7 @@ class QuoteBuilder extends Component
             'status' => $validated['status'],
             'total_retail' => $totals['retail'],
             'total_trade' => $totals['trade'],
+            'total_cost' => $totals['cost'],
             'labour_total' => $totals['labour'],
             'grand_total' => $totals['grand'],
             'notes' => $validated['notes'] ?? null,
@@ -229,10 +252,16 @@ class QuoteBuilder extends Component
             ]);
         }
 
+        $vatService = app(VatService::class);
+
         foreach ($this->lineItems as $item) {
             $qty = (float) ($item['quantity'] ?? 1);
             $retail = (float) ($item['unit_retail_price'] ?? 0);
             $trade = (float) ($item['unit_trade_price'] ?? 0);
+            $includesVat = (bool) ($item['trade_price_includes_vat'] ?? false);
+            $vatRateType = $item['vat_rate_type'] ?? 'standard';
+            $vatRate = $vatService->vatRateFor($vatRateType);
+            $unitCost = $vatService->calculateTrueCost($trade, $includesVat, $vatRateType);
 
             $quote->lineItems()->create([
                 'line_type' => $item['line_type'] ?? 'product',
@@ -242,8 +271,11 @@ class QuoteBuilder extends Component
                 'quantity' => (int) $qty,
                 'unit_retail_price' => $retail,
                 'unit_trade_price' => $trade,
+                'vat_rate' => $vatRate,
+                'unit_cost_price' => $unitCost,
                 'line_total_retail' => $qty * $retail,
                 'line_total_trade' => $qty * $trade,
+                'line_total_cost' => $qty * $unitCost,
                 'notes' => $item['notes'] ?? null,
             ]);
         }
