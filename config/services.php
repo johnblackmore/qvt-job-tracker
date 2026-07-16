@@ -16,6 +16,7 @@ return [
 
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
+        'webhook_secret' => env('POSTMARK_WEBHOOK_SECRET'),
     ],
 
     'resend' => [

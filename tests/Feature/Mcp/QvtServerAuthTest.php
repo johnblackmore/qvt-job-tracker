@@ -66,7 +66,7 @@ class QvtServerAuthTest extends TestCase
         $response->assertOk();
         $tools = $response->json('result.tools');
         $this->assertNotEmpty($tools);
-        $this->assertCount(43, $tools);
+        $this->assertCount(47, $tools);
     }
 
     public function test_delete_customer_tool_has_destructive_annotation(): void

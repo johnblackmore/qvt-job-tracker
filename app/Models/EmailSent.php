@@ -15,11 +15,19 @@ class EmailSent extends Model
     protected $fillable = [
         'customer_id', 'quote_id', 'order_id', 'template_id',
         'to_email', 'subject', 'body_html', 'postmark_message_id',
-        'status', 'sent_at', 'error_message',
+        'status', 'sent_at', 'error_message', 'metadata',
+        'opened_at', 'clicked_at', 'bounced_at', 'bounce_type',
+        'spam_complaint_at', 'delivered_at',
     ];
 
     protected $casts = [
         'sent_at' => 'datetime',
+        'metadata' => 'array',
+        'opened_at' => 'datetime',
+        'clicked_at' => 'datetime',
+        'bounced_at' => 'datetime',
+        'spam_complaint_at' => 'datetime',
+        'delivered_at' => 'datetime',
     ];
 
     public function customer(): BelongsTo

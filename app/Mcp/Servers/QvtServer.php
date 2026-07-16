@@ -27,15 +27,19 @@ use App\Mcp\Tools\DownloadQuotePdfTool;
 use App\Mcp\Tools\GenerateEnquiryDraftTool;
 use App\Mcp\Tools\GetCustomerTool;
 use App\Mcp\Tools\GetDashboardStatsTool;
+use App\Mcp\Tools\GetEmailSentTool;
 use App\Mcp\Tools\GetEnquiryTool;
+use App\Mcp\Tools\GetInboundReplyTool;
 use App\Mcp\Tools\GetOrderTool;
 use App\Mcp\Tools\GetProductTool;
 use App\Mcp\Tools\GetQuoteActivityTool;
 use App\Mcp\Tools\GetWeeklySummaryTool;
 use App\Mcp\Tools\LinkEnquiryToCustomerTool;
 use App\Mcp\Tools\ListCustomersTool;
+use App\Mcp\Tools\ListEmailSentTool;
 use App\Mcp\Tools\ListEnquiriesTool;
 use App\Mcp\Tools\ListEnquiryRepliesTool;
+use App\Mcp\Tools\ListInboundRepliesTool;
 use App\Mcp\Tools\ListOrdersTool;
 use App\Mcp\Tools\ListProductsTool;
 use App\Mcp\Tools\RecordPaymentTool;
@@ -108,6 +112,8 @@ class QvtServer extends Server
         RespondToEnquiryTool::class,
         CreateEnquiryReplyTool::class,
         ListEnquiryRepliesTool::class,
+        ListInboundRepliesTool::class,
+        GetInboundReplyTool::class,
         CreateQuoteFromEnquiryTool::class,
         GenerateEnquiryDraftTool::class,
         SaveEnquiryDraftTool::class,
@@ -115,6 +121,8 @@ class QvtServer extends Server
         // Communication tools
         SendQuoteEmailTool::class,
         DownloadQuotePdfTool::class,
+        ListEmailSentTool::class,
+        GetEmailSentTool::class,
 
         // Dashboard & reporting tools
         GetDashboardStatsTool::class,
@@ -178,11 +186,15 @@ class QvtServer extends Server
             RespondToEnquiryTool::class,
             CreateEnquiryReplyTool::class,
             ListEnquiryRepliesTool::class,
+            ListInboundRepliesTool::class,
+            GetInboundReplyTool::class,
             CreateQuoteFromEnquiryTool::class,
             GenerateEnquiryDraftTool::class,
             SaveEnquiryDraftTool::class,
             SendQuoteEmailTool::class,
             DownloadQuotePdfTool::class,
+            ListEmailSentTool::class,
+            GetEmailSentTool::class,
             GetDashboardStatsTool::class,
             GetQuoteActivityTool::class,
             GetWeeklySummaryTool::class,

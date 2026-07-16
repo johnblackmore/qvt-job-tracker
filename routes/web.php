@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Webhook\PostmarkWebhookController;
 use App\Livewire\ApiTokens\ApiTokenManager;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
@@ -17,6 +19,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/api-tokens', ApiTokenManager::class)
         ->name('api-tokens');
 });
+
+Route::post('/webhooks/postmark', [PostmarkWebhookController::class, '__invoke'])
+    ->withoutMiddleware([VerifyCsrfToken::class])
+    ->middleware('throttle:60,1')
+    ->name('webhooks.postmark');
 
 require __DIR__.'/auth.php';
 require __DIR__.'/customers.php';

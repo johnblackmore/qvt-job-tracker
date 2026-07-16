@@ -36,9 +36,10 @@ class EnquiryReplyService
             Mail::html(view('emails.enquiry-reply', [
                 'subject' => $reply->subject ?? 'Re: '.($enquiry->subject ?? 'Your Enquiry'),
                 'body' => $reply->body,
-            ])->render(), function ($message) use ($toEmail, $recipientName, $reply) {
+            ])->render(), function ($message) use ($toEmail, $recipientName, $reply, $enquiry) {
                 $message->to($toEmail, $recipientName)
                     ->subject($reply->subject ?? 'Re: '.($enquiry->subject ?? 'Your Enquiry'))
+                    ->replyTo('enquiries+enquiry-'.$enquiry->id.'@qvt.quantockvantech.com', 'Quantock Van Tech')
                     ->getHeaders()
                     ->addIdHeader('Message-ID', $reply->message_id);
             });
@@ -106,9 +107,10 @@ class EnquiryReplyService
             Mail::html(view('emails.enquiry-reply', [
                 'subject' => $newReply->subject ?? 'Re: '.($enquiry->subject ?? 'Your Enquiry'),
                 'body' => $newReply->body,
-            ])->render(), function ($message) use ($toEmail, $recipientName, $newReply) {
+            ])->render(), function ($message) use ($toEmail, $recipientName, $newReply, $enquiry) {
                 $message->to($toEmail, $recipientName)
                     ->subject($newReply->subject ?? 'Re: '.($enquiry->subject ?? 'Your Enquiry'))
+                    ->replyTo('enquiries+enquiry-'.$enquiry->id.'@qvt.quantockvantech.com', 'Quantock Van Tech')
                     ->getHeaders()
                     ->addIdHeader('Message-ID', $newReply->message_id);
             });
