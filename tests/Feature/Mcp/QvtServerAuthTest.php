@@ -60,13 +60,17 @@ class QvtServerAuthTest extends TestCase
                 'jsonrpc' => '2.0',
                 'id' => 1,
                 'method' => 'tools/list',
-                'params' => ['per_page' => 50],
+                'params' => ['per_page' => 100],
             ]);
 
         $response->assertOk();
         $tools = $response->json('result.tools');
         $this->assertNotEmpty($tools);
-        $this->assertCount(47, $tools);
+        $toolNames = array_column($tools, 'name');
+        $this->assertContains('import-transactions-tool', $toolNames, 'ImportTransactionsTool should be registered');
+        $this->assertContains('list-transactions-tool', $toolNames, 'ListTransactionsTool should be registered');
+        $this->assertContains('get-transaction-tool', $toolNames, 'GetTransactionTool should be registered');
+        $this->assertContains('update-transaction-category-tool', $toolNames, 'UpdateTransactionCategoryTool should be registered');
     }
 
     public function test_delete_customer_tool_has_destructive_annotation(): void

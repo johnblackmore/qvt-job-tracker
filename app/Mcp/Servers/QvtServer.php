@@ -15,6 +15,10 @@ use App\Mcp\Tools\AiConfig\GetAiModelConfigTool;
 use App\Mcp\Tools\AiConfig\ListAiModelConfigsTool;
 use App\Mcp\Tools\AiConfig\UpdateAiAssistantConfigSettingsTool;
 use App\Mcp\Tools\AiConfig\UpdateAiModelConfigTool;
+use App\Mcp\Tools\Banking\GetTransactionTool;
+use App\Mcp\Tools\Banking\ImportTransactionsTool;
+use App\Mcp\Tools\Banking\ListTransactionsTool;
+use App\Mcp\Tools\Banking\UpdateTransactionCategoryTool;
 use App\Mcp\Tools\CreateCustomerTool;
 use App\Mcp\Tools\CreateEnquiryReplyTool;
 use App\Mcp\Tools\CreateEnquiryTool;
@@ -124,6 +128,12 @@ class QvtServer extends Server
         ListEmailSentTool::class,
         GetEmailSentTool::class,
 
+        // Banking tools
+        ImportTransactionsTool::class,
+        ListTransactionsTool::class,
+        GetTransactionTool::class,
+        UpdateTransactionCategoryTool::class,
+
         // Dashboard & reporting tools
         GetDashboardStatsTool::class,
         GetQuoteActivityTool::class,
@@ -195,6 +205,10 @@ class QvtServer extends Server
             DownloadQuotePdfTool::class,
             ListEmailSentTool::class,
             GetEmailSentTool::class,
+            ImportTransactionsTool::class,
+            ListTransactionsTool::class,
+            GetTransactionTool::class,
+            UpdateTransactionCategoryTool::class,
             GetDashboardStatsTool::class,
             GetQuoteActivityTool::class,
             GetWeeklySummaryTool::class,

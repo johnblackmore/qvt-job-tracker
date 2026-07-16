@@ -1,5 +1,6 @@
 <?php
 
+use App\Banking\Console\ImportTransactionsCommand;
 use App\Services\NetlifyFormService;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -17,3 +18,11 @@ Artisan::command('netlify:sync-submissions', function () {
 Schedule::call(function () {
     app(NetlifyFormService::class)->sync();
 })->hourly()->name('sync-netlify-submissions');
+
+Artisan::command('banking:import', function () {
+    $this->call(ImportTransactionsCommand::class);
+})->purpose('Import recent transactions from linked bank accounts');
+
+Schedule::command('banking:import')
+    ->hourly()
+    ->name('banking-import-transactions');

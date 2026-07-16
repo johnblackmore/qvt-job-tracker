@@ -77,6 +77,15 @@
                     </a>
 
                     <a
+                        href="{{ route('admin.banking.transactions') }}"
+                        wire:navigate
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.banking.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                    >
+                        <x-lucide-banknote class="w-5 h-5 shrink-0" />
+                        Banking
+                    </a>
+
+                    <a
                         href="{{ route('products.index') }}"
                         wire:navigate
                         class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('products.*') && !request()->routeIs('products.categories.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
