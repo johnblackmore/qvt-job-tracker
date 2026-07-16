@@ -3,8 +3,6 @@
 namespace App\Banking\Controllers;
 
 use App\Banking\Adapters\MonzoAdapter;
-use App\Banking\Services\BankingProviderManager;
-use App\Banking\Services\TransactionImportService;
 use App\Models\BankAccount;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -25,11 +23,8 @@ class MonzoOAuthController extends Controller
         return redirect()->away($authUrl);
     }
 
-    public function callback(
-        Request $request,
-        BankingProviderManager $providerManager,
-        TransactionImportService $importService,
-    ) {
+    public function callback(Request $request)
+    {
         $storedState = session('monzo_oauth_state');
 
         if ($request->error) {
@@ -55,74 +50,61 @@ class MonzoOAuthController extends Controller
             $request->code,
         );
 
-        $tempAccount = new BankAccount;
-        $tempAccount->provider = 'monzo';
-        $tempAccount->provider_account_id = 'pending';
-        $tempAccount->name = 'Monzo Account';
-        $tempAccount->metadata = ['tokens' => [
+        $tokenData = [
             'access_token' => $tokens['access_token'],
             'refresh_token' => $tokens['refresh_token'] ?? null,
             'expires_at' => now()->addSeconds($tokens['expires_in'] ?? 21600)->timestamp,
             'client_id' => $tokens['client_id'] ?? null,
             'user_id' => $tokens['user_id'] ?? null,
-        ]];
-        $tempAccount->save();
+        ];
+
+        $pendingId = 'pending_'.Str::random(8);
+
+        $account = BankAccount::create([
+            'provider' => 'monzo',
+            'provider_account_id' => $pendingId,
+            'name' => 'Monzo Account',
+            'metadata' => ['tokens' => $tokenData],
+        ]);
+
+        session(['pending_monzo_account_id' => $account->id]);
+
+        return redirect()->route('admin.banking.approve');
+    }
+
+    public function retry()
+    {
+        $accountId = session('pending_monzo_account_id');
+        $account = BankAccount::find($accountId);
+
+        if (! $account) {
+            return redirect()->route('admin.banking.transactions')
+                ->with('error', 'Session expired. Please connect your Monzo account again.');
+        }
 
         try {
-            $adapter = new MonzoAdapter($tempAccount);
-
+            $adapter = new MonzoAdapter($account);
             $monzoAccounts = $adapter->listAccounts();
-
-            $monzoAccount = $monzoAccounts[0] ?? null;
-
-            if (! $monzoAccount) {
-                $tempAccount->update([
-                    'metadata' => array_merge($tempAccount->metadata ?? [], ['tokens' => [
-                        'access_token' => $tokens['access_token'],
-                        'refresh_token' => $tokens['refresh_token'] ?? null,
-                        'expires_at' => now()->addSeconds($tokens['expires_in'] ?? 21600)->timestamp,
-                        'client_id' => $tokens['client_id'] ?? null,
-                        'user_id' => $tokens['user_id'] ?? null,
-                    ]]),
-                ]);
-
-                return redirect()->route('admin.banking.transactions')
-                    ->with('warning', 'Monzo account linked, but no accounts were found.');
-            }
-
-            $tempAccount->update([
-                'provider_account_id' => $monzoAccount['id'],
-                'name' => $monzoAccount['description'] ?? 'Monzo Account',
-                'type' => 'current',
-                'metadata' => array_merge($tempAccount->metadata ?? [], [
-                    'tokens' => [
-                        'access_token' => $tokens['access_token'],
-                        'refresh_token' => $tokens['refresh_token'] ?? null,
-                        'expires_at' => now()->addSeconds($tokens['expires_in'] ?? 21600)->timestamp,
-                        'client_id' => $tokens['client_id'] ?? null,
-                        'user_id' => $tokens['user_id'] ?? null,
-                    ],
-                    'monzo_account' => $monzoAccount,
-                ]),
-            ]);
-
-            try {
-                $importService->import($tempAccount, $adapter, [
-                    'limit' => 100,
-                    'since' => now()->subDays(90)->format('Y-m-d\TH:i:s\Z'),
-                ]);
-            } catch (\Exception $e) {
-                // Import failure is non-fatal — user can run it manually via the UI
-            }
-
-            return redirect()->route('admin.banking.transactions')
-                ->with('success', 'Monzo account linked successfully. Recent transactions have been imported.');
         } catch (\Exception $e) {
-            $tempAccount->delete();
-
-            return redirect()->route('admin.banking.transactions')
-                ->with('error', 'Failed to link Monzo account: '.$e->getMessage());
+            return redirect()->route('admin.banking.approve')
+                ->with('error', 'Could not retrieve accounts. Make sure you have approved the connection in your Monzo app, then try again.');
         }
+
+        if (empty($monzoAccounts)) {
+            return redirect()->route('admin.banking.transactions')
+                ->with('warning', 'No Monzo accounts found on your profile.');
+        }
+
+        $mapped = array_map(fn ($a) => [
+            'id' => $a['id'],
+            'description' => $a['description'] ?? 'Monzo Account',
+            'account_type' => $a['type'] ?? 'uk_retail',
+        ], $monzoAccounts);
+
+        session(['pending_monzo_accounts' => $mapped]);
+        session()->forget('pending_monzo_retry');
+
+        return redirect()->route('admin.banking.select-account');
     }
 
     private function redirectUri(): string

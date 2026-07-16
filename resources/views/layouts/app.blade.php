@@ -76,24 +76,14 @@
                         Orders
                     </a>
 
-                    <div class="{{ request()->routeIs('admin.banking.*') ? 'bg-copper/10 rounded-lg' : '' }}">
-                        <a
-                            href="{{ route('admin.banking.transactions') }}"
-                            wire:navigate
-                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.banking.*') ? 'text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
-                        >
-                            <x-lucide-banknote class="w-5 h-5 shrink-0" />
-                            Banking
-                        </a>
-                        <a
-                            href="{{ route('admin.banking.connect') }}"
-                            wire:navigate
-                            class="flex items-center gap-3 pl-10 pr-3 py-1.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('admin.banking.connect') ? 'text-copper' : 'text-slate-400 hover:text-slate-600' }}"
-                        >
-                            <x-lucide-link-2 class="w-3.5 h-3.5 shrink-0" />
-                            Connect Account
-                        </a>
-                    </div>
+                    <a
+                        href="{{ route('admin.banking.transactions') }}"
+                        wire:navigate
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.banking.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                    >
+                        <x-lucide-banknote class="w-5 h-5 shrink-0" />
+                        Banking
+                    </a>
 
                     <a
                         href="{{ route('products.index') }}"
@@ -226,8 +216,10 @@
                 </header>
 
                 {{-- Toast notifications --}}
+                @php $__flashMsg = session('success') ?? session('error') ?? session('warning'); @endphp
+                @php $__flashType = session('success') ? 'success' : (session('error') ? 'error' : (session('warning') ? 'warning' : null)); @endphp
                 <div
-                    x-data="{ toasts: [], add(message, type = 'success') { this.toasts.push({ id: Date.now(), message, type }); setTimeout(() => this.remove(this.toasts[0]?.id), 4000); }, remove(id) { this.toasts = this.toasts.filter(t => t.id !== id); } }"
+                    x-data="{ toasts: [], init() { @if($__flashMsg) this.add(@js($__flashMsg), @js($__flashType)); @endif }, add(message, type = 'success') { this.toasts.push({ id: Date.now(), message, type }); setTimeout(() => this.remove(this.toasts[0]?.id), 4000); }, remove(id) { this.toasts = this.toasts.filter(t => t.id !== id); } }"
                     x-on:notify.window="add($event.detail.message, $event.detail.type)"
                     class="fixed top-4 right-4 z-[60] space-y-3 w-full max-w-sm pointer-events-none"
                 >

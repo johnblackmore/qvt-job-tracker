@@ -174,9 +174,30 @@
             <div class="card bg-white border border-slate-200 shadow-sm">
                 <div class="card-body p-6">
                     <h3 class="font-display font-semibold text-slate-700 mb-3">Raw Data</h3>
-                    <pre class="text-xs text-slate-500 overflow-auto max-h-48 bg-slate-50 rounded p-2">{{ json_encode($transaction->metadata, JSON_PRETTY_PRINT) }}</pre>
+                    <p class="text-xs text-slate-400 mb-3">View the original data returned by the bank for this transaction.</p>
+                    <button onclick="document.getElementById('raw-data-modal').showModal()" class="btn btn-ghost btn-sm text-slate-400 hover:text-copper">
+                        <x-lucide-code class="w-4 h-4" />
+                        View Raw Data
+                    </button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <dialog id="raw-data-modal" class="modal">
+        <div class="modal-box max-w-3xl bg-white">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-slate-400">✕</button>
+            </form>
+            <h3 class="font-display font-semibold text-slate-700 mb-4">Raw Transaction Data</h3>
+            <div class="bg-slate-50 rounded-lg border border-slate-200" style="max-height: 400px; overflow-y: auto;">
+                <pre class="text-xs text-slate-500 p-4">{{ json_encode($transaction->metadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</pre>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
         </div>
     </div>
 </div>
