@@ -32,6 +32,7 @@ class ListEnquiryRepliesTool extends Tool
             'replies' => $schema->array($schema->object([
                 'id' => $schema->integer(),
                 'direction' => $schema->string(),
+                'is_internal' => $schema->boolean(),
                 'subject' => $schema->string()->nullable(),
                 'body' => $schema->string(),
                 'staff_name' => $schema->string()->nullable(),
@@ -60,6 +61,7 @@ class ListEnquiryRepliesTool extends Tool
             ->map(fn ($reply) => [
                 'id' => $reply->id,
                 'direction' => $reply->direction,
+                'is_internal' => $reply->is_internal,
                 'subject' => $reply->subject,
                 'body' => $reply->body,
                 'staff_name' => $reply->staff?->name,

@@ -28,11 +28,14 @@ class EnquiryShow extends Component
 
     public bool $sending = false;
 
+    public string $internalNoteBody = '';
+
     protected function rules(): array
     {
         return [
             'replySubject' => ['nullable', 'string', 'max:255'],
             'replyBody' => ['required', 'string'],
+            'internalNoteBody' => ['required', 'string', 'max:5000'],
         ];
     }
 
@@ -87,6 +90,38 @@ class EnquiryShow extends Component
         $this->aiDraftConfidence = '';
         $this->aiSuggestedSteps = null;
         $this->aiKnowledgeGaps = null;
+    }
+
+    public function addInternalNote(): void
+    {
+        $this->validate(['internalNoteBody' => ['required', 'string', 'max:5000']]);
+
+        EnquiryReply::create([
+            'enquiry_id' => $this->enquiry->id,
+            'staff_user_id' => auth()->id(),
+            'direction' => 'outbound',
+            'is_internal' => true,
+            'body' => $this->internalNoteBody,
+            'status' => 'saved',
+        ]);
+
+        EnquiryActivityLog::create([
+            'enquiry_id' => $this->enquiry->id,
+            'staff_user_id' => auth()->id(),
+            'action' => 'note_added',
+            'description' => 'Added internal note',
+            'metadata' => ['note_preview' => str($this->internalNoteBody)->limit(100)],
+        ]);
+
+        $this->internalNoteBody = '';
+
+        $this->enquiry->refresh();
+        $this->enquiry->load([
+            'replies' => fn ($q) => $q->with('staff')->orderByDesc('created_at'),
+            'activityLogs' => fn ($q) => $q->with('staff'),
+        ]);
+
+        $this->dispatch('notify', type: 'success', message: 'Internal note added.');
     }
 
     public function sendReply(): void

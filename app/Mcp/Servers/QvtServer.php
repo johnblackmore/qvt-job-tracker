@@ -7,6 +7,7 @@ use App\Mcp\Prompts\WeeklyReportGeneratorPrompt;
 use App\Mcp\Resources\CustomerProfileResource;
 use App\Mcp\Resources\OrderDetailsResource;
 use App\Mcp\Resources\QuoteDetailsResource;
+use App\Mcp\Tools\AddInternalNoteTool;
 use App\Mcp\Tools\AddQuoteLineItemTool;
 use App\Mcp\Tools\AiConfig\CreateAiModelConfigTool;
 use App\Mcp\Tools\AiConfig\DeleteAiModelConfigTool;
@@ -119,6 +120,7 @@ class QvtServer extends Server
         LinkEnquiryToCustomerTool::class,
         RespondToEnquiryTool::class,
         CreateEnquiryReplyTool::class,
+        AddInternalNoteTool::class,
         ListEnquiryRepliesTool::class,
         ListInboundRepliesTool::class,
         GetInboundReplyTool::class,
@@ -203,6 +205,7 @@ class QvtServer extends Server
             LinkEnquiryToCustomerTool::class,
             RespondToEnquiryTool::class,
             CreateEnquiryReplyTool::class,
+            AddInternalNoteTool::class,
             ListEnquiryRepliesTool::class,
             ListInboundRepliesTool::class,
             GetInboundReplyTool::class,
