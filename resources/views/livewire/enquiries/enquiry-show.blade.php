@@ -78,15 +78,15 @@
                         @foreach($enquiry->replies as $reply)
                             @if($reply->isInternal())
                                 <div class="flex gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
-                                        <x-lucide-notebook-pen class="w-4 h-4 text-amber-700" />
+                                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
+                                        <x-lucide-notebook-pen class="w-4 h-4 text-slate-500" />
                                     </div>
                                     <div class="max-w-[80%]">
-                                        <div class="inline-block rounded-lg px-4 py-3 text-sm bg-amber-50 border border-amber-200 text-slate-700">
+                                        <div class="inline-block rounded-lg px-4 py-3 text-sm bg-slate-50 border border-slate-200 text-slate-700">
                                             <div class="flex items-center gap-2 mb-1.5">
-                                                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-700">
+                                                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-slate-200 text-slate-600">
                                                     <x-lucide-lock class="w-3 h-3 mr-1" />
-                                                    Internal Note
+                                                    Note
                                                 </span>
                                             </div>
                                             <p class="whitespace-pre-line">{{ $reply->body }}</p>
@@ -350,33 +350,26 @@
                     </div>
                 @endif
             </div>
-        </div>
-            </div>
 
             {{-- Internal note --}}
-            <div class="bg-white rounded-xl border border-amber-200 shadow-sm p-6">
-                <div class="flex items-center gap-2 mb-4">
-                    <x-lucide-notebook-pen class="w-4 h-4 text-amber-600" />
-                    <h2 class="text-sm font-semibold text-slate-900">Internal Note</h2>
-                    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-700">
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Internal Note</h3>
+                    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-slate-100 text-slate-500">
                         <x-lucide-lock class="w-3 h-3 mr-1" />
-                        Staff only
+                        Staff
                     </span>
                 </div>
-                <p class="text-xs text-slate-500 mb-3">Internal notes are not sent to the customer and are only visible to staff.</p>
-
                 <form wire:submit="addInternalNote" class="space-y-3">
-                    <div>
-                        <textarea wire:model="internalNoteBody" rows="3" class="w-full rounded-lg border-amber-300 text-slate-900 focus:border-amber-500 focus:ring-amber-500 text-sm px-3.5 py-2.5" placeholder="Add an internal note..."></textarea>
-                        @error('internalNoteBody') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                    </div>
-                    <div class="flex justify-end">
-                        <button type="submit" wire:loading.attr="disabled" wire:target="addInternalNote" class="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-amber-700 transition-colors">
-                            <x-lucide-plus class="w-4 h-4 shrink-0" />
-                            <span wire:loading.remove wire:target="addInternalNote">Add Note</span>
-                            <span wire:loading wire:target="addInternalNote">Adding...</span>
-                        </button>
-                    </div>
+                    <textarea wire:model="internalNoteBody" rows="3" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3 py-2" placeholder="Note visible to staff only..."></textarea>
+                    @error('internalNoteBody') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                    <button type="submit" wire:loading.attr="disabled" wire:target="addInternalNote" class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors w-full justify-center">
+                        <x-lucide-plus class="w-4 h-4" />
+                        <span wire:loading.remove wire:target="addInternalNote">Add Note</span>
+                        <span wire:loading wire:target="addInternalNote">Adding...</span>
+                    </button>
                 </form>
             </div>
         </div>
+    </div>
+</div>
