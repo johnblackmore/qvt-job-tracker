@@ -1,12 +1,15 @@
 <div>
-    <div class="mb-6 flex items-center justify-between">
-        <h1 class="text-2xl font-display font-bold text-slate-800">Reconciliation</h1>
+    <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">Reconciliation</h1>
+            <p class="mt-1 text-sm text-slate-500">Match bank transactions to order payments</p>
+        </div>
         <div class="flex items-center gap-3">
             <span class="text-xs text-slate-400">
                 {{ $summary['match_rate'] }}% matched
                 ({{ $summary['matched_transactions'] }}/{{ $summary['total_transactions'] }})
             </span>
-            <button wire:click="runAutoMatch" class="btn btn-primary btn-sm" wire:loading.attr="disabled">
+            <button wire:click="runAutoMatch" class="inline-flex items-center gap-2 rounded-lg bg-copper px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark transition-colors" wire:loading.attr="disabled">
                 <x-lucide-wand-2 class="w-4 h-4" />
                 Run Auto-Match
             </button>
@@ -14,29 +17,28 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-        <div class="stat bg-white border border-slate-200 shadow-sm rounded-lg p-4">
-            <div class="stat-title text-xs text-slate-500">Unmatched Transactions</div>
-            <div class="stat-value text-2xl font-display font-bold text-amber">{{ $summary['unmatched_transactions'] }}</div>
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+            <p class="text-xs font-medium text-slate-500 uppercase tracking-wide">Unmatched Transactions</p>
+            <p class="mt-1 text-2xl font-display font-bold text-amber-700">{{ $summary['unmatched_transactions'] }}</p>
         </div>
-        <div class="stat bg-white border border-slate-200 shadow-sm rounded-lg p-4">
-            <div class="stat-title text-xs text-slate-500">Unlinked Payments</div>
-            <div class="stat-value text-2xl font-display font-bold text-slate-700">{{ $summary['unlinked_payments'] }}</div>
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+            <p class="text-xs font-medium text-slate-500 uppercase tracking-wide">Unlinked Payments</p>
+            <p class="mt-1 text-2xl font-display font-bold text-slate-900">{{ $summary['unlinked_payments'] }}</p>
         </div>
-        <div class="stat bg-white border border-slate-200 shadow-sm rounded-lg p-4">
-            <div class="stat-title text-xs text-slate-500">Matched</div>
-            <div class="stat-value text-2xl font-display font-bold text-teal">{{ $summary['matched_transactions'] }}</div>
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+            <p class="text-xs font-medium text-slate-500 uppercase tracking-wide">Matched</p>
+            <p class="mt-1 text-2xl font-display font-bold text-teal">{{ $summary['matched_transactions'] }}</p>
         </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div class="card bg-white border border-slate-200 shadow-sm">
-            <div class="card-body p-4">
-                <h3 class="font-display font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                    <x-lucide-arrow-left-from-line class="w-4 h-4 text-amber" />
-                    Unmatched Bank Transactions
-                    <span class="badge badge-sm bg-slate-100 text-slate-500">{{ $unmatchedTransactions->count() }}</span>
-                </h3>
-
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+            <div class="px-4 py-4 border-b border-slate-200 flex items-center gap-2">
+                <x-lucide-arrow-left-from-line class="w-4 h-4 text-amber-700" />
+                <h2 class="text-sm font-semibold text-slate-900">Unmatched Bank Transactions</h2>
+                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-slate-100 text-slate-600">{{ $unmatchedTransactions->count() }}</span>
+            </div>
+            <div class="p-4">
                 <div class="space-y-2 max-h-96 overflow-y-auto">
                     @forelse($unmatchedTransactions as $txn)
                         <div
@@ -45,14 +47,14 @@
                         >
                             <div class="flex justify-between items-start">
                                 <div class="min-w-0 flex-1">
-                                    <p class="font-medium text-slate-800 truncate">{{ $txn->description }}</p>
-                                    <p class="text-xs text-slate-400">{{ $txn->merchant_name ?? $txn->bankAccount?->name }}</p>
+                                    <p class="font-medium text-slate-900 truncate">{{ $txn->description }}</p>
+                                    <p class="text-xs text-slate-400 mt-0.5">{{ $txn->merchant_name ?? $txn->bankAccount?->name }}</p>
                                     <p class="text-xs text-slate-400 mt-0.5">{{ $txn->transaction_date->format('j M Y') }}</p>
                                 </div>
                                 <div class="text-right ml-3 shrink-0">
-                                    <p class="font-mono font-medium text-slate-700">-£{{ number_format(abs($txn->amount), 2) }}</p>
+                                    <p class="font-mono font-medium text-slate-700">-&pound;{{ number_format(abs($txn->amount), 2) }}</p>
                                     @if($txn->expense_category)
-                                        <span class="badge badge-xs bg-slate-100 text-slate-500 mt-1">{{ str_replace('_', ' ', $txn->expense_category) }}</span>
+                                        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-slate-100 text-slate-500 mt-1">{{ str_replace('_', ' ', $txn->expense_category) }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -64,14 +66,13 @@
             </div>
         </div>
 
-        <div class="card bg-white border border-slate-200 shadow-sm">
-            <div class="card-body p-4">
-                <h3 class="font-display font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                    <x-lucide-arrow-right-from-line class="w-4 h-4 text-teal" />
-                    Unlinked Order Payments
-                    <span class="badge badge-sm bg-slate-100 text-slate-500">{{ $unmatchedPayments->count() }}</span>
-                </h3>
-
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+            <div class="px-4 py-4 border-b border-slate-200 flex items-center gap-2">
+                <x-lucide-arrow-right-from-line class="w-4 h-4 text-teal" />
+                <h2 class="text-sm font-semibold text-slate-900">Unlinked Order Payments</h2>
+                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-slate-100 text-slate-600">{{ $unmatchedPayments->count() }}</span>
+            </div>
+            <div class="p-4">
                 <div class="space-y-2 max-h-96 overflow-y-auto">
                     @forelse($unmatchedPayments as $payment)
                         <div
@@ -80,13 +81,13 @@
                         >
                             <div class="flex justify-between items-start">
                                 <div class="min-w-0 flex-1">
-                                    <p class="font-medium text-slate-800">{{ $payment->order?->reference_number ?? 'Order #'.$payment->order_id }}</p>
-                                    <p class="text-xs text-slate-400">{{ $payment->order?->customer?->name }}</p>
+                                    <p class="font-medium text-slate-900">{{ $payment->order?->reference_number ?? 'Order #'.$payment->order_id }}</p>
+                                    <p class="text-xs text-slate-400 mt-0.5">{{ $payment->order?->customer?->name }}</p>
                                     <p class="text-xs text-slate-400 mt-0.5">{{ $payment->paid_at->format('j M Y') }}</p>
                                 </div>
                                 <div class="text-right ml-3 shrink-0">
-                                    <p class="font-mono font-medium text-teal">£{{ number_format($payment->amount, 2) }}</p>
-                                    <span class="badge badge-xs bg-slate-100 text-slate-500 mt-1">{{ str_replace('_', ' ', $payment->method) }}</span>
+                                    <p class="font-mono font-medium text-teal">&pound;{{ number_format($payment->amount, 2) }}</p>
+                                    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-slate-100 text-slate-500 mt-1">{{ str_replace('_', ' ', $payment->method) }}</span>
                                 </div>
                             </div>
                         </div>
@@ -99,8 +100,8 @@
     </div>
 
     @if($selectedTransactionId && $selectedPaymentId)
-        <div class="card bg-copper/5 border border-copper/20 shadow-sm mb-6">
-            <div class="card-body p-4 flex items-center justify-between">
+        <div class="bg-copper/5 border border-copper/20 rounded-xl shadow-sm mb-6">
+            <div class="p-4 flex items-center justify-between">
                 <div class="flex items-center gap-3 text-sm">
                     <x-lucide-link-2 class="w-5 h-5 text-copper" />
                     <span class="text-slate-700">
@@ -108,8 +109,8 @@
                     </span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button wire:click="$set('selectedTransactionId', null)" class="btn btn-ghost btn-xs">Cancel</button>
-                    <button wire:click="linkSelected" class="btn btn-primary btn-sm">
+                    <button wire:click="$set('selectedTransactionId', null)" class="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 transition-colors">Cancel</button>
+                    <button wire:click="linkSelected" class="inline-flex items-center gap-2 rounded-lg bg-copper px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark transition-colors">
                         <x-lucide-link-2 class="w-4 h-4" />
                         Link
                     </button>
@@ -119,47 +120,44 @@
     @endif
 
     @if($matchedTransactions->isNotEmpty())
-        <div class="card bg-white border border-slate-200 shadow-sm">
-            <div class="card-body p-4">
-                <h3 class="font-display font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                    <x-lucide-check-circle-2 class="w-4 h-4 text-teal" />
-                    Recently Matched
-                </h3>
-
-                <div class="overflow-x-auto">
-                    <table class="table table-sm">
-                        <thead>
-                            <tr class="text-slate-500 text-xs uppercase">
-                                <th>Transaction</th>
-                                <th>Payment</th>
-                                <th>Order</th>
-                                <th>Amount</th>
-                                <th>Matched</th>
-                                <th></th>
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-4 py-4 border-b border-slate-200 flex items-center gap-2">
+                <x-lucide-check-circle-2 class="w-4 h-4 text-teal" />
+                <h2 class="text-sm font-semibold text-slate-900">Recently Matched</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-slate-50 border-b border-slate-200">
+                        <tr>
+                            <th class="px-6 py-3 font-medium text-slate-700">Transaction</th>
+                            <th class="px-6 py-3 font-medium text-slate-700">Payment</th>
+                            <th class="px-6 py-3 font-medium text-slate-700">Order</th>
+                            <th class="px-6 py-3 font-medium text-slate-700">Amount</th>
+                            <th class="px-6 py-3 font-medium text-slate-700">Matched</th>
+                            <th class="px-6 py-3 font-medium text-slate-700"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @foreach($matchedTransactions as $txn)
+                            <tr class="hover:bg-slate-50 transition-colors text-sm">
+                                <td class="px-6 py-4 max-w-xs truncate text-slate-600">{{ $txn->description }}</td>
+                                <td class="px-6 py-4 text-slate-600">&pound;{{ number_format($txn->matchedPayment?->amount ?? 0, 2) }}</td>
+                                <td class="px-6 py-4">
+                                    <a href="{{ route('orders.show', $txn->matchedPayment?->order_id) }}" wire:navigate class="text-copper hover:underline">
+                                        {{ $txn->matchedPayment?->order?->reference_number ?? '#' . $txn->matchedPayment?->order_id }}
+                                    </a>
+                                </td>
+                                <td class="px-6 py-4 font-mono text-slate-600">&pound;{{ number_format(abs($txn->amount), 2) }}</td>
+                                <td class="px-6 py-4 text-xs text-slate-400">{{ $txn->updated_at->diffForHumans() }}</td>
+                                <td class="px-6 py-4 text-right">
+                                    <button wire:click="unlink({{ $txn->id }})" class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="Unlink">
+                                        <x-lucide-unlink-2 class="w-4 h-4" />
+                                    </button>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($matchedTransactions as $txn)
-                                <tr class="text-sm text-slate-600">
-                                    <td class="max-w-xs truncate">{{ $txn->description }}</td>
-                                    <td>£{{ number_format($txn->matchedPayment?->amount ?? 0, 2) }}</td>
-                                    <td>
-                                        <a href="{{ route('orders.show', $txn->matchedPayment?->order_id) }}" wire:navigate class="text-copper hover:underline">
-                                            {{ $txn->matchedPayment?->order?->reference_number ?? '#' . $txn->matchedPayment?->order_id }}
-                                        </a>
-                                    </td>
-                                    <td class="font-mono">£{{ number_format(abs($txn->amount), 2) }}</td>
-                                    <td class="text-xs text-slate-400">{{ $txn->updated_at->diffForHumans() }}</td>
-                                    <td>
-                                        <button wire:click="unlink({{ $txn->id }})" class="btn btn-ghost btn-xs text-slate-400 hover:text-red-500" title="Unlink">
-                                            <x-lucide-unlink-2 class="w-3.5 h-3.5" />
-                                        </button>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     @endif

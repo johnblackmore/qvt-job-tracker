@@ -76,39 +76,62 @@
                 @else
                     <div class="space-y-4">
                         @foreach($enquiry->replies as $reply)
-                            <div class="flex gap-3 {{ $reply->direction === 'inbound' ? '' : 'flex-row-reverse' }}">
-                                <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 {{ $reply->direction === 'inbound' ? 'bg-slate-100' : 'bg-copper/10' }}">
-                                    @if($reply->direction === 'inbound')
-                                        <x-lucide-user class="w-4 h-4 text-slate-500" />
-                                    @else
-                                        <x-lucide-send class="w-4 h-4 text-copper" />
-                                    @endif
-                                </div>
-                                <div class="max-w-[80%] {{ $reply->direction === 'inbound' ? '' : 'text-right' }}">
-                                    <div class="inline-block rounded-lg px-4 py-3 text-sm {{ $reply->direction === 'inbound' ? 'bg-slate-100 text-slate-700' : 'bg-copper/5 text-slate-700' }}">
-                                        @if($reply->subject)
-                                            <p class="font-medium text-slate-900 mb-1">{{ $reply->subject }}</p>
-                                        @endif
-                                        <p class="whitespace-pre-line">{{ $reply->body }}</p>
+                            @if($reply->isInternal())
+                                <div class="flex gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+                                        <x-lucide-notebook-pen class="w-4 h-4 text-amber-700" />
                                     </div>
-                                    <p class="text-xs text-slate-400 mt-1">
-                                        {{ $reply->staff?->name ?? ($reply->direction === 'inbound' ? 'Customer' : 'Staff') }}
-                                        &middot; {{ $reply->created_at->format('j M Y, g:ia') }}
-                                        @if($reply->status === 'sent' && $reply->sent_at)
-                                            &middot; Sent
-                                        @elseif($reply->status === 'failed')
-                                            &middot; <span class="text-red-500">Failed</span>
-                                        @elseif($reply->status === 'draft')
-                                            &middot; Draft
-                                        @elseif($reply->status === 'received')
-                                            &middot; Received
-                                        @endif
-                                        @if($reply->direction === 'outbound' && ($reply->status === 'sent' || $reply->status === 'failed'))
-                                            <button wire:click="resendReply({{ $reply->id }})" class="text-copper hover:text-copper-dark underline ml-1">Resend</button>
-                                        @endif
-                                    </p>
+                                    <div class="max-w-[80%]">
+                                        <div class="inline-block rounded-lg px-4 py-3 text-sm bg-amber-50 border border-amber-200 text-slate-700">
+                                            <div class="flex items-center gap-2 mb-1.5">
+                                                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-700">
+                                                    <x-lucide-lock class="w-3 h-3 mr-1" />
+                                                    Internal Note
+                                                </span>
+                                            </div>
+                                            <p class="whitespace-pre-line">{{ $reply->body }}</p>
+                                        </div>
+                                        <p class="text-xs text-slate-400 mt-1">
+                                            {{ $reply->staff?->name ?? 'Staff' }}
+                                            &middot; {{ $reply->created_at->format('j M Y, g:ia') }}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
+                            @else
+                                <div class="flex gap-3 {{ $reply->direction === 'inbound' ? '' : 'flex-row-reverse' }}">
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 {{ $reply->direction === 'inbound' ? 'bg-slate-100' : 'bg-copper/10' }}">
+                                        @if($reply->direction === 'inbound')
+                                            <x-lucide-user class="w-4 h-4 text-slate-500" />
+                                        @else
+                                            <x-lucide-send class="w-4 h-4 text-copper" />
+                                        @endif
+                                    </div>
+                                    <div class="max-w-[80%] {{ $reply->direction === 'inbound' ? '' : 'text-right' }}">
+                                        <div class="inline-block rounded-lg px-4 py-3 text-sm {{ $reply->direction === 'inbound' ? 'bg-slate-100 text-slate-700' : 'bg-copper/5 text-slate-700' }}">
+                                            @if($reply->subject)
+                                                <p class="font-medium text-slate-900 mb-1">{{ $reply->subject }}</p>
+                                            @endif
+                                            <p class="whitespace-pre-line">{{ $reply->body }}</p>
+                                        </div>
+                                        <p class="text-xs text-slate-400 mt-1">
+                                            {{ $reply->staff?->name ?? ($reply->direction === 'inbound' ? 'Customer' : 'Staff') }}
+                                            &middot; {{ $reply->created_at->format('j M Y, g:ia') }}
+                                            @if($reply->status === 'sent' && $reply->sent_at)
+                                                &middot; Sent
+                                            @elseif($reply->status === 'failed')
+                                                &middot; <span class="text-red-500">Failed</span>
+                                            @elseif($reply->status === 'draft')
+                                                &middot; Draft
+                                            @elseif($reply->status === 'received')
+                                                &middot; Received
+                                            @endif
+                                            @if($reply->direction === 'outbound' && ($reply->status === 'sent' || $reply->status === 'failed'))
+                                                <button wire:click="resendReply({{ $reply->id }})" class="text-copper hover:text-copper-dark underline ml-1">Resend</button>
+                                            @endif
+                                        </p>
+                                    </div>
+                                </div>
+                            @endif
                         @endforeach
 
                         {{-- AI draft preview --}}
@@ -328,5 +351,32 @@
                 @endif
             </div>
         </div>
-    </div>
-</div>
+            </div>
+
+            {{-- Internal note --}}
+            <div class="bg-white rounded-xl border border-amber-200 shadow-sm p-6">
+                <div class="flex items-center gap-2 mb-4">
+                    <x-lucide-notebook-pen class="w-4 h-4 text-amber-600" />
+                    <h2 class="text-sm font-semibold text-slate-900">Internal Note</h2>
+                    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-700">
+                        <x-lucide-lock class="w-3 h-3 mr-1" />
+                        Staff only
+                    </span>
+                </div>
+                <p class="text-xs text-slate-500 mb-3">Internal notes are not sent to the customer and are only visible to staff.</p>
+
+                <form wire:submit="addInternalNote" class="space-y-3">
+                    <div>
+                        <textarea wire:model="internalNoteBody" rows="3" class="w-full rounded-lg border-amber-300 text-slate-900 focus:border-amber-500 focus:ring-amber-500 text-sm px-3.5 py-2.5" placeholder="Add an internal note..."></textarea>
+                        @error('internalNoteBody') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" wire:loading.attr="disabled" wire:target="addInternalNote" class="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-amber-700 transition-colors">
+                            <x-lucide-plus class="w-4 h-4 shrink-0" />
+                            <span wire:loading.remove wire:target="addInternalNote">Add Note</span>
+                            <span wire:loading wire:target="addInternalNote">Adding...</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>

@@ -20,6 +20,8 @@ class TransactionShow extends Component
 
     public string $reconciliationStatus = '';
 
+    public bool $showRawData = false;
+
     public $upload = null;
 
     public function mount(BankTransaction $transaction): void
