@@ -19,6 +19,8 @@ class ChatStreamController extends Controller
 
         session_write_close();
 
+        set_time_limit(600);
+
         return $assistant->streamResponse(
             conversation: $conversation,
             user: request()->user(),
