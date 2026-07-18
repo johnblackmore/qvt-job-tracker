@@ -136,9 +136,9 @@
                     </a>
 
                     <a
-                        href="{{ route('admin.ai.assistant-settings') }}"
+                        href="{{ route('admin.ai.assistants.index') }}"
                         wire:navigate
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.ai.assistant-settings') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.ai.assistants.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
                     >
                         <x-lucide-bot class="w-5 h-5 shrink-0" />
                         AI Assistants

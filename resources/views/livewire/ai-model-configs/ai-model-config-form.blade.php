@@ -30,6 +30,31 @@
             </div>
         </div>
 
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+                <label for="input_price" class="block text-sm font-medium text-slate-700 mb-1.5">Input Price (per 1M tokens)</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm text-slate-500 font-medium">$</span>
+                    <input wire:model="input_price" id="input_price" type="number" step="0.0001" min="0"
+                           class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm pl-7 pr-3.5 py-2.5"
+                           placeholder="0.14" />
+                </div>
+                <p class="mt-1 text-xs text-slate-400">USD cost per million input tokens</p>
+                @error('input_price') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label for="output_price" class="block text-sm font-medium text-slate-700 mb-1.5">Output Price (per 1M tokens)</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm text-slate-500 font-medium">$</span>
+                    <input wire:model="output_price" id="output_price" type="number" step="0.0001" min="0"
+                           class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm pl-7 pr-3.5 py-2.5"
+                           placeholder="0.28" />
+                </div>
+                <p class="mt-1 text-xs text-slate-400">USD cost per million output tokens</p>
+                @error('output_price') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+        </div>
+
         <div>
             <label for="description" class="block text-sm font-medium text-slate-700 mb-1.5">Description</label>
             <textarea wire:model="description" id="description" rows="2" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5" placeholder="Optional notes about this config..."></textarea>

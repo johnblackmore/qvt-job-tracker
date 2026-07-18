@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['label', 'provider', 'model', 'description'])]
+#[Fillable(['label', 'provider', 'model', 'description', 'input_price', 'output_price'])]
 class AiModelConfig extends Model
 {
     /** @use HasFactory<AiModelConfigFactory> */

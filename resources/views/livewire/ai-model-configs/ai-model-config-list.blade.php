@@ -19,6 +19,8 @@
                             <th class="px-6 py-3 font-medium text-slate-700">Label</th>
                             <th class="px-6 py-3 font-medium text-slate-700">Provider</th>
                             <th class="px-6 py-3 font-medium text-slate-700">Model</th>
+                            <th class="px-6 py-3 font-medium text-slate-700 text-right">Input Price</th>
+                            <th class="px-6 py-3 font-medium text-slate-700 text-right">Output Price</th>
                             <th class="px-6 py-3 font-medium text-slate-700">Assigned To</th>
                             <th class="px-6 py-3 font-medium text-slate-700 text-right">Actions</th>
                         </tr>
@@ -39,6 +41,12 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <code class="text-xs bg-slate-100 px-1.5 py-0.5 rounded text-slate-700 font-mono">{{ $config->model }}</code>
+                                </td>
+                                <td class="px-6 py-4 text-right text-sm text-slate-600 font-mono">
+                                    {{ $config->input_price !== null ? '$'.number_format($config->input_price, 4) : '—' }}
+                                </td>
+                                <td class="px-6 py-4 text-right text-sm text-slate-600 font-mono">
+                                    {{ $config->output_price !== null ? '$'.number_format($config->output_price, 4) : '—' }}
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex flex-wrap gap-1.5">

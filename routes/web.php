@@ -33,4 +33,5 @@ require __DIR__.'/orders.php';
 require __DIR__.'/email.php';
 require __DIR__.'/chat.php';
 require __DIR__.'/ai-configs.php';
+require __DIR__.'/ai-assistants.php';
 require __DIR__.'/admin-settings.php';
