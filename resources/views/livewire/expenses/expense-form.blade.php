@@ -136,14 +136,19 @@
                                 <div class="flex-1 space-y-2">
                                     <input wire:model="lineItems.{{ $index }}.description" type="text" class="w-full rounded border-slate-300 text-ink focus:border-copper focus:ring-copper text-sm px-2.5 py-1.5" placeholder="Item description..." />
                                     @error("lineItems.{$index}.description") <p class="text-xs text-red-600">{{ $message }}</p> @enderror
-                                    <div class="flex gap-3">
+                                    <div class="flex flex-wrap gap-2 items-start">
                                         <select wire:model="lineItems.{{ $index }}.line_type" class="rounded border-slate-300 text-ink focus:border-copper focus:ring-copper text-xs px-2 py-1.5">
                                             <option value="business">Business</option>
                                             <option value="personal">Personal</option>
                                         </select>
-                                        <div class="relative flex-1 max-w-[140px]">
+                                        <input wire:model="lineItems.{{ $index }}.quantity" wire:change="recalculateLineItem({{ $index }})" type="number" step="0.01" min="0" class="w-16 text-right rounded border-slate-300 text-ink focus:border-copper focus:ring-copper text-sm px-2 py-1.5" placeholder="Qty" />
+                                        <div class="relative max-w-[120px]">
                                             <span class="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-xs">£</span>
-                                            <input wire:model="lineItems.{{ $index }}.amount" wire:change="recalculateLineItem({{ $index }})" type="number" step="0.01" min="0" class="w-full text-right rounded border-slate-300 text-ink focus:border-copper focus:ring-copper text-sm pl-5 pr-2 py-1.5" placeholder="Amount" />
+                                            <input wire:model="lineItems.{{ $index }}.unit_price" wire:change="recalculateLineItem({{ $index }})" type="number" step="0.0001" min="0" class="w-full text-right rounded border-slate-300 text-ink focus:border-copper focus:ring-copper text-sm pl-5 pr-2 py-1.5" placeholder="Unit price" />
+                                        </div>
+                                        <div class="relative max-w-[120px]">
+                                            <span class="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-xs">£</span>
+                                            <input wire:model="lineItems.{{ $index }}.amount" wire:change="recalculateLineItem({{ $index }})" type="number" step="0.01" min="0" class="w-full text-right rounded border-slate-300 text-ink focus:border-copper focus:ring-copper text-sm pl-5 pr-2 py-1.5" placeholder="Total" />
                                         </div>
                                         <input wire:model="lineItems.{{ $index }}.vat_rate" wire:change="recalculateLineItem({{ $index }})" type="number" step="0.01" min="0" max="100" class="w-16 text-right rounded border-slate-300 text-ink focus:border-copper focus:ring-copper text-sm px-2 py-1.5" placeholder="VAT%" />
                                         <span class="text-sm text-slate-600 self-center">VAT: £{{ number_format((float) ($item['vat_amount'] ?? 0), 2) }}</span>

@@ -124,6 +124,8 @@
                     <tr class="border-b border-slate-200">
                         <th class="px-6 py-3 text-left font-medium text-slate-700">Type</th>
                         <th class="px-6 py-3 text-left font-medium text-slate-700">Description</th>
+                        <th class="px-6 py-3 text-right font-medium text-slate-700">Qty</th>
+                        <th class="px-6 py-3 text-right font-medium text-slate-700">Unit Price</th>
                         <th class="px-6 py-3 text-right font-medium text-slate-700">Amount</th>
                         <th class="px-6 py-3 text-right font-medium text-slate-700">VAT</th>
                     </tr>
@@ -140,6 +142,8 @@
                                 </span>
                             </td>
                             <td class="px-6 py-3 text-ink">{{ $item->description }}</td>
+                            <td class="px-6 py-3 text-right text-slate-600">{{ $item->quantity ? number_format($item->quantity, 2) : '-' }}</td>
+                            <td class="px-6 py-3 text-right text-slate-600">{{ $item->unit_price ? '£'.number_format($item->unit_price, 4) : '-' }}</td>
                             <td class="px-6 py-3 text-right font-medium text-ink">£{{ number_format($item->amount, 2) }}</td>
                             <td class="px-6 py-3 text-right text-slate-600">£{{ number_format($item->vat_amount, 2) }}</td>
                         </tr>

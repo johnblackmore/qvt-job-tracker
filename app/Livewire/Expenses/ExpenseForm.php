@@ -63,6 +63,8 @@ class ExpenseForm extends Component
                         'description' => $item->description,
                         'line_type' => $item->line_type,
                         'amount' => (string) $item->amount,
+                        'unit_price' => (string) ($item->unit_price ?? 0),
+                        'quantity' => (string) ($item->quantity ?? 1),
                         'vat_rate' => (string) ($item->vat_rate * 100),
                         'vat_amount' => (string) $item->vat_amount,
                         'line_type_category' => $item->line_type_category ?? '',
@@ -89,6 +91,8 @@ class ExpenseForm extends Component
             'description' => '',
             'line_type' => 'business',
             'amount' => '0',
+            'unit_price' => '0',
+            'quantity' => '1',
             'vat_rate' => '20',
             'vat_amount' => '0',
             'line_type_category' => '',
@@ -178,6 +182,8 @@ class ExpenseForm extends Component
                     'description' => $item['description'],
                     'line_type' => $item['line_type'],
                     'amount' => $item['amount'],
+                    'unit_price' => ! empty($item['unit_price']) ? (float) $item['unit_price'] : null,
+                    'quantity' => ! empty($item['quantity']) ? (float) $item['quantity'] : null,
                     'vat_rate' => (float) ($item['vat_rate'] ?? 20) / 100,
                     'vat_amount' => (float) ($item['amount'] ?? 0) * ((float) ($item['vat_rate'] ?? 20) / 100),
                     'line_type_category' => $item['line_type_category'] ?? null,
@@ -233,19 +239,33 @@ class ExpenseForm extends Component
             $this->showLineItems = true;
             $this->lineItems = [];
             foreach ($data['line_items'] as $item) {
-                $amount = (float) ($item['unit_amount'] ?? 0) * (float) ($item['quantity'] ?? 1);
+                $lineTotal = (float) ($item['line_total'] ?? 0);
+                $unitAmount = (float) ($item['unit_amount'] ?? 0);
+                $qty = (float) ($item['quantity'] ?? 1);
+                $amount = $lineTotal > 0 ? $lineTotal : $unitAmount * $qty;
                 $vatRate = (float) ($item['vat_rate'] ?? 0.20) * 100;
                 $this->lineItems[] = [
                     'id' => null,
                     'description' => $item['description'] ?? '',
                     'line_type' => $item['line_type'] ?? 'business',
                     'amount' => (string) $amount,
+                    'unit_price' => $unitAmount > 0 ? (string) $unitAmount : '0',
+                    'quantity' => $qty > 0 ? (string) $qty : '1',
                     'vat_rate' => (string) $vatRate,
                     'vat_amount' => (string) round($amount * ($vatRate / 100), 2),
                     'line_type_category' => '',
                 ];
             }
+
             $this->recalculateTotals();
+
+            if (! empty($data['total_amount'])) {
+                $this->total_amount = (string) $data['total_amount'];
+            }
+
+            if (! empty($data['vat_total'])) {
+                $this->vat_total = (string) $data['vat_total'];
+            }
         }
 
         $this->dispatch('$refresh');
