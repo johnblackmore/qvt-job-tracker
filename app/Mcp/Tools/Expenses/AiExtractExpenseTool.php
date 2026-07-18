@@ -2,6 +2,7 @@
 
 namespace App\Mcp\Tools\Expenses;
 
+use App\Jobs\ProcessExpenseExtraction;
 use App\Models\AiExtraction;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Request;
@@ -80,13 +81,15 @@ class AiExtractExpenseTool extends Tool
         $extraction = AiExtraction::create([
             'user_id' => $request->user()?->id,
             'assistant_name' => 'expenses-extractor',
-            'provider' => config('ai.assistants.expenses-extractor.provider', 'openai'),
-            'model' => config('ai.assistants.expenses-extractor.model', 'gpt-4o'),
+            'provider' => 'pending',
+            'model' => 'pending',
             'source_url' => $storagePath,
             'status' => 'processing',
             'extracted_data' => null,
             'raw_response' => null,
         ]);
+
+        ProcessExpenseExtraction::dispatch($extraction->id);
 
         return Response::structured([
             'status' => 'completed',

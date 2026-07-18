@@ -7,7 +7,10 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Prism\Prism\Exceptions\PrismException;
 use Prism\Prism\PrismManager;
+use Prism\Prism\Providers\Anthropic\Anthropic;
 use Prism\Prism\Providers\DeepSeek\DeepSeek;
+use Prism\Prism\Providers\Gemini\Gemini;
+use Prism\Prism\Providers\OpenAI\OpenAI;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -38,6 +41,73 @@ class AppServiceProvider extends ServiceProvider
                 }
 
                 return new DeepSeek(
+                    apiKey: $config['api_key'],
+                    url: $config['url'],
+                );
+            });
+
+            $manager->extend('opencode-go-anthropic', function ($app, $config) {
+                if (blank($config['api_key'] ?? '')) {
+                    throw PrismException::providerResponseError(
+                        'OpenCode Zen API key is not set. Set OPENCODE_API_KEY in your .env file.'
+                    );
+                }
+
+                return new Anthropic(
+                    apiKey: $config['api_key'],
+                    apiVersion: $config['version'] ?? '2023-06-01',
+                    url: $config['url'],
+                );
+            });
+
+            $manager->extend('opencode-openai', function ($app, $config) {
+                if (blank($config['api_key'] ?? '')) {
+                    throw PrismException::providerResponseError(
+                        'OpenCode Zen API key is not set. Set OPENCODE_API_KEY in your .env file.'
+                    );
+                }
+
+                return new OpenAI(
+                    apiKey: $config['api_key'],
+                    url: $config['url'],
+                );
+            });
+
+            $manager->extend('opencode-openai-compatible', function ($app, $config) {
+                if (blank($config['api_key'] ?? '')) {
+                    throw PrismException::providerResponseError(
+                        'OpenCode Zen API key is not set. Set OPENCODE_API_KEY in your .env file.'
+                    );
+                }
+
+                return new DeepSeek(
+                    apiKey: $config['api_key'],
+                    url: $config['url'],
+                );
+            });
+
+            $manager->extend('opencode-anthropic', function ($app, $config) {
+                if (blank($config['api_key'] ?? '')) {
+                    throw PrismException::providerResponseError(
+                        'OpenCode Zen API key is not set. Set OPENCODE_API_KEY in your .env file.'
+                    );
+                }
+
+                return new Anthropic(
+                    apiKey: $config['api_key'],
+                    apiVersion: $config['version'] ?? '2023-06-01',
+                    url: $config['url'],
+                );
+            });
+
+            $manager->extend('opencode-google', function ($app, $config) {
+                if (blank($config['api_key'] ?? '')) {
+                    throw PrismException::providerResponseError(
+                        'OpenCode Zen API key is not set. Set OPENCODE_API_KEY in your .env file.'
+                    );
+                }
+
+                return new Gemini(
                     apiKey: $config['api_key'],
                     url: $config['url'],
                 );

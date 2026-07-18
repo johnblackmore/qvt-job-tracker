@@ -32,7 +32,7 @@ class EnquiryAiAssistantService
             ? AiModelConfig::find($settings->enquiry_draft_assistant_config_id)
             : null;
 
-        $provider = $configRecord?->provider ?? $fallback['provider'];
+        $provider = $configRecord?->resolvedProvider() ?? $fallback['provider'];
         $model = $configRecord?->model ?? $fallback['model'];
 
         $generation = AiDraftGeneration::create([

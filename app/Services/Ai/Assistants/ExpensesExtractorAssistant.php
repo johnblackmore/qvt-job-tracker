@@ -18,7 +18,7 @@ use Smalot\PdfParser\Parser as PdfParser;
 
 class ExpensesExtractorAssistant
 {
-    public function extract(string $filePath, User $user): array
+    protected function resolveConfig(string $filePath): array
     {
         $settings = app(AiAssistantConfigSettings::class);
         $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
@@ -34,18 +34,53 @@ class ExpensesExtractorAssistant
 
         $fallback = config('ai.assistants.expenses-extractor');
 
-        $provider = $configRecord?->provider ?? $fallback['provider'];
-        $model = $configRecord?->model ?? $fallback['model'];
+        return [
+            'provider' => $configRecord?->resolvedProvider() ?? $fallback['provider'],
+            'model' => $configRecord?->model ?? $fallback['model'],
+            'fallback' => $fallback,
+            'isImage' => $isImage,
+            'extension' => $extension,
+        ];
+    }
+
+    public function extract(string $filePath, User $user): array
+    {
+        $config = $this->resolveConfig($filePath);
 
         $extraction = AiExtraction::create([
             'user_id' => $user->id,
             'assistant_name' => 'expenses-extractor',
-            'provider' => $provider,
-            'model' => $model,
+            'provider' => $config['provider'],
+            'model' => $config['model'],
             'source_url' => $filePath,
             'prompt_data' => null,
             'status' => 'processing',
         ]);
+
+        $this->processExtractionRecord($extraction, $config);
+
+        if ($extraction->status === 'failed') {
+            throw new \RuntimeException($extraction->error_message ?? 'Extraction failed.');
+        }
+
+        return $extraction->extracted_data ?? [];
+    }
+
+    public function processExtraction(AiExtraction $extraction): void
+    {
+        $config = $this->resolveConfig($extraction->source_url);
+
+        $extraction->update([
+            'provider' => $config['provider'],
+            'model' => $config['model'],
+        ]);
+
+        $this->processExtractionRecord($extraction, $config);
+    }
+
+    protected function processExtractionRecord(AiExtraction $extraction, array $config): void
+    {
+        $filePath = $extraction->source_url;
 
         try {
             $fullPath = Storage::disk('local')->path($filePath);
@@ -54,22 +89,22 @@ class ExpensesExtractorAssistant
                 throw new \RuntimeException('The uploaded file could not be found on the server.');
             }
 
-            if ($isImage) {
-                $data = $this->extractFromImage($fullPath, $extension, $provider, $model, $fallback, $extraction);
-            } elseif ($extension === 'pdf') {
-                $data = $this->extractFromPdf($fullPath, $provider, $model, $fallback, $extraction);
-            } else {
-                $data = $this->extractFromTextFile($fullPath, $provider, $model, $fallback, $extraction);
-            }
+            $provider = $config['provider'];
+            $model = $config['model'];
+            $fallback = $config['fallback'];
 
-            return $data;
+            if ($config['isImage']) {
+                $this->extractFromImage($fullPath, $config['extension'], $provider, $model, $fallback, $extraction);
+            } elseif ($config['extension'] === 'pdf') {
+                $this->extractFromPdf($fullPath, $provider, $model, $fallback, $extraction);
+            } else {
+                $this->extractFromTextFile($fullPath, $provider, $model, $fallback, $extraction);
+            }
         } catch (\Throwable $e) {
             $extraction->update([
                 'status' => 'failed',
                 'error_message' => $e->getMessage(),
             ]);
-
-            throw $e;
         }
     }
 
@@ -220,7 +255,7 @@ class ExpensesExtractorAssistant
                             new StringSchema('line_type', 'Either "business" or "personal"', true),
                         ],
                     ),
-                    true,
+                    nullable: true,
                 ),
             ],
         );

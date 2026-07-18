@@ -44,7 +44,7 @@ class ChatAgentAssistant
             ? AiModelConfig::find($settings->chat_agent_config_id)
             : null;
 
-        $provider = $conversation->provider ?: ($configRecord?->provider ?? $fallback['provider']);
+        $provider = $conversation->provider ?: ($configRecord?->resolvedProvider() ?? $fallback['provider']);
         $model = $conversation->model ?: ($configRecord?->model ?? $fallback['model']);
 
         $prism = Prism::text()

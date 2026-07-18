@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Expenses;
 
+use App\Jobs\ProcessExpenseExtraction;
 use App\Models\AiExtraction;
-use App\Services\Ai\Assistants\ExpensesExtractorAssistant;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -17,23 +17,7 @@ class AiExtractionPanel extends Component
 
     public ?AiExtraction $extraction = null;
 
-    public array $extractedData = [];
-
-    public string $supplierName = '';
-
-    public string $invoiceNumber = '';
-
-    public string $invoiceDate = '';
-
-    public string $dueDate = '';
-
-    public string $subtotal = '0';
-
-    public string $vatTotal = '0';
-
-    public string $totalAmount = '0';
-
-    public array $lineItems = [];
+    public bool $hasPollStarted = false;
 
     public string $documentableType = '';
 
@@ -60,29 +44,52 @@ class AiExtractionPanel extends Component
 
         $this->isProcessing = true;
         $this->extraction = null;
+        $this->hasPollStarted = false;
 
         $path = $this->upload->store('expenses/ai-extractions', 'local');
 
         $this->dispatch('extraction-started');
 
         try {
-            $assistant = app(ExpensesExtractorAssistant::class);
-            $data = $assistant->extract($path, auth()->user());
+            $extraction = AiExtraction::create([
+                'user_id' => auth()->id(),
+                'assistant_name' => 'expenses-extractor',
+                'provider' => 'pending',
+                'model' => 'pending',
+                'source_url' => $path,
+                'status' => 'processing',
+                'extracted_data' => null,
+                'raw_response' => null,
+            ]);
 
-            $extraction = AiExtraction::where('assistant_name', 'expenses-extractor')
-                ->where('source_url', $path)
-                ->latest()
-                ->first();
+            ProcessExpenseExtraction::dispatch($extraction->id);
 
             $this->extraction = $extraction;
-            $this->extractedData = $data;
+            $this->hasPollStarted = true;
 
-            $this->dispatch('extraction-completed', extractionId: $extraction?->id);
-        } catch (\Exception $e) {
+            $this->dispatch('extraction-dispatched', extractionId: $extraction->id);
+        } catch (\Throwable $e) {
             $this->addError('upload', 'Failed to process file: '.$e->getMessage());
+            $this->isProcessing = false;
+        }
+    }
+
+    public function checkStatus(): void
+    {
+        if (! $this->extraction) {
+            return;
         }
 
-        $this->isProcessing = false;
+        $this->extraction->refresh();
+
+        if ($this->extraction->status === 'completed') {
+            $this->isProcessing = false;
+            $this->hasPollStarted = false;
+            $this->dispatch('extraction-completed', extractionId: $this->extraction->id);
+        } elseif ($this->extraction->status === 'failed') {
+            $this->isProcessing = false;
+            $this->hasPollStarted = false;
+        }
     }
 
     public function applyToForm(): void

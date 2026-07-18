@@ -24,7 +24,7 @@ class ProductUrlAssistant
             ? AiModelConfig::find($settings->product_url_extractor_config_id)
             : null;
 
-        $provider = $configRecord?->provider ?? $fallback['provider'];
+        $provider = $configRecord?->resolvedProvider() ?? $fallback['provider'];
         $model = $configRecord?->model ?? $fallback['model'];
 
         $extraction = AiExtraction::create([

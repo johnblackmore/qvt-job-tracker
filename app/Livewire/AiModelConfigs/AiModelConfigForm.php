@@ -19,6 +19,14 @@ class AiModelConfigForm extends Component
 
     public bool $has_vision = false;
 
+    public ?string $api_type = null;
+
+    public bool $supports_text = true;
+
+    public bool $supports_audio = false;
+
+    public bool $supports_file_uploads = false;
+
     public ?string $input_price = null;
 
     public ?string $output_price = null;
@@ -32,6 +40,10 @@ class AiModelConfigForm extends Component
             $this->model = $this->config->model;
             $this->description = $this->config->description ?? '';
             $this->has_vision = $this->config->has_vision ?? false;
+            $this->api_type = $this->config->api_type;
+            $this->supports_text = $this->config->supports_text ?? true;
+            $this->supports_audio = $this->config->supports_audio ?? false;
+            $this->supports_file_uploads = $this->config->supports_file_uploads ?? false;
             $this->input_price = $this->config->input_price !== null ? (string) $this->config->input_price : null;
             $this->output_price = $this->config->output_price !== null ? (string) $this->config->output_price : null;
         }
@@ -47,6 +59,10 @@ class AiModelConfigForm extends Component
             'model' => ['required', 'string', 'max:100'],
             'description' => ['nullable', 'string', 'max:500'],
             'has_vision' => ['boolean'],
+            'api_type' => ['nullable', 'string', 'in:openai,openai_compatible,anthropic,google'],
+            'supports_text' => ['boolean'],
+            'supports_audio' => ['boolean'],
+            'supports_file_uploads' => ['boolean'],
             'input_price' => ['nullable', 'numeric', 'min:0', 'max:999999.9999'],
             'output_price' => ['nullable', 'numeric', 'min:0', 'max:999999.9999'],
         ]);

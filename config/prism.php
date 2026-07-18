@@ -65,6 +65,26 @@ return [
             'api_key' => env('PERPLEXITY_API_KEY', ''),
             'url' => env('PERPLEXITY_URL', 'https://api.perplexity.ai'),
         ],
+        'opencode-openai' => [
+            'url' => env('OPENCODE_URL', 'https://opencode.ai/zen/v1'),
+            'api_key' => env('OPENCODE_API_KEY', ''),
+        ],
+        'opencode-openai-compatible' => [
+            'url' => env('OPENCODE_URL', 'https://opencode.ai/zen/v1'),
+            'api_key' => env('OPENCODE_API_KEY', ''),
+        ],
+        'opencode-anthropic' => [
+            'url' => env('OPENCODE_URL', 'https://opencode.ai/zen/v1'),
+            'api_key' => env('OPENCODE_API_KEY', ''),
+        ],
+        'opencode-google' => [
+            'url' => env('OPENCODE_URL', 'https://opencode.ai/zen/v1'),
+            'api_key' => env('OPENCODE_API_KEY', ''),
+        ],
+        'opencode-go-anthropic' => [
+            'url' => env('OPENCODE_URL', 'https://opencode.ai/zen/go/v1'),
+            'api_key' => env('OPENCODE_API_KEY', ''),
+        ],
         'z' => [
             'url' => env('Z_URL', 'https://api.z.ai/api/paas/v4'),
             'api_key' => env('Z_API_KEY', ''),

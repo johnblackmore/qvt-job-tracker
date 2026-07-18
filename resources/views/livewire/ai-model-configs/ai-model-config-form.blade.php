@@ -30,6 +30,18 @@
             </div>
         </div>
 
+        <div>
+            <label for="api_type" class="block text-sm font-medium text-slate-700 mb-1.5">API Protocol</label>
+            <select wire:model="api_type" id="api_type" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5">
+                <option value="">OpenAI-compatible (default)</option>
+                <option value="openai">OpenAI (genuine OpenAI models)</option>
+                <option value="anthropic">Anthropic</option>
+                <option value="google">Google Gemini</option>
+            </select>
+            <p class="mt-1 text-xs text-slate-400">The API protocol this model uses. Leave as default for OpenAI-compatible models like DeepSeek, Groq, etc.</p>
+            @error('api_type') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+        </div>
+
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
                 <label for="input_price" class="block text-sm font-medium text-slate-700 mb-1.5">Input Price (per 1M tokens)</label>
@@ -61,10 +73,28 @@
             @error('description') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
         </div>
 
-        <div class="flex items-center gap-3">
-            <input wire:model="has_vision" id="has_vision" type="checkbox" class="rounded border-slate-300 text-copper focus:ring-copper cursor-pointer" />
-            <label for="has_vision" class="text-sm font-medium text-slate-700 cursor-pointer">This model supports vision (can process images)</label>
-            @error('has_vision') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+        <div class="space-y-3">
+            <p class="text-sm font-medium text-slate-700">Capabilities</p>
+            <div class="flex items-center gap-3">
+                <input wire:model="supports_text" id="supports_text" type="checkbox" class="rounded border-slate-300 text-copper focus:ring-copper cursor-pointer" />
+                <label for="supports_text" class="text-sm font-medium text-slate-700 cursor-pointer">Supports text processing</label>
+                @error('supports_text') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+            <div class="flex items-center gap-3">
+                <input wire:model="has_vision" id="has_vision" type="checkbox" class="rounded border-slate-300 text-copper focus:ring-copper cursor-pointer" />
+                <label for="has_vision" class="text-sm font-medium text-slate-700 cursor-pointer">Supports vision (can process images)</label>
+                @error('has_vision') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+            <div class="flex items-center gap-3">
+                <input wire:model="supports_audio" id="supports_audio" type="checkbox" class="rounded border-slate-300 text-copper focus:ring-copper cursor-pointer" />
+                <label for="supports_audio" class="text-sm font-medium text-slate-700 cursor-pointer">Supports audio processing</label>
+                @error('supports_audio') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+            <div class="flex items-center gap-3">
+                <input wire:model="supports_file_uploads" id="supports_file_uploads" type="checkbox" class="rounded border-slate-300 text-copper focus:ring-copper cursor-pointer" />
+                <label for="supports_file_uploads" class="text-sm font-medium text-slate-700 cursor-pointer">Supports file uploads</label>
+                @error('supports_file_uploads') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
         </div>
 
         <div class="flex items-center gap-4 pt-2">
