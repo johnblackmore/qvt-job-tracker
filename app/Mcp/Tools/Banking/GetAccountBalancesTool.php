@@ -30,7 +30,7 @@ class GetAccountBalancesTool extends Tool
                     'id' => $schema->integer()->required(),
                     'name' => $schema->string()->required(),
                     'type' => $schema->string(),
-                    'balance' => $schema->float(),
+                    'balance' => $schema->number(),
                     'currency' => $schema->string(),
                     'formatted_balance' => $schema->string(),
                     'last_fetched_at' => $schema->string(),

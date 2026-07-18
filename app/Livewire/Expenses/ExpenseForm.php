@@ -1,0 +1,192 @@
+<?php
+
+namespace App\Livewire\Expenses;
+
+use App\Models\Expense;
+use App\Models\ExpenseCategory;
+use Illuminate\Support\Str;
+use Livewire\Component;
+
+class ExpenseForm extends Component
+{
+    public ?Expense $expense = null;
+
+    public ?int $expense_category_id = null;
+
+    public string $description = '';
+
+    public string $merchant_name = '';
+
+    public string $total_amount = '0';
+
+    public string $vat_total = '0';
+
+    public string $expense_date = '';
+
+    public string $payment_method = '';
+
+    public string $payment_reference = '';
+
+    public string $status = 'draft';
+
+    public string $notes = '';
+
+    public bool $showLineItems = false;
+
+    public array $lineItems = [];
+
+    public function mount(?int $expenseId = null): void
+    {
+        if ($expenseId) {
+            $this->expense = Expense::with('lineItems')->findOrFail($expenseId);
+            $this->expense_category_id = $this->expense->expense_category_id;
+            $this->description = $this->expense->description;
+            $this->merchant_name = $this->expense->merchant_name ?? '';
+            $this->total_amount = (string) $this->expense->total_amount;
+            $this->vat_total = (string) $this->expense->vat_total;
+            $this->expense_date = $this->expense->expense_date->format('Y-m-d');
+            $this->payment_method = $this->expense->payment_method ?? '';
+            $this->payment_reference = $this->expense->payment_reference ?? '';
+            $this->status = $this->expense->status;
+            $this->notes = $this->expense->notes ?? '';
+
+            if ($this->expense->lineItems->isNotEmpty()) {
+                $this->showLineItems = true;
+                foreach ($this->expense->lineItems as $item) {
+                    $this->lineItems[] = [
+                        'id' => $item->id,
+                        'description' => $item->description,
+                        'line_type' => $item->line_type,
+                        'amount' => (string) $item->amount,
+                        'vat_rate' => (string) ($item->vat_rate * 100),
+                        'vat_amount' => (string) $item->vat_amount,
+                        'line_type_category' => $item->line_type_category ?? '',
+                    ];
+                }
+            }
+        } else {
+            $this->expense_date = now()->format('Y-m-d');
+        }
+    }
+
+    public function toggleLineItems(): void
+    {
+        $this->showLineItems = ! $this->showLineItems;
+        if ($this->showLineItems && empty($this->lineItems)) {
+            $this->addLineItem();
+        }
+    }
+
+    public function addLineItem(): void
+    {
+        $this->lineItems[] = [
+            'id' => null,
+            'description' => '',
+            'line_type' => 'business',
+            'amount' => '0',
+            'vat_rate' => '20',
+            'vat_amount' => '0',
+            'line_type_category' => '',
+        ];
+    }
+
+    public function removeLineItem(int $index): void
+    {
+        unset($this->lineItems[$index]);
+        $this->lineItems = array_values($this->lineItems);
+        $this->recalculateTotals();
+    }
+
+    public function recalculateLineItem(int $index): void
+    {
+        $item = &$this->lineItems[$index];
+        $amount = (float) ($item['amount'] ?? 0);
+        $vatRate = (float) ($item['vat_rate'] ?? 20) / 100;
+        $item['vat_amount'] = (string) round($amount * $vatRate, 2);
+        $this->recalculateTotals();
+    }
+
+    public function recalculateTotals(): void
+    {
+        $total = 0;
+        $vatTotal = 0;
+
+        foreach ($this->lineItems as $item) {
+            $amount = (float) ($item['amount'] ?? 0);
+            $vatRate = (float) ($item['vat_rate'] ?? 20) / 100;
+            $total += $amount;
+            $vatTotal += $amount * $vatRate;
+        }
+
+        $this->total_amount = (string) round($total, 2);
+        $this->vat_total = (string) round($vatTotal, 2);
+    }
+
+    public function save(): void
+    {
+        $rules = [
+            'expense_category_id' => ['nullable', 'integer', 'exists:expense_categories,id'],
+            'description' => ['required', 'string', 'max:5000'],
+            'merchant_name' => ['nullable', 'string', 'max:255'],
+            'expense_date' => ['required', 'date', 'date_format:Y-m-d'],
+            'payment_method' => ['nullable', 'string', 'max:30'],
+            'payment_reference' => ['nullable', 'string', 'max:255'],
+            'status' => ['required', 'in:draft,approved,paid,cancelled'],
+            'notes' => ['nullable', 'string'],
+        ];
+
+        if ($this->showLineItems) {
+            $rules['lineItems'] = ['required', 'array', 'min:1'];
+            $rules['lineItems.*.description'] = ['required', 'string', 'max:5000'];
+            $rules['lineItems.*.line_type'] = ['required', 'in:business,personal'];
+            $rules['lineItems.*.amount'] = ['required', 'numeric', 'min:0'];
+            $rules['lineItems.*.vat_rate'] = ['required', 'numeric', 'min:0', 'max:100'];
+        }
+
+        $validated = $this->validate($rules);
+
+        $data = [
+            'expense_category_id' => $validated['expense_category_id'],
+            'description' => $validated['description'],
+            'merchant_name' => $validated['merchant_name'] ?: null,
+            'total_amount' => $this->total_amount,
+            'vat_total' => $this->vat_total,
+            'expense_date' => $validated['expense_date'],
+            'payment_method' => $validated['payment_method'] ?: null,
+            'payment_reference' => $validated['payment_reference'] ?: null,
+            'status' => $validated['status'],
+            'notes' => $validated['notes'] ?? null,
+            'created_by_user_id' => auth()->id(),
+        ];
+
+        if ($this->expense) {
+            $this->expense->update($data);
+            $this->expense->lineItems()->delete();
+        } else {
+            $data['reference_number'] = 'EXP-'.now()->format('Ymd').'-'.strtoupper(Str::random(4));
+            $this->expense = Expense::create($data);
+        }
+
+        if ($this->showLineItems && ! empty($validated['lineItems'] ?? [])) {
+            foreach ($validated['lineItems'] as $item) {
+                $this->expense->lineItems()->create([
+                    'description' => $item['description'],
+                    'line_type' => $item['line_type'],
+                    'amount' => $item['amount'],
+                    'vat_rate' => (float) ($item['vat_rate'] ?? 20) / 100,
+                    'vat_amount' => (float) ($item['amount'] ?? 0) * ((float) ($item['vat_rate'] ?? 20) / 100),
+                    'line_type_category' => $item['line_type_category'] ?? null,
+                ]);
+            }
+        }
+
+        $this->redirect(route('expenses.show', $this->expense->id), navigate: true);
+    }
+
+    public function render()
+    {
+        $categories = ExpenseCategory::where('is_active', true)->orderBy('name')->get();
+
+        return view('livewire.expenses.expense-form', compact('categories'));
+    }
+}

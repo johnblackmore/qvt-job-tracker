@@ -77,6 +77,15 @@
                     </a>
 
                     <a
+                        href="{{ route('expenses.index') }}"
+                        wire:navigate
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('expenses.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                    >
+                        <x-lucide-receipt class="w-5 h-5 shrink-0" />
+                        Expenses
+                    </a>
+
+                    <a
                         href="{{ route('admin.banking.transactions') }}"
                         wire:navigate
                         class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.banking.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"

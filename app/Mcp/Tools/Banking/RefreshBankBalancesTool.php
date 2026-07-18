@@ -34,7 +34,7 @@ class RefreshBankBalancesTool extends Tool
                 $schema->object([
                     'id' => $schema->integer()->required(),
                     'name' => $schema->string()->required(),
-                    'balance' => $schema->float(),
+                    'balance' => $schema->number(),
                     'formatted_balance' => $schema->string(),
                     'last_fetched_at' => $schema->string(),
                     'last_fetched_relative' => $schema->string(),
