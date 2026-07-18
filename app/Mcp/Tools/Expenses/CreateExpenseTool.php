@@ -112,7 +112,19 @@ class CreateExpenseTool extends Tool
             'status' => 'completed',
             'message' => "Expense {$reference} created: £".number_format($validated['total_amount'], 2)." for {$validated['description']}.",
             'url' => route('expenses.show', $expense),
-            'expense' => $expense->toArray(),
+            'expense' => [
+                'id' => $expense->id,
+                'reference_number' => $expense->reference_number,
+                'description' => $expense->description,
+                'merchant_name' => $expense->merchant_name,
+                'total_amount' => $expense->total_amount,
+                'vat_total' => $expense->vat_total,
+                'expense_date' => $expense->expense_date?->toDateString(),
+                'payment_method' => $expense->payment_method,
+                'status' => $expense->status,
+                'created_at' => $expense->created_at?->toIso8601String(),
+                'url' => route('expenses.show', $expense),
+            ],
         ]);
     }
 }

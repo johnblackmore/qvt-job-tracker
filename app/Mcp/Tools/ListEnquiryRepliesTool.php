@@ -4,6 +4,7 @@ namespace App\Mcp\Tools;
 
 use App\Models\EnquiryReply;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Illuminate\Support\Str;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
@@ -63,7 +64,7 @@ class ListEnquiryRepliesTool extends Tool
                 'direction' => $reply->direction,
                 'is_internal' => $reply->is_internal,
                 'subject' => $reply->subject,
-                'body' => $reply->body,
+                'body' => Str::limit($reply->body, 500),
                 'staff_name' => $reply->staff?->name,
                 'status' => $reply->status,
                 'sent_at' => $reply->sent_at?->toIso8601String(),

@@ -51,7 +51,50 @@ class GetExpenseTool extends Tool
             'status' => 'completed',
             'message' => "Expense {$expense->reference_number}: ".($expense->merchant_name ?? $expense->description)." - £{$expense->total_amount}",
             'url' => route('expenses.show', $expense),
-            'expense' => $expense->toArray(),
+            'expense' => [
+                'id' => $expense->id,
+                'reference_number' => $expense->reference_number,
+                'description' => $expense->description,
+                'merchant_name' => $expense->merchant_name,
+                'total_amount' => $expense->total_amount,
+                'vat_total' => $expense->vat_total,
+                'expense_date' => $expense->expense_date?->toDateString(),
+                'payment_method' => $expense->payment_method,
+                'payment_reference' => $expense->payment_reference,
+                'paid_at' => $expense->paid_at?->toIso8601String(),
+                'status' => $expense->status,
+                'notes' => $expense->notes,
+                'created_at' => $expense->created_at?->toIso8601String(),
+                'category' => $expense->category ? [
+                    'id' => $expense->category->id,
+                    'name' => $expense->category->name,
+                ] : null,
+                'line_items' => $expense->lineItems->map(fn ($item) => [
+                    'id' => $item->id,
+                    'description' => $item->description,
+                    'quantity' => $item->quantity,
+                    'unit_amount' => $item->unit_amount,
+                    'vat_amount' => $item->vat_amount,
+                    'line_total' => $item->line_total,
+                    'line_type' => $item->line_type,
+                ]),
+                'documents' => $expense->documents->map(fn ($doc) => [
+                    'id' => $doc->id,
+                    'filename' => $doc->filename,
+                    'original_filename' => $doc->original_filename,
+                    'type' => $doc->type,
+                ]),
+                'bank_transaction' => $expense->bankTransaction ? [
+                    'id' => $expense->bankTransaction->id,
+                    'description' => $expense->bankTransaction->description,
+                    'amount' => $expense->bankTransaction->amount,
+                    'transaction_date' => $expense->bankTransaction->transaction_date?->toDateString(),
+                ] : null,
+                'created_by' => $expense->createdBy ? [
+                    'id' => $expense->createdBy->id,
+                    'name' => $expense->createdBy->name,
+                ] : null,
+            ],
         ]);
     }
 }

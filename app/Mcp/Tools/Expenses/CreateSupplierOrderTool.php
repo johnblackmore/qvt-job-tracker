@@ -146,11 +146,34 @@ class CreateSupplierOrderTool extends Tool
             ]);
         }
 
+        $order->load('lineItems');
+
         return Response::structured([
             'status' => 'completed',
             'message' => "Supplier order {$reference} created for £".number_format($totalAmount, 2).'.',
             'url' => route('expenses.supplier-orders.show', $order),
-            'order' => $order->fresh('lineItems')->toArray(),
+            'order' => [
+                'id' => $order->id,
+                'reference_number' => $order->reference_number,
+                'order_date' => $order->order_date?->toDateString(),
+                'invoice_number' => $order->invoice_number,
+                'subtotal' => $order->subtotal,
+                'vat_total' => $order->vat_total,
+                'total_amount' => $order->total_amount,
+                'status' => $order->status,
+                'notes' => $order->notes,
+                'created_at' => $order->created_at?->toIso8601String(),
+                'url' => route('expenses.supplier-orders.show', $order),
+                'line_items' => $order->lineItems->map(fn ($item) => [
+                    'id' => $item->id,
+                    'description' => $item->description,
+                    'quantity' => $item->quantity,
+                    'unit_amount' => $item->unit_amount,
+                    'vat_amount' => $item->vat_amount,
+                    'line_total' => $item->line_total,
+                    'line_type' => $item->line_type,
+                ]),
+            ],
         ]);
     }
 }

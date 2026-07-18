@@ -4,6 +4,7 @@ namespace App\Mcp\Tools\Expenses;
 
 use App\Models\Expense;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Illuminate\Support\Str;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
@@ -68,10 +69,24 @@ class ListExpensesTool extends Tool
             ->latest('expense_date')
             ->paginate($validated['per_page'] ?? 20);
 
+        $mapped = $expenses->map(fn (Expense $expense) => [
+            'id' => $expense->id,
+            'reference_number' => $expense->reference_number,
+            'description' => Str::limit($expense->description, 100),
+            'merchant_name' => $expense->merchant_name,
+            'total_amount' => $expense->total_amount,
+            'vat_total' => $expense->vat_total,
+            'expense_date' => $expense->expense_date?->toDateString(),
+            'status' => $expense->status,
+            'category' => $expense->category?->name,
+            'payment_method' => $expense->payment_method,
+            'url' => route('expenses.show', $expense),
+        ]);
+
         return Response::structured([
             'status' => 'completed',
             'message' => "Found {$expenses->total()} expenses.",
-            'expenses' => $expenses->items(),
+            'expenses' => $mapped,
             'total' => $expenses->total(),
         ]);
     }

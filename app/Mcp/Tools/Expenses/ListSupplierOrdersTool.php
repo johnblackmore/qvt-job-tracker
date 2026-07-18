@@ -65,10 +65,25 @@ class ListSupplierOrdersTool extends Tool
             ->latest('order_date')
             ->paginate($validated['per_page'] ?? 20);
 
+        $mapped = $orders->map(fn (SupplierOrder $order) => [
+            'id' => $order->id,
+            'reference_number' => $order->reference_number,
+            'supplier_name' => $order->supplier?->name,
+            'order_date' => $order->order_date?->toDateString(),
+            'invoice_number' => $order->invoice_number,
+            'subtotal' => $order->subtotal,
+            'vat_total' => $order->vat_total,
+            'total_amount' => $order->total_amount,
+            'status' => $order->status,
+            'paid_at' => $order->paid_at?->toIso8601String(),
+            'created_at' => $order->created_at?->toIso8601String(),
+            'url' => route('expenses.supplier-orders.show', $order),
+        ]);
+
         return Response::structured([
             'status' => 'completed',
             'message' => "Found {$orders->total()} supplier orders.",
-            'orders' => $orders->items(),
+            'orders' => $mapped,
             'total' => $orders->total(),
         ]);
     }

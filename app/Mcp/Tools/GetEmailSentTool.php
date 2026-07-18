@@ -4,6 +4,7 @@ namespace App\Mcp\Tools;
 
 use App\Models\EmailSent;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Illuminate\Support\Str;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
@@ -60,7 +61,7 @@ class GetEmailSentTool extends Tool
                 'id' => $email->id,
                 'to_email' => $email->to_email,
                 'subject' => $email->subject,
-                'body_html' => $email->body_html,
+                'body_html' => Str::limit($email->body_html, 500),
                 'status' => $email->status,
                 'postmark_message_id' => $email->postmark_message_id,
                 'customer_id' => $email->customer_id,
