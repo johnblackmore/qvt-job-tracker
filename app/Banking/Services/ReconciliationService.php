@@ -3,7 +3,10 @@
 namespace App\Banking\Services;
 
 use App\Models\BankTransaction;
+use App\Models\Expense;
 use App\Models\Payment;
+use App\Models\ReconciliationLink;
+use App\Models\SupplierOrder;
 use Illuminate\Support\Facades\DB;
 
 class ReconciliationService
@@ -80,6 +83,8 @@ class ReconciliationService
                 $txn->matchedPayment->update(['bank_transaction_id' => null]);
             }
 
+            $txn->reconciliationLink?->delete();
+
             $txn->update([
                 'matched_payment_id' => null,
                 'reconciliation_status' => 'unmatched',
@@ -105,6 +110,54 @@ class ReconciliationService
         });
     }
 
+    public function matchExpense(BankTransaction $txn, SupplierOrder|Expense $expensable, float $amount, ?int $userId = null): ReconciliationLink
+    {
+        return DB::transaction(function () use ($txn, $expensable, $amount, $userId) {
+            // Deduct amount from existing link if re-matching
+            $txn->reconciliationLink?->delete();
+
+            $link = ReconciliationLink::create([
+                'bank_transaction_id' => $txn->id,
+                'reconcilable_type' => $expensable::class,
+                'reconcilable_id' => $expensable->id,
+                'amount' => $amount,
+                'matched_by_user_id' => $userId,
+                'matched_at' => now(),
+            ]);
+
+            $txn->update([
+                'reconciliation_status' => 'matched',
+            ]);
+
+            // Update the expense's bank_transaction_id for convenience
+            if ($expensable instanceof SupplierOrder) {
+                $expensable->update(['bank_transaction_id' => $txn->id, 'paid_at' => now()]);
+            } else {
+                $expensable->update(['bank_transaction_id' => $txn->id, 'paid_at' => now()]);
+            }
+
+            return $link;
+        });
+    }
+
+    public function unlinkExpense(BankTransaction $txn): void
+    {
+        DB::transaction(function () use ($txn) {
+            $link = $txn->reconciliationLink;
+            if ($link) {
+                $expensable = $link->reconcilable;
+                if ($expensable) {
+                    $expensable->update(['bank_transaction_id' => null]);
+                }
+                $link->delete();
+            }
+
+            $txn->update([
+                'reconciliation_status' => 'unmatched',
+            ]);
+        });
+    }
+
     public function getUnmatchedPayments()
     {
         return Payment::whereNull('bank_transaction_id')
@@ -114,6 +167,21 @@ class ReconciliationService
             ->with('order.customer')
             ->orderByDesc('paid_at')
             ->get();
+    }
+
+    public function getUnmatchedExpenses()
+    {
+        $supplierOrders = SupplierOrder::whereNull('bank_transaction_id')
+            ->whereIn('status', ['ordered', 'received', 'partially_received'])
+            ->with('supplier')
+            ->get();
+
+        $expenses = Expense::whereNull('bank_transaction_id')
+            ->where('status', 'approved')
+            ->with('category')
+            ->get();
+
+        return $supplierOrders->concat($expenses);
     }
 
     public function getUnmatchedTransactions()
@@ -138,12 +206,20 @@ class ReconciliationService
             })
             ->count();
 
+        $unlinkedExpenses = SupplierOrder::whereNull('bank_transaction_id')
+            ->whereIn('status', ['ordered', 'received', 'partially_received'])
+            ->count()
+            + Expense::whereNull('bank_transaction_id')
+                ->where('status', 'approved')
+                ->count();
+
         return [
             'total_transactions' => $totalTransactions,
             'matched_transactions' => $matchedTransactions,
             'unmatched_transactions' => $unmatchedTransactions,
             'ignored_transactions' => $ignoredTransactions,
             'unlinked_payments' => $unlinkedPayments,
+            'unlinked_expenses' => $unlinkedExpenses,
             'match_rate' => $totalTransactions > 0
                 ? round(($matchedTransactions / $totalTransactions) * 100, 1)
                 : 0,

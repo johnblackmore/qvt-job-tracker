@@ -2,11 +2,14 @@
 
 namespace App\Mcp\Servers;
 
+use App\Mcp\Prompts\ExpensesAssistantPrompt;
 use App\Mcp\Prompts\QuoteAssistantPrompt;
 use App\Mcp\Prompts\WeeklyReportGeneratorPrompt;
 use App\Mcp\Resources\CustomerProfileResource;
+use App\Mcp\Resources\ExpenseDetailsResource;
 use App\Mcp\Resources\OrderDetailsResource;
 use App\Mcp\Resources\QuoteDetailsResource;
+use App\Mcp\Resources\SupplierOrderDetailsResource;
 use App\Mcp\Tools\AddInternalNoteTool;
 use App\Mcp\Tools\AddQuoteLineItemTool;
 use App\Mcp\Tools\AiConfig\CreateAiModelConfigTool;
@@ -35,6 +38,18 @@ use App\Mcp\Tools\CreateQuoteFromTemplateTool;
 use App\Mcp\Tools\CreateQuoteTool;
 use App\Mcp\Tools\DeleteCustomerTool;
 use App\Mcp\Tools\DownloadQuotePdfTool;
+use App\Mcp\Tools\Expenses\AiExtractExpenseTool;
+use App\Mcp\Tools\Expenses\AllocateLineItemTool;
+use App\Mcp\Tools\Expenses\CreateExpenseTool;
+use App\Mcp\Tools\Expenses\CreateSupplierOrderTool;
+use App\Mcp\Tools\Expenses\ExportExpensesTool;
+use App\Mcp\Tools\Expenses\GetExpenseTool;
+use App\Mcp\Tools\Expenses\GetSupplierOrderTool;
+use App\Mcp\Tools\Expenses\ListExpensesTool;
+use App\Mcp\Tools\Expenses\ListSupplierOrdersTool;
+use App\Mcp\Tools\Expenses\ReconcileExpenseTool;
+use App\Mcp\Tools\Expenses\UpdateSupplierOrderStatusTool;
+use App\Mcp\Tools\Expenses\UploadDocumentTool;
 use App\Mcp\Tools\GenerateEnquiryDraftTool;
 use App\Mcp\Tools\GetCustomerTool;
 use App\Mcp\Tools\GetDashboardStatsTool;
@@ -148,6 +163,20 @@ class QvtServer extends Server
         GetAccountBalancesTool::class,
         RefreshBankBalancesTool::class,
 
+        // Expense tools
+        ListSupplierOrdersTool::class,
+        GetSupplierOrderTool::class,
+        CreateSupplierOrderTool::class,
+        UpdateSupplierOrderStatusTool::class,
+        ListExpensesTool::class,
+        GetExpenseTool::class,
+        CreateExpenseTool::class,
+        UploadDocumentTool::class,
+        AllocateLineItemTool::class,
+        ReconcileExpenseTool::class,
+        ExportExpensesTool::class,
+        AiExtractExpenseTool::class,
+
         // Dashboard & reporting tools
         GetDashboardStatsTool::class,
         GetQuoteActivityTool::class,
@@ -171,12 +200,15 @@ class QvtServer extends Server
         CustomerProfileResource::class,
         QuoteDetailsResource::class,
         OrderDetailsResource::class,
+        SupplierOrderDetailsResource::class,
+        ExpenseDetailsResource::class,
     ];
 
     /** @var array<int, class-string<Prompt>> */
     protected array $prompts = [
         QuoteAssistantPrompt::class,
         WeeklyReportGeneratorPrompt::class,
+        ExpensesAssistantPrompt::class,
     ];
 
     /** @return array<int, class-string<Tool>> */
@@ -234,6 +266,18 @@ class QvtServer extends Server
             GetQuoteActivityTool::class,
             GetWeeklySummaryTool::class,
             SyncNetlifySubmissionsTool::class,
+            ListSupplierOrdersTool::class,
+            GetSupplierOrderTool::class,
+            CreateSupplierOrderTool::class,
+            UpdateSupplierOrderStatusTool::class,
+            ListExpensesTool::class,
+            GetExpenseTool::class,
+            CreateExpenseTool::class,
+            UploadDocumentTool::class,
+            AllocateLineItemTool::class,
+            ReconcileExpenseTool::class,
+            ExportExpensesTool::class,
+            AiExtractExpenseTool::class,
             ListAiModelConfigsTool::class,
             GetAiModelConfigTool::class,
             CreateAiModelConfigTool::class,

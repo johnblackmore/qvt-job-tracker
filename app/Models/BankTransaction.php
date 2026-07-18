@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class BankTransaction extends Model
 {
@@ -55,6 +56,11 @@ class BankTransaction extends Model
     public function receipts(): HasMany
     {
         return $this->hasMany(Receipt::class);
+    }
+
+    public function reconciliationLink(): HasOne
+    {
+        return $this->hasOne(ReconciliationLink::class);
     }
 
     public function scopeUnmatched($query)

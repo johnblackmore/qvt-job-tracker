@@ -64,6 +64,32 @@
             </div>
         </a>
 
+        <a href="{{ route('admin.ai.assistants.expenses-extractor') }}" wire:navigate
+           class="group bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-copper/30 transition-all block">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center group-hover:bg-amber-100 transition-colors">
+                    <x-lucide-receipt class="w-5 h-5 text-amber-600" />
+                </div>
+                <span class="text-xs font-medium text-copper group-hover:underline">View Details &rarr;</span>
+            </div>
+            <h3 class="text-base font-display font-semibold text-slate-900 mb-1">Expenses Assistant</h3>
+            <p class="text-xs text-slate-500 mb-4">Extract invoice and receipt data with AI</p>
+            <div class="grid grid-cols-3 gap-3 pt-3 border-t border-slate-100">
+                <div>
+                    <p class="text-xs text-slate-400">Total</p>
+                    <p class="text-lg font-bold text-slate-900">{{ number_format($expensesExtractions) }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-slate-400">Successful</p>
+                    <p class="text-lg font-bold text-teal-dark">{{ number_format($expensesExtractionsSuccess) }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-slate-400">Failed</p>
+                    <p class="text-lg font-bold text-red-600">{{ number_format($expensesExtractionsFailed) }}</p>
+                </div>
+            </div>
+        </a>
+
         <a href="{{ route('admin.ai.assistants.enquiry-draft') }}" wire:navigate
            class="group bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-copper/30 transition-all block">
             <div class="flex items-center justify-between mb-4">

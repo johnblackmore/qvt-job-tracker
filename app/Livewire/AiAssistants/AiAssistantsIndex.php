@@ -25,12 +25,19 @@ class AiAssistantsIndex extends Component
         $drafts = AiDraftGeneration::count();
         $draftTokens = AiDraftGeneration::sum('input_tokens') + AiDraftGeneration::sum('output_tokens');
 
-        $totalTokens = $chatTokens + $extractionTokens + $draftTokens;
+        $expensesExtractions = AiExtraction::where('assistant_name', 'expenses-extractor')->count();
+        $expensesExtractionsSuccess = AiExtraction::where('assistant_name', 'expenses-extractor')->where('status', 'completed')->count();
+        $expensesExtractionsFailed = AiExtraction::where('assistant_name', 'expenses-extractor')->where('status', 'failed')->count();
+        $expensesExtractionTokens = AiExtraction::where('assistant_name', 'expenses-extractor')->sum('input_tokens')
+            + AiExtraction::where('assistant_name', 'expenses-extractor')->sum('output_tokens');
+
+        $totalTokens = $chatTokens + $extractionTokens + $draftTokens + $expensesExtractionTokens;
 
         return view('livewire.ai-assistants.ai-assistants-index', compact(
             'chatConversations', 'chatMessages', 'chatTokens', 'chatUsers',
             'extractions', 'extractionsSuccess', 'extractionsFailed', 'extractionTokens',
             'drafts', 'draftTokens',
+            'expensesExtractions', 'expensesExtractionsSuccess', 'expensesExtractionsFailed', 'expensesExtractionTokens',
             'totalTokens',
         ));
     }
