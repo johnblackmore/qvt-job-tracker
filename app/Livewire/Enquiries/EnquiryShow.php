@@ -56,7 +56,7 @@ class EnquiryShow extends Component
     {
         try {
             $service = app(EnquiryAiAssistantService::class);
-            $draft = $service->generateDraft($this->enquiry);
+            $draft = $service->generateDraft($this->enquiry, 'professional', auth()->user(), 'livewire');
 
             if (! empty($draft['error'])) {
                 $this->dispatch('notify', type: 'error', message: 'AI draft failed: '.$draft['error']);

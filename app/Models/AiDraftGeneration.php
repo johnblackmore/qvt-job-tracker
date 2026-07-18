@@ -6,19 +6,26 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class AiExtraction extends Model
+class AiDraftGeneration extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'user_id',
+        'enquiry_id',
         'assistant_name',
+        'tone',
+        'trigger_source',
         'provider',
         'model',
-        'source_url',
         'prompt_data',
         'raw_response',
-        'extracted_data',
+        'summary',
+        'draft_subject',
+        'draft_body',
+        'confidence',
+        'suggested_next_steps',
+        'knowledge_gaps',
         'status',
         'error_message',
         'input_tokens',
@@ -26,14 +33,17 @@ class AiExtraction extends Model
     ];
 
     protected $casts = [
-        'raw_response' => 'json',
-        'extracted_data' => 'json',
-        'input_tokens' => 'integer',
-        'output_tokens' => 'integer',
+        'suggested_next_steps' => 'array',
+        'knowledge_gaps' => 'array',
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function enquiry(): BelongsTo
+    {
+        return $this->belongsTo(Enquiry::class);
     }
 }

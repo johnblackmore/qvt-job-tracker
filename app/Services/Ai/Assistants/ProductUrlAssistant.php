@@ -18,9 +18,20 @@ class ProductUrlAssistant
 {
     public function extract(string $url, User $user): array
     {
+        $fallback = config('ai.assistants.product-url-extractor');
+        $settings = app(AiAssistantConfigSettings::class);
+        $configRecord = $settings->product_url_extractor_config_id
+            ? AiModelConfig::find($settings->product_url_extractor_config_id)
+            : null;
+
+        $provider = $configRecord?->provider ?? $fallback['provider'];
+        $model = $configRecord?->model ?? $fallback['model'];
+
         $extraction = AiExtraction::create([
             'user_id' => $user->id,
             'assistant_name' => 'product-url-extractor',
+            'provider' => $provider,
+            'model' => $model,
             'source_url' => $url,
             'prompt_data' => null,
             'status' => 'processing',
@@ -30,15 +41,6 @@ class ProductUrlAssistant
             $text = $this->fetchAndExtractText($url);
 
             $extraction->update(['prompt_data' => $text]);
-
-            $fallback = config('ai.assistants.product-url-extractor');
-            $settings = app(AiAssistantConfigSettings::class);
-            $configRecord = $settings->product_url_extractor_config_id
-                ? AiModelConfig::find($settings->product_url_extractor_config_id)
-                : null;
-
-            $provider = $configRecord?->provider ?? $fallback['provider'];
-            $model = $configRecord?->model ?? $fallback['model'];
 
             $response = Prism::structured()
                 ->using($provider, $model)

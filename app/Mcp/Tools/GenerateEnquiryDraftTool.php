@@ -61,7 +61,7 @@ class GenerateEnquiryDraftTool extends Tool
         $tone = $validated['tone'] ?? 'professional';
 
         $service = app(EnquiryAiAssistantService::class);
-        $draft = $service->generateDraft($enquiry, $tone);
+        $draft = $service->generateDraft($enquiry, $tone, $request->user(), 'mcp');
 
         if (! empty($draft['error'])) {
             return Response::structured([
