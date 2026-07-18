@@ -36,3 +36,24 @@ Schedule::command('banking:refresh-balances')
     ->everyFourHours()
     ->between('8:00', '20:00')
     ->name('banking-refresh-balances');
+
+Schedule::command('backup:clean')
+    ->dailyAt('02:00')
+    ->name('backup-daily-clean');
+
+Schedule::command('backup:run')
+    ->dailyAt('02:30')
+    ->name('backup-daily-run');
+
+Schedule::command('backup:run')
+    ->weeklyOn(0, '03:00')
+    ->name('backup-weekly-run');
+
+Schedule::command('backup:run')
+    ->monthlyOn(1, '04:00')
+    ->name('backup-monthly-run');
+
+Schedule::command('backup:monitor')
+    ->hourly()
+    ->between('8:00', '20:00')
+    ->name('backup-monitor');

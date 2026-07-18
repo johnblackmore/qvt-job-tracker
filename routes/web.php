@@ -36,3 +36,4 @@ require __DIR__.'/chat.php';
 require __DIR__.'/ai-configs.php';
 require __DIR__.'/ai-assistants.php';
 require __DIR__.'/admin-settings.php';
+require __DIR__.'/backups.php';

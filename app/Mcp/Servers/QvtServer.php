@@ -19,6 +19,10 @@ use App\Mcp\Tools\AiConfig\GetAiModelConfigTool;
 use App\Mcp\Tools\AiConfig\ListAiModelConfigsTool;
 use App\Mcp\Tools\AiConfig\UpdateAiAssistantConfigSettingsTool;
 use App\Mcp\Tools\AiConfig\UpdateAiModelConfigTool;
+use App\Mcp\Tools\Backup\CreateBackupTool;
+use App\Mcp\Tools\Backup\DeleteBackupTool;
+use App\Mcp\Tools\Backup\ListBackupsTool;
+use App\Mcp\Tools\Backup\RestoreBackupTool;
 use App\Mcp\Tools\Banking\AttachReceiptTool;
 use App\Mcp\Tools\Banking\GetAccountBalancesTool;
 use App\Mcp\Tools\Banking\GetReconciliationSummaryTool;
@@ -193,6 +197,12 @@ class QvtServer extends Server
         DeleteAiModelConfigTool::class,
         GetAiAssistantConfigSettingsTool::class,
         UpdateAiAssistantConfigSettingsTool::class,
+
+        // Backup tools
+        ListBackupsTool::class,
+        CreateBackupTool::class,
+        RestoreBackupTool::class,
+        DeleteBackupTool::class,
     ];
 
     /** @var array<int, class-string<Server\Resource>> */
@@ -285,6 +295,11 @@ class QvtServer extends Server
             DeleteAiModelConfigTool::class,
             GetAiAssistantConfigSettingsTool::class,
             UpdateAiAssistantConfigSettingsTool::class,
+
+            ListBackupsTool::class,
+            CreateBackupTool::class,
+            RestoreBackupTool::class,
+            DeleteBackupTool::class,
         ];
     }
 }

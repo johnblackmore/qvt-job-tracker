@@ -13,10 +13,10 @@
         <div class="min-h-screen flex">
             {{-- Sidebar --}}
             <aside
-                x-data="{ open: false }"
-                @keydown.window.escape="open = false"
+                x-data="{ sidebarOpen: false }"
+                @keydown.window.escape="sidebarOpen = false"
                 class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:flex lg:flex-col"
-                :class="open ? 'translate-x-0' : '-translate-x-full'"
+                :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
             >
                 {{-- Logo --}}
                 <div class="flex items-center gap-3 h-16 px-6 border-b border-slate-200 shrink-0">
@@ -170,6 +170,15 @@
                         <x-lucide-pound-sterling class="w-5 h-5 shrink-0" />
                         VAT Settings
                     </a>
+
+                    <a
+                        href="{{ route('admin.backups.index') }}"
+                        wire:navigate
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.backups.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
+                    >
+                        <x-lucide-hard-drive class="w-5 h-5 shrink-0" />
+                        Data Backups
+                    </a>
                 </nav>
 
                 {{-- User menu --}}
@@ -199,9 +208,9 @@
 
             {{-- Mobile overlay --}}
             <div
-                x-show="open"
+                x-show="sidebarOpen"
                 x-transition.opacity.duration.200ms
-                @click="open = false"
+                @click="sidebarOpen = false"
                 class="fixed inset-0 z-40 bg-black/30 lg:hidden"
                 style="display: none;"
             ></div>
@@ -211,7 +220,7 @@
                 {{-- Top bar --}}
                 <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 shrink-0">
                     <button
-                        @click="open = !open"
+                        @click="sidebarOpen = !sidebarOpen"
                         class="lg:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900"
                     >
                         <x-lucide-menu class="w-5 h-5" />
