@@ -11,12 +11,47 @@
         streamError: null,
 
         init() {
+            const saved = sessionStorage.getItem('qvt_chat');
+            if (saved) {
+                try {
+                    const state = JSON.parse(saved);
+                    this.isOpen = state.isOpen;
+                    if (state.activeConversationId) {
+                        $wire.set('activeConversationId', state.activeConversationId);
+                    }
+                } catch {}
+                sessionStorage.removeItem('qvt_chat');
+            }
+
             this.$watch('streamingContent', () => this.scrollToBottom());
+            this.$watch('completedContent', () => this.scrollToBottom());
             this.$watch('isOpen', (val) => {
                 if (val) {
-                    this.$nextTick(() => this.$refs.messageInput?.focus());
+                    this.$nextTick(() => {
+                        this.scrollToBottom();
+                        this.$refs.messageInput?.focus();
+                    });
                 }
             });
+
+            document.addEventListener('livewire:navigating', () => this.saveState());
+            document.addEventListener('livewire:navigated', () => {
+                if ($wire.activeConversationId) {
+                    $wire.$refresh();
+                }
+            });
+            window.addEventListener('beforeunload', () => this.saveState());
+        },
+
+        saveState() {
+            if (this.isOpen && $wire.activeConversationId) {
+                sessionStorage.setItem('qvt_chat', JSON.stringify({
+                    isOpen: true,
+                    activeConversationId: $wire.activeConversationId,
+                }));
+            } else {
+                sessionStorage.removeItem('qvt_chat');
+            }
         },
 
         startStream(conversationId) {
@@ -29,6 +64,8 @@
             this.streamingContent = '';
             this.currentToolName = null;
             this.streamError = null;
+
+            this.scrollToBottom();
 
             this.eventSource = new EventSource(`/admin/ai/chat/${conversationId}/stream`);
 
@@ -95,6 +132,8 @@
 
             $wire.set('isStreaming', false).finally(() => {
                 this.completedContent = '';
+                this.scrollToBottom();
+                this.$nextTick(() => this.$refs.messageInput?.focus());
             });
         },
 
@@ -105,6 +144,26 @@
                     container.scrollTop = container.scrollHeight;
                 }
             });
+        },
+
+        renderMarkdown(content) {
+            if (!content) return '';
+            if (typeof window.marked?.parse === 'function') {
+                return window.marked.parse(content);
+            }
+            return content;
+        },
+
+        autoGrow(el) {
+            el.style.height = 'auto';
+            el.style.height = el.scrollHeight + 'px';
+        },
+
+        async submitAndScroll() {
+            if (this.isStreaming) return;
+            await $wire.call('sendMessage');
+            this.scrollToBottom();
+            this.$nextTick(() => this.$refs.messageInput?.focus());
         },
     }"
     @start-streaming.window="startStream($event.detail.conversationId)"
@@ -147,7 +206,7 @@
                 <button wire:click="startNewConversation" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors" title="New conversation">
                     <x-lucide-plus class="w-4 h-4" />
                 </button>
-                <button wire:click="toggle" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors" title="Close">
+                <button wire:click="toggle" @click="sessionStorage.removeItem('qvt_chat')" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors" title="Close">
                     <x-lucide-x class="w-4 h-4" />
                 </button>
             </div>
@@ -192,7 +251,7 @@
                 @foreach($messages as $message)
                     @if($message->role === 'user')
                         <div class="chat chat-end">
-                            <div class="chat-bubble bg-copper text-white text-sm">
+                            <div class="chat-bubble bg-copper text-white text-sm whitespace-pre-wrap">
                                 {{ $message->content }}
                             </div>
                         </div>
@@ -256,7 +315,7 @@
                         </div>
                     </div>
                     <div class="chat-bubble bg-white border border-copper/30 text-slate-700 text-sm shadow-sm">
-                        <div x-html="streamingContent" class="prose prose-sm max-w-none overflow-x-auto"></div>
+                        <div x-html="renderMarkdown(streamingContent)" class="prose prose-sm max-w-none overflow-x-auto"></div>
                         <span class="inline-block w-2 h-4 bg-copper/50 ml-0.5 animate-pulse">&nbsp;</span>
                     </div>
                 </div>
@@ -269,7 +328,7 @@
                         </div>
                     </div>
                     <div class="chat-bubble bg-white border border-slate-200 text-slate-700 text-sm shadow-sm">
-                        <div x-html="completedContent" class="prose prose-sm max-w-none overflow-x-auto"></div>
+                        <div x-html="renderMarkdown(completedContent)" class="prose prose-sm max-w-none overflow-x-auto"></div>
                     </div>
                 </div>
 
@@ -285,21 +344,25 @@
 
         {{-- Input --}}
         <div class="p-3 border-t border-slate-200 bg-white shrink-0">
-            <form wire:submit.prevent="sendMessage" class="flex items-center gap-2">
-                <input
+            <form wire:submit.prevent="sendMessage" class="flex items-end gap-2">
+                <textarea
                     wire:model="newMessage"
                     x-ref="messageInput"
-                    type="text"
+                    rows="1"
+                    x-init="autoGrow($el)"
+                    @input="autoGrow($el)"
+                    @keydown.enter="if (!$event.shiftKey) { $event.preventDefault(); submitAndScroll(); }"
                     placeholder="Ask me anything about the business..."
-                    class="flex-1 input input-bordered input-sm border-slate-200 bg-slate-50 focus:border-copper focus:ring-copper/20 text-sm rounded-lg"
+                    class="flex-1 textarea textarea-sm border-slate-200 bg-slate-50 focus:border-copper focus:ring-copper/20 text-sm rounded-lg resize-none overflow-hidden leading-5 py-2.5"
                     :disabled="isStreaming"
                     @keydown.window.slash.prevent="isOpen && $refs.messageInput?.focus()"
-                />
+                ></textarea>
                 <button
                     type="submit"
-                    class="btn btn-sm btn-copper transition-all min-w-[36px]"
+                    class="btn btn-sm btn-copper transition-all min-w-[36px] shrink-0"
                     :disabled="isStreaming || !$wire.newMessage.trim()"
                     wire:loading.attr="disabled"
+                    @click="scrollToBottom()"
                 >
                     <x-lucide-send class="w-4 h-4" />
                 </button>
