@@ -17,6 +17,8 @@ class AiModelConfigForm extends Component
 
     public string $description = '';
 
+    public bool $has_vision = false;
+
     public ?string $input_price = null;
 
     public ?string $output_price = null;
@@ -29,6 +31,7 @@ class AiModelConfigForm extends Component
             $this->provider = $this->config->provider;
             $this->model = $this->config->model;
             $this->description = $this->config->description ?? '';
+            $this->has_vision = $this->config->has_vision ?? false;
             $this->input_price = $this->config->input_price !== null ? (string) $this->config->input_price : null;
             $this->output_price = $this->config->output_price !== null ? (string) $this->config->output_price : null;
         }
@@ -43,6 +46,7 @@ class AiModelConfigForm extends Component
             'provider' => ['required', 'string', 'in:'.implode(',', $providers)],
             'model' => ['required', 'string', 'max:100'],
             'description' => ['nullable', 'string', 'max:500'],
+            'has_vision' => ['boolean'],
             'input_price' => ['nullable', 'numeric', 'min:0', 'max:999999.9999'],
             'output_price' => ['nullable', 'numeric', 'min:0', 'max:999999.9999'],
         ]);

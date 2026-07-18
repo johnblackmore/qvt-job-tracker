@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
             <p class="text-xs font-medium text-slate-500 uppercase tracking-wide">Unmatched Transactions</p>
             <p class="mt-1 text-2xl font-display font-bold text-amber-700">{{ $summary['unmatched_transactions'] }}</p>
@@ -26,12 +26,16 @@
             <p class="mt-1 text-2xl font-display font-bold text-slate-900">{{ $summary['unlinked_payments'] }}</p>
         </div>
         <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+            <p class="text-xs font-medium text-slate-500 uppercase tracking-wide">Unmatched Expenses</p>
+            <p class="mt-1 text-2xl font-display font-bold text-amber-700">{{ $summary['unmatched_expenses'] ?? $unmatchedExpenses->count() }}</p>
+        </div>
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
             <p class="text-xs font-medium text-slate-500 uppercase tracking-wide">Matched</p>
             <p class="mt-1 text-2xl font-display font-bold text-teal">{{ $summary['matched_transactions'] }}</p>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
             <div class="px-4 py-4 border-b border-slate-200 flex items-center gap-2">
                 <x-lucide-arrow-left-from-line class="w-4 h-4 text-amber-700" />
@@ -97,19 +101,56 @@
                 </div>
             </div>
         </div>
+
+        {{-- Unmatched Expenses --}}
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+            <div class="px-4 py-4 border-b border-slate-200 flex items-center gap-2">
+                <x-lucide-receipt class="w-4 h-4 text-amber-700" />
+                <h2 class="text-sm font-semibold text-slate-900">Unmatched Expenses</h2>
+                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-slate-100 text-slate-600">{{ $unmatchedExpenses->count() }}</span>
+            </div>
+            <div class="p-4">
+                <div class="space-y-2 max-h-96 overflow-y-auto">
+                    @forelse($unmatchedExpenses as $expense)
+                        <div
+                            wire:click="selectExpense({{ $expense['id'] }}, '{{ $expense['type'] }}')"
+                            class="p-3 rounded-lg border text-sm cursor-pointer transition-colors {{ $selectedExpenseId === $expense['id'] && $selectedExpenseType === $expense['type'] ? 'border-copper bg-copper/5 ring-1 ring-copper' : 'border-slate-200 hover:border-slate-300' }}"
+                        >
+                            <div class="flex justify-between items-start">
+                                <div class="min-w-0 flex-1">
+                                    <p class="font-medium text-slate-900">{{ $expense['type'] === 'supplier_order' ? $expense['reference'] : $expense['reference'] }}</p>
+                                    <p class="text-xs text-slate-400 mt-0.5">{{ $expense['merchant'] ?? $expense['description'] }}</p>
+                                    <p class="text-xs text-slate-400 mt-0.5">{{ $expense['date'] }}</p>
+                                </div>
+                                <div class="text-right ml-3 shrink-0">
+                                    <p class="font-mono font-medium text-amber-700">&pound;{{ number_format($expense['amount'], 2) }}</p>
+                                    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-slate-100 text-slate-500 mt-1">{{ str_replace('_', ' ', $expense['type']) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <p class="text-sm text-slate-400 text-center py-8">No unmatched expenses or supplier orders.</p>
+                    @endforelse
+                </div>
+            </div>
+        </div>
     </div>
 
-    @if($selectedTransactionId && $selectedPaymentId)
+    @if($selectedTransactionId && ($selectedPaymentId || ($selectedExpenseId && $selectedExpenseType)))
         <div class="bg-copper/5 border border-copper/20 rounded-xl shadow-sm mb-6">
             <div class="p-4 flex items-center justify-between">
                 <div class="flex items-center gap-3 text-sm">
                     <x-lucide-link-2 class="w-5 h-5 text-copper" />
                     <span class="text-slate-700">
-                        Link selected transaction to selected payment?
+                        @if($selectedPaymentId)
+                            Link selected transaction to selected payment?
+                        @else
+                            Link selected transaction to selected {{ str_replace('_', ' ', $selectedExpenseType) }}?
+                        @endif
                     </span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button wire:click="$set('selectedTransactionId', null)" class="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 transition-colors">Cancel</button>
+                    <button wire:click="$set('selectedTransactionId', null); $set('selectedExpenseId', null); $set('selectedExpenseType', ''); $set('selectedPaymentId', null)" class="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 transition-colors">Cancel</button>
                     <button wire:click="linkSelected" class="inline-flex items-center gap-2 rounded-lg bg-copper px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark transition-colors">
                         <x-lucide-link-2 class="w-4 h-4" />
                         Link

@@ -34,6 +34,16 @@ class AiModelConfigList extends Component
             $settings->enquiry_draft_assistant_config_id = null;
         }
 
+        if ($settings->expenses_extractor_config_id === $id) {
+            $assignedTo[] = 'Expenses Extractor (Text)';
+            $settings->expenses_extractor_config_id = null;
+        }
+
+        if ($settings->expenses_extractor_vision_config_id === $id) {
+            $assignedTo[] = 'Expenses Extractor (Vision)';
+            $settings->expenses_extractor_vision_config_id = null;
+        }
+
         $config->delete();
         $settings->save();
 
@@ -60,6 +70,8 @@ class AiModelConfigList extends Component
             'chat-agent' => $settings->chat_agent_config_id = $configId,
             'product-url-extractor' => $settings->product_url_extractor_config_id = $configId,
             'enquiry-draft-assistant' => $settings->enquiry_draft_assistant_config_id = $configId,
+            'expenses-extractor' => $settings->expenses_extractor_config_id = $configId,
+            'expenses-extractor-vision' => $settings->expenses_extractor_vision_config_id = $configId,
             default => null,
         };
 
@@ -69,6 +81,8 @@ class AiModelConfigList extends Component
             'chat-agent' => 'Chat Agent',
             'product-url-extractor' => 'Product URL Extractor',
             'enquiry-draft-assistant' => 'Enquiry Draft Assistant',
+            'expenses-extractor' => 'Expenses Extractor (Text)',
+            'expenses-extractor-vision' => 'Expenses Extractor (Vision)',
             default => $assistant,
         };
 
@@ -89,6 +103,8 @@ class AiModelConfigList extends Component
             'assignedChatAgent' => $settings->chat_agent_config_id,
             'assignedUrlExtractor' => $settings->product_url_extractor_config_id,
             'assignedDraftAssistant' => $settings->enquiry_draft_assistant_config_id,
+            'assignedExpensesExtractor' => $settings->expenses_extractor_config_id,
+            'assignedExpensesExtractorVision' => $settings->expenses_extractor_vision_config_id,
         ]);
     }
 }

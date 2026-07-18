@@ -1,8 +1,14 @@
-<div class="max-w-2xl">
+<div class="max-w-3xl mx-auto">
     <div class="mb-8">
         <h1 class="text-2xl font-display font-semibold text-ink tracking-tight">{{ $expense ? 'Edit Expense' : 'New Expense' }}</h1>
         <p class="mt-1 text-sm text-slate-500">{{ $expense ? 'Update expense details' : 'Record a new business expense' }}</p>
     </div>
+
+    @if(!$expense)
+        <div class="mb-6">
+            <livewire:expenses.ai-extraction-panel />
+        </div>
+    @endif
 
     <form wire:submit="save" class="space-y-6">
         <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-5">
@@ -89,6 +95,16 @@
                 <label for="notes" class="block text-sm font-medium text-slate-700 mb-1.5">Notes</label>
                 <textarea wire:model="notes" id="notes" rows="2" class="w-full rounded-lg border-slate-300 text-ink focus:border-copper focus:ring-copper text-sm px-3.5 py-2.5" placeholder="Additional details..."></textarea>
                 @error('notes') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+        </div>
+
+        {{-- Document Upload --}}
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+            <h2 class="text-base font-display font-semibold text-ink mb-4">Receipt / Invoice</h2>
+            <div>
+                <input wire:model="upload" type="file" accept=".pdf,.jpg,.jpeg,.png" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-copper file:text-white hover:file:bg-copper-dark file:cursor-pointer" />
+                @error('upload') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
+                <p class="mt-1.5 text-xs text-slate-500">PDF, JPG or PNG (max 10MB)</p>
             </div>
         </div>
 

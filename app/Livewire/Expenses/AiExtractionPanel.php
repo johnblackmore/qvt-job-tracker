@@ -3,6 +3,7 @@
 namespace App\Livewire\Expenses;
 
 use App\Models\AiExtraction;
+use App\Services\Ai\Assistants\ExpensesExtractorAssistant;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -64,23 +65,19 @@ class AiExtractionPanel extends Component
 
         $this->dispatch('extraction-started');
 
-        // The actual AI extraction would be handled by the MCP tool
-        // or a dedicated job. For now, we capture the file and dispatch.
         try {
-            $extraction = AiExtraction::create([
-                'user_id' => auth()->id(),
-                'assistant_name' => 'expenses-extractor',
-                'provider' => config('ai.assistants.expenses-extractor.provider', 'openai'),
-                'model' => config('ai.assistants.expenses-extractor.model', 'gpt-4o'),
-                'source_url' => $path,
-                'status' => 'processing',
-                'extracted_data' => null,
-                'raw_response' => null,
-            ]);
+            $assistant = app(ExpensesExtractorAssistant::class);
+            $data = $assistant->extract($path, auth()->user());
+
+            $extraction = AiExtraction::where('assistant_name', 'expenses-extractor')
+                ->where('source_url', $path)
+                ->latest()
+                ->first();
 
             $this->extraction = $extraction;
+            $this->extractedData = $data;
 
-            $this->dispatch('extraction-completed', extractionId: $extraction->id);
+            $this->dispatch('extraction-completed', extractionId: $extraction?->id);
         } catch (\Exception $e) {
             $this->addError('upload', 'Failed to process file: '.$e->getMessage());
         }

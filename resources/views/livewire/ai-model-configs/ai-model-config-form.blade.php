@@ -61,6 +61,12 @@
             @error('description') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
         </div>
 
+        <div class="flex items-center gap-3">
+            <input wire:model="has_vision" id="has_vision" type="checkbox" class="rounded border-slate-300 text-copper focus:ring-copper cursor-pointer" />
+            <label for="has_vision" class="text-sm font-medium text-slate-700 cursor-pointer">This model supports vision (can process images)</label>
+            @error('has_vision') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+        </div>
+
         <div class="flex items-center gap-4 pt-2">
             <button type="submit" wire:loading.attr="disabled" class="inline-flex items-center gap-2 rounded-lg bg-copper px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark focus:outline-none focus:ring-2 focus:ring-copper focus:ring-offset-2 transition-colors">
                 <span wire:loading.remove>{{ $config ? 'Save Changes' : 'Create Config' }}</span>

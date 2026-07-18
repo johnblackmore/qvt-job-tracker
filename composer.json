@@ -17,6 +17,7 @@
         "livewire/volt": "^1.7.0",
         "mallardduck/blade-lucide-icons": "^1.26",
         "prism-php/prism": "^0.100.1",
+        "smalot/pdfparser": "^2.12",
         "spatie/laravel-backup": "^10.3",
         "spatie/laravel-permission": "^8.3",
         "spatie/laravel-settings": "^3.9",

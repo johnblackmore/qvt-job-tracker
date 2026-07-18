@@ -6,9 +6,12 @@ use App\Models\Expense;
 use App\Models\ExpenseCategory;
 use Illuminate\Support\Str;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class ExpenseForm extends Component
 {
+    use WithFileUploads;
+
     public ?Expense $expense = null;
 
     public ?int $expense_category_id = null;
@@ -34,6 +37,8 @@ class ExpenseForm extends Component
     public bool $showLineItems = false;
 
     public array $lineItems = [];
+
+    public $upload;
 
     public function mount(?int $expenseId = null): void
     {
@@ -180,7 +185,70 @@ class ExpenseForm extends Component
             }
         }
 
+        if ($this->upload) {
+            $filePath = $this->upload->store('expenses/documents', 'local');
+            $this->expense->documents()->create([
+                'documentable_type' => Expense::class,
+                'file_path' => $filePath,
+                'original_filename' => $this->upload->getClientOriginalName(),
+                'mime_type' => $this->upload->getMimeType(),
+                'file_size' => $this->upload->getSize(),
+                'document_type' => 'invoice',
+            ]);
+        }
+
         $this->redirect(route('expenses.show', $this->expense->id), navigate: true);
+    }
+
+    protected function getListeners(): array
+    {
+        return [
+            'apply-extracted-data' => 'applyExtractedData',
+        ];
+    }
+
+    public function applyExtractedData(array $data): void
+    {
+        if (! empty($data['supplier_name'])) {
+            $this->merchant_name = $data['supplier_name'];
+        }
+
+        if (! empty($data['invoice_date'])) {
+            $this->expense_date = $data['invoice_date'];
+        }
+
+        if (! empty($data['total_amount'])) {
+            $this->total_amount = (string) $data['total_amount'];
+        }
+
+        if (! empty($data['vat_total'])) {
+            $this->vat_total = (string) $data['vat_total'];
+        }
+
+        if (! empty($data['invoice_number'])) {
+            $this->payment_reference = $data['invoice_number'];
+        }
+
+        if (! empty($data['line_items']) && is_array($data['line_items'])) {
+            $this->showLineItems = true;
+            $this->lineItems = [];
+            foreach ($data['line_items'] as $item) {
+                $amount = (float) ($item['unit_amount'] ?? 0) * (float) ($item['quantity'] ?? 1);
+                $vatRate = (float) ($item['vat_rate'] ?? 0.20) * 100;
+                $this->lineItems[] = [
+                    'id' => null,
+                    'description' => $item['description'] ?? '',
+                    'line_type' => $item['line_type'] ?? 'business',
+                    'amount' => (string) $amount,
+                    'vat_rate' => (string) $vatRate,
+                    'vat_amount' => (string) round($amount * ($vatRate / 100), 2),
+                    'line_type_category' => '',
+                ];
+            }
+            $this->recalculateTotals();
+        }
+
+        $this->dispatch('$refresh');
     }
 
     public function render()

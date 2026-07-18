@@ -6,9 +6,12 @@ use App\Models\Supplier;
 use App\Models\SupplierOrder;
 use Illuminate\Support\Str;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class SupplierOrderForm extends Component
 {
+    use WithFileUploads;
+
     public ?SupplierOrder $supplierOrder = null;
 
     public ?int $supplier_id = null;
@@ -32,6 +35,8 @@ class SupplierOrderForm extends Component
     public string $notes = '';
 
     public array $lineItems = [];
+
+    public $upload;
 
     public function mount(?int $supplierOrderId = null): void
     {
@@ -180,7 +185,86 @@ class SupplierOrderForm extends Component
             ]);
         }
 
+        if ($this->upload) {
+            $filePath = $this->upload->store('expenses/documents', 'local');
+            $this->supplierOrder->documents()->create([
+                'documentable_type' => SupplierOrder::class,
+                'file_path' => $filePath,
+                'original_filename' => $this->upload->getClientOriginalName(),
+                'mime_type' => $this->upload->getMimeType(),
+                'file_size' => $this->upload->getSize(),
+                'document_type' => 'invoice',
+            ]);
+        }
+
         $this->redirect(route('expenses.supplier-orders.show', $this->supplierOrder->id), navigate: true);
+    }
+
+    protected function getListeners(): array
+    {
+        return [
+            'apply-extracted-data' => 'applyExtractedData',
+        ];
+    }
+
+    public function applyExtractedData(array $data): void
+    {
+        if (! empty($data['supplier_name'])) {
+            $supplier = Supplier::where('name', 'like', '%'.$data['supplier_name'].'%')->first();
+            $this->supplier_id = $supplier?->id;
+        }
+
+        if (! empty($data['invoice_number'])) {
+            $this->invoice_number = $data['invoice_number'];
+        }
+
+        if (! empty($data['invoice_date'])) {
+            $this->invoice_date = $data['invoice_date'];
+            if (empty($this->order_date) || $this->order_date === now()->format('Y-m-d')) {
+                $this->order_date = $data['invoice_date'];
+            }
+        }
+
+        if (! empty($data['due_date'])) {
+            $this->due_date = $data['due_date'];
+        }
+
+        if (! empty($data['subtotal'])) {
+            $this->subtotal = (string) $data['subtotal'];
+        }
+
+        if (! empty($data['vat_total'])) {
+            $this->vat_total = (string) $data['vat_total'];
+        }
+
+        if (! empty($data['total_amount'])) {
+            $this->total_amount = (string) $data['total_amount'];
+        }
+
+        if (! empty($data['line_items']) && is_array($data['line_items'])) {
+            $this->lineItems = [];
+            foreach ($data['line_items'] as $item) {
+                $qty = (float) ($item['quantity'] ?? 1);
+                $unit = (float) ($item['unit_amount'] ?? 0);
+                $vatRate = (float) ($item['vat_rate'] ?? 0.20);
+                $lineNet = $qty * $unit;
+                $vatAmount = $lineNet * $vatRate;
+                $this->lineItems[] = [
+                    'id' => null,
+                    'line_type' => ($item['line_type'] ?? 'product') === 'personal' ? 'personal' : 'product',
+                    'description' => $item['description'] ?? '',
+                    'quantity' => (string) $qty,
+                    'unit_amount' => (string) $unit,
+                    'vat_rate' => (string) round($vatRate * 100, 2),
+                    'vat_amount' => (string) round($vatAmount, 2),
+                    'line_total' => (string) round($lineNet + $vatAmount, 2),
+                    'line_type_category' => 'stock',
+                ];
+            }
+            $this->recalculateTotals();
+        }
+
+        $this->dispatch('$refresh');
     }
 
     public function render()

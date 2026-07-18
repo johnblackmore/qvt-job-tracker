@@ -17,6 +17,10 @@ class ReconciliationView extends Component
 
     public ?int $selectedPaymentId = null;
 
+    public ?int $selectedExpenseId = null;
+
+    public string $selectedExpenseType = '';
+
     public bool $showMatched = false;
 
     public function runAutoMatch(ReconciliationService $service): void
@@ -42,29 +46,46 @@ class ReconciliationView extends Component
         $this->selectedPaymentId = $id;
     }
 
+    public function selectExpense(int $id, string $type): void
+    {
+        $this->selectedExpenseId = $id;
+        $this->selectedExpenseType = $type;
+    }
+
     public function linkSelected(ReconciliationService $service): void
     {
-        if (! $this->selectedTransactionId || ! $this->selectedPaymentId) {
-            $this->dispatch('notify', message: 'Select both a transaction and a payment to link.', type: 'warning');
+        if ($this->selectedTransactionId && $this->selectedPaymentId) {
+            $txn = BankTransaction::findOrFail($this->selectedTransactionId);
+            $payment = Payment::findOrFail($this->selectedPaymentId);
 
-            return;
+            $service->manualMatch($txn, $payment);
+
+            $this->selectedTransactionId = null;
+            $this->selectedPaymentId = null;
+
+            $this->dispatch('notify', message: 'Transaction linked to payment.', type: 'success');
+        } elseif ($this->selectedTransactionId && $this->selectedExpenseId) {
+            $service->matchExpense($this->selectedTransactionId, $this->selectedExpenseType, $this->selectedExpenseId);
+
+            $this->selectedTransactionId = null;
+            $this->selectedExpenseId = null;
+            $this->selectedExpenseType = '';
+
+            $this->dispatch('notify', message: 'Transaction linked to expense.', type: 'success');
+        } else {
+            $this->dispatch('notify', message: 'Select both a transaction and a payment or expense to link.', type: 'warning');
         }
-
-        $txn = BankTransaction::findOrFail($this->selectedTransactionId);
-        $payment = Payment::findOrFail($this->selectedPaymentId);
-
-        $service->manualMatch($txn, $payment);
-
-        $this->selectedTransactionId = null;
-        $this->selectedPaymentId = null;
-
-        $this->dispatch('notify', message: 'Transaction linked to payment.', type: 'success');
     }
 
     public function unlink(int $transactionId, ReconciliationService $service): void
     {
         $txn = BankTransaction::findOrFail($transactionId);
-        $service->unlinkTransaction($txn);
+
+        if ($txn->matchedPayment) {
+            $service->unlinkTransaction($txn);
+        } else {
+            $service->unlinkExpense($transactionId);
+        }
 
         $this->dispatch('notify', message: 'Transaction unlinked.', type: 'success');
     }
@@ -74,9 +95,14 @@ class ReconciliationView extends Component
         $unmatchedTransactions = $service->getUnmatchedTransactions();
         $unmatchedPayments = $service->getUnmatchedPayments();
 
+        $unmatchedExpenses = $service->getUnmatchedExpenses();
+
         $matchedTransactions = BankTransaction::where('reconciliation_status', 'matched')
-            ->whereNotNull('matched_payment_id')
-            ->with(['bankAccount', 'matchedPayment.order.customer'])
+            ->where(function ($q) {
+                $q->whereNotNull('matched_payment_id')
+                    ->orWhereHas('reconciliationLink');
+            })
+            ->with(['bankAccount', 'matchedPayment.order.customer', 'reconciliationLink'])
             ->orderByDesc('updated_at')
             ->limit(20)
             ->get();
@@ -86,6 +112,7 @@ class ReconciliationView extends Component
         return view('livewire.banking.reconciliation-view', compact(
             'unmatchedTransactions',
             'unmatchedPayments',
+            'unmatchedExpenses',
             'matchedTransactions',
             'summary',
         ));

@@ -68,7 +68,19 @@
                                                 Draft Assistant
                                             </span>
                                         @endif
-                                        @if($assignedChatAgent !== $config->id && $assignedUrlExtractor !== $config->id && $assignedDraftAssistant !== $config->id)
+                                        @if($assignedExpensesExtractor === $config->id)
+                                            <span class="inline-flex items-center gap-1 rounded-full bg-teal/10 px-2.5 py-0.5 text-xs font-medium text-teal-dark border border-teal/20">
+                                                <x-lucide-receipt class="w-3 h-3" />
+                                                Expenses (Text)
+                                            </span>
+                                        @endif
+                                        @if($assignedExpensesExtractorVision === $config->id)
+                                            <span class="inline-flex items-center gap-1 rounded-full bg-teal/10 px-2.5 py-0.5 text-xs font-medium text-teal-dark border border-teal/20">
+                                                <x-lucide-image class="w-3 h-3" />
+                                                Expenses (Vision)
+                                            </span>
+                                        @endif
+                                        @if($assignedChatAgent !== $config->id && $assignedUrlExtractor !== $config->id && $assignedDraftAssistant !== $config->id && $assignedExpensesExtractor !== $config->id && $assignedExpensesExtractorVision !== $config->id)
                                             <span class="text-xs text-slate-400">Not assigned</span>
                                         @endif
                                     </div>
@@ -86,7 +98,7 @@
                                         <a href="{{ route('admin.ai.configs.edit', $config) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors">
                                             <x-lucide-pencil class="w-4 h-4" />
                                         </a>
-                                        <button wire:click="delete({{ $config->id }})" wire:confirm="Delete this config? {{ ($assignedChatAgent === $config->id || $assignedUrlExtractor === $config->id || $assignedDraftAssistant === $config->id) ? 'It is currently assigned to an assistant and will fall back to env defaults. ' : '' }}This cannot be undone." class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                                        <button wire:click="delete({{ $config->id }})" wire:confirm="Delete this config? {{ ($assignedChatAgent === $config->id || $assignedUrlExtractor === $config->id || $assignedDraftAssistant === $config->id || $assignedExpensesExtractor === $config->id || $assignedExpensesExtractorVision === $config->id) ? 'It is currently assigned to an assistant and will fall back to env defaults. ' : '' }}This cannot be undone." class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
                                             <x-lucide-trash-2 class="w-4 h-4" />
                                         </button>
                                     </div>
@@ -156,6 +168,26 @@
                     <div>
                         <div>Enquiry Draft Assistant</div>
                         <div class="text-xs text-slate-400 font-normal">Generates draft responses to enquiries</div>
+                    </div>
+                </button>
+                <button
+                    @click="$wire.assignToAssistant(configId, 'expenses-extractor'); open = false"
+                    class="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-sm font-medium text-slate-700 hover:bg-copper/10 hover:text-copper border border-slate-200 hover:border-copper/30 transition-colors text-left"
+                >
+                    <x-lucide-receipt class="w-5 h-5 shrink-0 text-slate-400" />
+                    <div>
+                        <div>Expenses Extractor (Text)</div>
+                        <div class="text-xs text-slate-400 font-normal">Extracts data from PDFs and text files</div>
+                    </div>
+                </button>
+                <button
+                    @click="$wire.assignToAssistant(configId, 'expenses-extractor-vision'); open = false"
+                    class="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-sm font-medium text-slate-700 hover:bg-copper/10 hover:text-copper border border-slate-200 hover:border-copper/30 transition-colors text-left"
+                >
+                    <x-lucide-image class="w-5 h-5 shrink-0 text-slate-400" />
+                    <div>
+                        <div>Expenses Extractor (Vision)</div>
+                        <div class="text-xs text-slate-400 font-normal">Processes images of invoices/receipts</div>
                     </div>
                 </button>
                 <button @click="open = false" class="w-full px-4 py-2 text-sm text-slate-500 hover:text-slate-700 transition-colors">

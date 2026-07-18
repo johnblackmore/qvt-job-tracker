@@ -22,6 +22,13 @@ return [
             'system_prompt' => 'ai.prompts.chat-agent',
         ],
 
+        'expenses-extractor' => [
+            'provider' => env('AI_EXPENSES_EXTRACTOR_PROVIDER', 'opencode'),
+            'model' => env('AI_EXPENSES_EXTRACTOR_MODEL', 'deepseek-v4-flash-free'),
+            'temperature' => 0.1,
+            'max_tokens' => 2048,
+        ],
+
         'enquiry-draft-assistant' => [
             'provider' => env('AI_DRAFT_PROVIDER', 'opencode'),
             'model' => env('AI_DRAFT_MODEL', 'deepseek-v4-flash-free'),

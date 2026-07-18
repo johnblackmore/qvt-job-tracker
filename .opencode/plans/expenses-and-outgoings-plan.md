@@ -699,3 +699,77 @@ This is the most flexible approach. We can allocate line items to orders, quotes
 | 4 | Partial reconciliation? | **Yes** — `reconciliation_links.amount` captures the matched portion. One bank debit maps to at most one expense (not split across multiple). Supports credits-on-account / extra discounts on the expense side. |
 | 5 | Personal line type? | Keep as `line_type = 'personal'` on line items. Not a boolean. |
 | 6 | Export frequency? | Manual CSV export. Automated integration with accounting APIs is future. |
+
+---
+
+## 13. Phase 5: Completion Tasks
+
+*Added during Phase 3+ implementation — tasks that complete items stubbed or not built during initial implementation.*
+
+### 13.1 File Upload in Expense & Supplier Order Forms
+
+| Task | Effort | Details |
+|------|--------|---------|
+| Add file upload to `ExpenseForm` | Small | Add `$upload` Livewire property, file input to view, persist as `ExpenseDocument` on save |
+| Add file upload to `SupplierOrderForm` | Small | Same pattern as ExpenseForm |
+| Create `documents` storage disk in `config/filesystems.php` | Tiny | Named `documents` disk pointing to `storage/app/private/expenses/documents` |
+
+### 13.2 AI Expenses Assistant — Working Pipeline
+
+| Task | Effort | Details |
+|------|--------|---------|
+| Add `expenses-extractor` to `config/ai.php` | Tiny | Follow `product-url-extractor` pattern with `temperature: 0.1`, `max_tokens: 2048` |
+| Add `expenses_extractor_config_id` to `AiAssistantConfigSettings` + migration | Small | Follow `product_url_extractor_config_id` pattern |
+| Create `ExpensesExtractorAssistant` service | Medium | Mimics `ProductUrlAssistant` but reads uploaded file content (raw text) instead of HTTP-fetching a URL |
+| Create system prompt `resources/views/ai/prompts/expenses-extraction.blade.php` | Small | Prompt tailored to invoice/receipt extraction |
+| Wire `AiExtractionPanel::extract()` to call `ExpensesExtractorAssistant` | Medium | Replace the stub with a real call to the assistant |
+| Add `getListeners()` to `ExpenseForm` for `apply-extracted-data` | Small | Pre-fill form fields from extracted data |
+| Add `getListeners()` to `SupplierOrderForm` for `apply-extracted-data` | Small | Pre-fill supplier, invoice number, dates, line items |
+| Embed `AiExtractionPanel` in `SupplierOrderForm` view | Small | Add the panel component |
+| Embed `AiExtractionPanel` in `ExpenseForm` view | Small | Same pattern |
+| Create `ExpenseDocument` from uploaded file on form save | Small | Persist file as document record |
+
+### 13.3 ReconciliationView — Show Unmatched Expenses
+
+| Task | Effort | Details |
+|------|--------|---------|
+| Extend `ReconciliationView` to fetch unmatched expenses | Small | Call `ReconciliationService::getUnmatchedExpenses()` |
+| Extend reconciliation view template | Small | Add a third panel for unmatched expenses/supplier orders |
+| Add `selectExpense()` / `linkExpense()` methods | Small | Follow existing `selectPayment()` / `linkSelected()` pattern |
+
+### 13.4 Accounting Export Settings & Web Download
+
+| Task | Effort | Details |
+|------|--------|---------|
+| Create `AccountingMappingSettings` class | Small | Follow `VatSettings` pattern |
+| Create settings migration | Small | Seed default mapping |
+| Add CSV download route + controller | Small | Expose `GET /admin/expenses/export` returning StreamedResponse |
+| Add "Export CSV" button to list views | Tiny | Link to new route |
+
+### 13.5 Files to Create
+
+| File | Purpose |
+|------|---------|
+| `app/Services/Ai/Assistants/ExpensesExtractorAssistant.php` | AI extraction service |
+| `resources/views/ai/prompts/expenses-extraction.blade.php` | System prompt |
+| `app/Settings/AccountingMappingSettings.php` | Account code mapping |
+| `database/settings/2026_07_18_000001_create_accounting_mapping_settings.php` | Settings migration |
+| `database/settings/2026_07_18_000002_add_expenses_extractor_config_setting.php` | Settings migration |
+
+### 13.6 Files to Modify
+
+| File | Change |
+|------|--------|
+| `config/ai.php` | Add `expenses-extractor` entry |
+| `app/Settings/AiAssistantConfigSettings.php` | Add `$expenses_extractor_config_id` property |
+| `app/Livewire/Expenses/AiExtractionPanel.php` | Replace stub with real assistant call |
+| `app/Livewire/Expenses/ExpenseForm.php` | Add `$upload`, `getListeners()`, `applyExtractedData()`, create `ExpenseDocument` on save |
+| `app/Livewire/Expenses/SupplierOrderForm.php` | Add `$upload`, `getListeners()`, `applyExtractedData()`, create `ExpenseDocument` on save |
+| `resources/views/livewire/expenses/expense-form.blade.php` | Embed `AiExtractionPanel`, add file upload |
+| `resources/views/livewire/expenses/supplier-order-form.blade.php` | Embed `AiExtractionPanel`, add file upload |
+| `app/Livewire/Banking/ReconciliationView.php` | Add unmatched expenses methods |
+| `resources/views/livewire/banking/reconciliation-view.blade.php` | Add expenses panel |
+| `config/filesystems.php` | Add `documents` disk |
+| `routes/expenses.php` | Add CSV export route |
+| `resources/views/livewire/expenses/expense-list.blade.php` | Add "Export CSV" button |
+| `resources/views/livewire/expenses/supplier-order-list.blade.php` | Add "Export CSV" button |

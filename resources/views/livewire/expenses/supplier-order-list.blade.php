@@ -4,10 +4,16 @@
             <h1 class="text-2xl font-display font-semibold text-ink tracking-tight">Supplier Orders</h1>
             <p class="mt-1 text-sm text-slate-500">Track orders and invoices from your suppliers</p>
         </div>
-        <a href="{{ route('expenses.supplier-orders.create') }}" wire:navigate class="inline-flex items-center gap-2 rounded-lg bg-copper px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark transition-colors">
-            <x-lucide-plus class="w-4 h-4" />
-            New Supplier Order
-        </a>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('expenses.export', ['type' => 'supplier_orders']) }}" class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors">
+                <x-lucide-file-down class="w-4 h-4" />
+                Export CSV
+            </a>
+            <a href="{{ route('expenses.supplier-orders.create') }}" wire:navigate class="inline-flex items-center gap-2 rounded-lg bg-copper px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark transition-colors">
+                <x-lucide-plus class="w-4 h-4" />
+                New Supplier Order
+            </a>
+        </div>
     </div>
 
     <div class="mb-6 flex flex-col sm:flex-row gap-4">
