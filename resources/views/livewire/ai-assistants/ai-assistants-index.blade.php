@@ -11,7 +11,7 @@
         </a>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
         <a href="{{ route('admin.ai.assistants.chat-agent') }}" wire:navigate
            class="group bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-copper/30 transition-all block">
             <div class="flex items-center justify-between mb-4">
@@ -51,15 +51,15 @@
             <div class="grid grid-cols-3 gap-3 pt-3 border-t border-slate-100">
                 <div>
                     <p class="text-xs text-slate-400">Total</p>
-                    <p class="text-lg font-bold text-slate-900">{{ number_format($extractions) }}</p>
+                    <p class="text-lg font-bold text-slate-900">{{ number_format($productExtractions) }}</p>
                 </div>
                 <div>
-                    <p class="text-xs text-slate-400">Successful</p>
-                    <p class="text-lg font-bold text-teal-dark">{{ number_format($extractionsSuccess) }}</p>
+                    <p class="text-xs text-slate-400">Success Rate</p>
+                    <p class="text-lg font-bold text-teal-dark">{{ number_format($productExtractionsSuccessRate, 2) }}%</p>
                 </div>
                 <div>
-                    <p class="text-xs text-slate-400">Failed</p>
-                    <p class="text-lg font-bold text-red-600">{{ number_format($extractionsFailed) }}</p>
+                    <p class="text-xs text-slate-400">Tokens</p>
+                    <p class="text-lg font-bold text-slate-900">{{ number_format($productExtractionTokens) }}</p>
                 </div>
             </div>
         </a>
@@ -80,12 +80,12 @@
                     <p class="text-lg font-bold text-slate-900">{{ number_format($expensesExtractions) }}</p>
                 </div>
                 <div>
-                    <p class="text-xs text-slate-400">Successful</p>
-                    <p class="text-lg font-bold text-teal-dark">{{ number_format($expensesExtractionsSuccess) }}</p>
+                    <p class="text-xs text-slate-400">Success Rate</p>
+                    <p class="text-lg font-bold text-teal-dark">{{ number_format($expensesExtractionsSuccessRate, 2) }}%</p>
                 </div>
                 <div>
-                    <p class="text-xs text-slate-400">Failed</p>
-                    <p class="text-lg font-bold text-red-600">{{ number_format($expensesExtractionsFailed) }}</p>
+                    <p class="text-xs text-slate-400">Tokens</p>
+                    <p class="text-lg font-bold text-slate-900">{{ number_format($expensesExtractionTokens) }}</p>
                 </div>
             </div>
         </a>

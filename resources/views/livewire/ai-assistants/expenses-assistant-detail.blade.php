@@ -100,7 +100,7 @@
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @foreach($extractions as $extraction)
-                            <tr class="hover:bg-slate-50 transition-colors cursor-pointer" wire:click="viewExtraction({{ $extraction->id }})">
+                            <tr class="hover:bg-slate-50 transition-colors">
                                 <td class="px-6 py-3 text-slate-600 text-xs">{{ $extraction->created_at->format('j M Y H:i') }}</td>
                                 <td class="px-6 py-3 text-ink">{{ $extraction->user?->name ?? 'Unknown' }}</td>
                                 <td class="px-6 py-3 text-slate-500 text-xs max-w-[200px] truncate">{{ $extraction->source_url ?? '—' }}</td>
@@ -114,7 +114,8 @@
                                 </td>
                                 <td class="px-6 py-3 text-right text-slate-600 text-xs">{{ number_format(($extraction->input_tokens ?? 0) + ($extraction->output_tokens ?? 0)) }}</td>
                                 <td class="px-6 py-3 text-right">
-                                    <button wire:click="viewExtraction({{ $extraction->id }})" class="text-xs font-medium text-copper hover:underline">View</button>
+                                    <button x-on:click="$wire.viewExtraction({{ $extraction->id }}).then(() => $dispatch('open-modal', 'view-extraction'))"
+                                            class="text-xs font-medium text-copper hover:underline">View</button>
                                 </td>
                             </tr>
                         @endforeach
@@ -136,66 +137,108 @@
     </div>
 
     {{-- Extraction Detail Modal --}}
-    @if($viewingExtraction)
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-base font-display font-semibold text-ink">Extraction Details</h3>
-                    <button wire:click="closeExtraction" class="text-slate-400 hover:text-slate-600">
-                        <x-lucide-x class="w-5 h-5" />
-                    </button>
+    <x-modal name="view-extraction" maxWidth="2xl" focusable>
+        @if($viewingExtraction)
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="text-lg font-display font-semibold text-slate-900">Extraction Details</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">
+                        {{ $viewingExtraction->user?->name ?? 'Unknown' }} &middot;
+                        {{ $viewingExtraction->created_at->format('d M Y, H:i') }}
+                    </p>
                 </div>
-                <dl class="grid grid-cols-2 gap-4 text-sm mb-4">
-                    <div>
-                        <dt class="text-slate-500">Date</dt>
-                        <dd class="font-medium text-ink">{{ $viewingExtraction->created_at->format('j M Y H:i:s') }}</dd>
-                    </div>
-                    <div>
-                        <dt class="text-slate-500">User</dt>
-                        <dd class="font-medium text-ink">{{ $viewingExtraction->user?->name ?? 'Unknown' }}</dd>
-                    </div>
-                    <div>
-                        <dt class="text-slate-500">Status</dt>
-                        <dd>
-                            <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium {{ $viewingExtraction->status === 'completed' ? 'bg-teal/10 text-teal-dark' : 'bg-red-50 text-red-600' }}">
-                                {{ ucfirst($viewingExtraction->status) }}
-                            </span>
-                        </dd>
-                    </div>
-                    <div>
-                        <dt class="text-slate-500">Provider / Model</dt>
-                        <dd class="font-medium text-ink">{{ $viewingExtraction->provider }} / {{ $viewingExtraction->model }}</dd>
-                    </div>
-                    @if($viewingExtraction->source_url)
-                        <div class="col-span-2">
-                            <dt class="text-slate-500">Source</dt>
-                            <dd class="font-medium text-ink break-all">{{ $viewingExtraction->source_url }}</dd>
-                        </div>
-                    @endif
-                    <div>
-                        <dt class="text-slate-500">Input Tokens</dt>
-                        <dd class="font-medium text-ink">{{ number_format($viewingExtraction->input_tokens ?? 0) }}</dd>
-                    </div>
-                    <div>
-                        <dt class="text-slate-500">Output Tokens</dt>
-                        <dd class="font-medium text-ink">{{ number_format($viewingExtraction->output_tokens ?? 0) }}</dd>
-                    </div>
-                </dl>
+                <button x-on:click="$wire.closeExtraction(); $dispatch('close-modal', 'view-extraction')"
+                        class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
+                    <x-lucide-x class="w-5 h-5" />
+                </button>
+            </div>
 
-                @if($viewingExtraction->extracted_data)
-                    <div class="mt-4">
-                        <h4 class="text-sm font-medium text-ink mb-2">Extracted Data</h4>
-                        <pre class="bg-slate-50 rounded-lg p-4 text-xs text-slate-700 overflow-x-auto max-h-60">{{ json_encode($viewingExtraction->extracted_data, JSON_PRETTY_PRINT) }}</pre>
-                    </div>
+            <div class="space-y-4">
+                @if($viewingExtraction->source_url)
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 mb-1">Source</label>
+                    <a href="{{ $viewingExtraction->source_url }}" target="_blank"
+                       class="text-sm text-copper hover:underline break-all">
+                        {{ $viewingExtraction->source_url }}
+                    </a>
+                </div>
                 @endif
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 mb-1">Status</label>
+                    @if($viewingExtraction->status === 'completed')
+                        <span class="inline-flex items-center gap-1 rounded-full bg-teal/10 px-2.5 py-0.5 text-xs font-medium text-teal-dark border border-teal/20">
+                            <x-lucide-check class="w-3 h-3" /> Completed
+                        </span>
+                    @elseif($viewingExtraction->status === 'failed')
+                        <span class="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700 border border-red-200">
+                            <x-lucide-x class="w-3 h-3" /> Failed
+                        </span>
+                    @else
+                        <span class="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700 border border-amber-200">Processing</span>
+                    @endif
+                </div>
 
                 @if($viewingExtraction->error_message)
-                    <div class="mt-4">
-                        <h4 class="text-sm font-medium text-red-600 mb-2">Error</h4>
-                        <p class="bg-red-50 rounded-lg p-3 text-sm text-red-700">{{ $viewingExtraction->error_message }}</p>
-                    </div>
+                <div class="bg-red-50 border border-red-200 rounded-lg p-3">
+                    <p class="text-xs font-medium text-red-700 mb-1">Error:</p>
+                    <p class="text-sm text-red-600">{{ $viewingExtraction->error_message }}</p>
+                </div>
                 @endif
+
+                @if($viewingExtraction->extracted_data)
+                <div>
+                    <label class="block text-xs font-medium text-slate-500 mb-2">Extracted Data</label>
+                    <div class="bg-white border border-slate-200 rounded-lg overflow-hidden">
+                        <table class="w-full text-sm">
+                            <tbody class="divide-y divide-slate-200">
+                                @foreach((array) $viewingExtraction->extracted_data as $key => $value)
+                                    <tr class="even:bg-slate-50">
+                                        <td class="px-4 py-2.5 text-xs font-medium text-slate-500 uppercase tracking-wider align-top w-1/3">{{ $key }}</td>
+                                        <td class="px-4 py-2.5 text-sm text-slate-900">
+                                            @if(is_array($value) || is_object($value))
+                                                <pre class="text-xs font-mono bg-slate-50 rounded p-2 border border-slate-200 overflow-x-auto whitespace-pre-wrap">{{ json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</pre>
+                                            @else
+                                                {{ $value }}
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @endif
+
+                @php
+                    $eInput = $viewingExtraction->input_tokens ?? 0;
+                    $eOutput = $viewingExtraction->output_tokens ?? 0;
+                    $eConfig = $viewingExtraction->provider ? App\Models\AiModelConfig::where('provider', $viewingExtraction->provider)->where('model', $viewingExtraction->model)->first() : null;
+                    $eCost = null;
+                    if ($eConfig && $eConfig->input_price !== null && $eConfig->output_price !== null) {
+                        $eCost = ($eInput / 1_000_000 * $eConfig->input_price) + ($eOutput / 1_000_000 * $eConfig->output_price);
+                    }
+                @endphp
+
+                <div class="grid grid-cols-3 gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                    <div class="text-center">
+                        <p class="text-xs text-slate-400">Input Tokens</p>
+                        <p class="text-sm font-semibold text-slate-900">{{ number_format($eInput) }}</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-xs text-slate-400">Output Tokens</p>
+                        <p class="text-sm font-semibold text-slate-900">{{ number_format($eOutput) }}</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-xs text-slate-400">Est. Cost</p>
+                        <p class="text-sm font-semibold text-slate-900 font-mono">
+                            {{ $eCost !== null ? '$'.number_format($eCost, 4) : '—' }}
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
-    @endif
+        @endif
+    </x-modal>
 </div>

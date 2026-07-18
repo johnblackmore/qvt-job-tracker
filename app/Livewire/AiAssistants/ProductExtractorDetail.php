@@ -69,7 +69,8 @@ class ProductExtractorDetail extends Component
 
     public function render()
     {
-        $extractionsQuery = AiExtraction::with('user');
+        $extractionsQuery = AiExtraction::with('user')
+            ->where('assistant_name', 'product-url-extractor');
 
         if ($this->search) {
             $extractionsQuery->where(function ($q) {
@@ -94,10 +95,10 @@ class ProductExtractorDetail extends Component
             ->orderByDesc('created_at')
             ->paginate(20);
 
-        $totalExtractions = AiExtraction::count();
-        $successCount = AiExtraction::where('status', 'completed')->count();
-        $failedCount = AiExtraction::where('status', 'failed')->count();
-        $totalTokens = AiExtraction::sum('input_tokens') + AiExtraction::sum('output_tokens');
+        $totalExtractions = AiExtraction::where('assistant_name', 'product-url-extractor')->count();
+        $successCount = AiExtraction::where('assistant_name', 'product-url-extractor')->where('status', 'completed')->count();
+        $failedCount = AiExtraction::where('assistant_name', 'product-url-extractor')->where('status', 'failed')->count();
+        $totalTokens = AiExtraction::where('assistant_name', 'product-url-extractor')->sum('input_tokens') + AiExtraction::where('assistant_name', 'product-url-extractor')->sum('output_tokens');
 
         $providerModelStats = AiExtraction::selectRaw('
                 provider,
@@ -107,6 +108,7 @@ class ProductExtractorDetail extends Component
                 sum(case when status = "failed" then 1 else 0 end) as failed,
                 coalesce(sum(input_tokens), 0) + coalesce(sum(output_tokens), 0) as total_tokens
             ')
+            ->where('assistant_name', 'product-url-extractor')
             ->whereNotNull('provider')
             ->groupBy('provider', 'model')
             ->get()
