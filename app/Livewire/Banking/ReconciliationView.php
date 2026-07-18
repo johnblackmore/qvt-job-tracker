@@ -102,7 +102,7 @@ class ReconciliationView extends Component
                 $q->whereNotNull('matched_payment_id')
                     ->orWhereHas('reconciliationLink');
             })
-            ->with(['bankAccount', 'matchedPayment.order.customer', 'reconciliationLink'])
+            ->with(['bankAccount', 'matchedPayment.order.customer', 'reconciliationLink.reconcilable'])
             ->orderByDesc('updated_at')
             ->limit(20)
             ->get();

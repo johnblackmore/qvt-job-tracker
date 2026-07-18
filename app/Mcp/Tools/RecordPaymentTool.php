@@ -2,8 +2,10 @@
 
 namespace App\Mcp\Tools;
 
+use App\Models\BankTransaction;
 use App\Models\Order;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Illuminate\Support\Facades\DB;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
@@ -12,7 +14,7 @@ use Laravel\Mcp\Server\Tool;
 use Laravel\Mcp\Server\Tools\Annotations\IsIdempotent;
 
 #[IsIdempotent]
-#[Description('Record a payment against an existing order. Supports bank transfer, card, cash, or other methods. Requires confirmation after preview.')]
+#[Description('Record a payment against an existing order. Optionally link to a bank transaction. Supports bank transfer, card, cash, or other methods. Requires confirmation after preview.')]
 class RecordPaymentTool extends Tool
 {
     public function schema(JsonSchema $schema): array
@@ -32,6 +34,9 @@ class RecordPaymentTool extends Tool
                 ->nullable(),
             'paid_at' => $schema->string()
                 ->description('Date the payment was made (YYYY-MM-DD). Defaults to today.')
+                ->nullable(),
+            'transaction_id' => $schema->integer()
+                ->description('Optional bank transaction ID to link this payment to (reconciles in one step)')
                 ->nullable(),
             'preview' => $schema->boolean()
                 ->description('Set true to preview what will happen without saving.')
@@ -75,6 +80,7 @@ class RecordPaymentTool extends Tool
             'method' => ['required', 'in:bank_transfer,card,cash,other'],
             'reference' => ['nullable', 'string', 'max:255'],
             'paid_at' => ['nullable', 'date'],
+            'transaction_id' => ['nullable', 'integer', 'exists:bank_transactions,id'],
             'preview' => ['boolean'],
             'confirmed' => ['boolean'],
         ]);
@@ -94,31 +100,52 @@ class RecordPaymentTool extends Tool
         $newTotalPaid = $currentTotalPaid + (float) $validated['amount'];
         $balanceDue = max(0, (float) $order->total_amount - $newTotalPaid);
 
+        $transaction = null;
+        if (! empty($validated['transaction_id'])) {
+            $transaction = BankTransaction::find($validated['transaction_id']);
+        }
+
         if ($isPreview && ! $isConfirmed) {
+            $msg = 'I will record a payment of £'.number_format((float) $validated['amount'], 2)
+                ." for order {$order->reference_number} ({$order->customer->name}).\n\n"
+                .'Current total paid: £'.number_format($currentTotalPaid, 2)."\n"
+                .'New total paid: £'.number_format($newTotalPaid, 2)."\n"
+                .'Balance due: £'.number_format($balanceDue, 2);
+
+            if ($transaction) {
+                $msg .= "\n\nThis payment will also be linked to bank transaction: {$transaction->description}.";
+            }
+
+            $msg .= "\n\nIs that correct?";
+
             return Response::structured([
                 'status' => 'preview',
-                'message' => sprintf(
-                    "I will record a payment of £%s for order %s (%s).\n\nCurrent total paid: £%s\nNew total paid: £%s\nBalance due: £%s\n\nIs that correct?",
-                    number_format((float) $validated['amount'], 2),
-                    $order->reference_number,
-                    $order->customer->name,
-                    number_format($currentTotalPaid, 2),
-                    number_format($newTotalPaid, 2),
-                    number_format($balanceDue, 2)
-                ),
+                'message' => $msg,
             ]);
         }
 
-        $payment = $order->payments()->create([
-            'amount' => $validated['amount'],
-            'method' => $validated['method'],
-            'reference' => $validated['reference'] ?? null,
-            'paid_at' => $paidAt,
-            'notes' => null,
-            'recorded_by_user_id' => $request->user()?->id,
-        ]);
+        $payment = DB::transaction(function () use ($order, $validated, $paidAt, $request, $transaction, $newTotalPaid) {
+            $payment = $order->payments()->create([
+                'amount' => $validated['amount'],
+                'method' => $validated['method'],
+                'reference' => $validated['reference'] ?? null,
+                'paid_at' => $paidAt,
+                'notes' => null,
+                'recorded_by_user_id' => $request->user()?->id,
+                'bank_transaction_id' => $transaction?->id,
+            ]);
 
-        $order->update(['deposit_paid' => $newTotalPaid]);
+            $order->update(['deposit_paid' => $newTotalPaid]);
+
+            if ($transaction) {
+                $transaction->update([
+                    'matched_payment_id' => $payment->id,
+                    'reconciliation_status' => 'matched',
+                ]);
+            }
+
+            return $payment;
+        });
 
         return Response::structured([
             'status' => 'completed',

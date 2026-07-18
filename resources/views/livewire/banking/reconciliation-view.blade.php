@@ -180,13 +180,18 @@
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @foreach($matchedTransactions as $txn)
+                            @php $entityUrl = $txn->matchedEntityUrl(); @endphp
                             <tr class="hover:bg-slate-50 transition-colors text-sm">
                                 <td class="px-6 py-4 max-w-xs truncate text-slate-600">{{ $txn->description }}</td>
-                                <td class="px-6 py-4 text-slate-600">&pound;{{ number_format($txn->matchedPayment?->amount ?? 0, 2) }}</td>
+                                <td class="px-6 py-4 text-slate-600">&pound;{{ number_format(abs($txn->amount), 2) }}</td>
                                 <td class="px-6 py-4">
-                                    <a href="{{ route('orders.show', $txn->matchedPayment?->order_id) }}" wire:navigate class="text-copper hover:underline">
-                                        {{ $txn->matchedPayment?->order?->reference_number ?? '#' . $txn->matchedPayment?->order_id }}
-                                    </a>
+                                    @if($entityUrl)
+                                        <a href="{{ $entityUrl }}" wire:navigate class="text-copper hover:underline">
+                                            {{ $txn->matchedEntityLabel() }}
+                                        </a>
+                                    @else
+                                        <span class="text-slate-400">-</span>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 font-mono text-slate-600">&pound;{{ number_format(abs($txn->amount), 2) }}</td>
                                 <td class="px-6 py-4 text-xs text-slate-400">{{ $txn->updated_at->diffForHumans() }}</td>

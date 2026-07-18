@@ -12,6 +12,10 @@
                     <span wire:loading.remove>Sync Transactions</span>
                     <span wire:loading>Syncing...</span>
                 </button>
+                <a href="{{ route('admin.banking.reconciliation') }}" wire:navigate class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors">
+                    <x-lucide-wand-2 class="w-4 h-4" />
+                    Reconciliation
+                </a>
                 <a href="{{ route('admin.banking.accounts') }}" wire:navigate class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors">
                     <x-lucide-settings class="w-4 h-4" />
                     Manage Accounts

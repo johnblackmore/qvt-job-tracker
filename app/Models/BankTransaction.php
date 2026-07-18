@@ -63,6 +63,63 @@ class BankTransaction extends Model
         return $this->hasOne(ReconciliationLink::class);
     }
 
+    public function matchedEntity(): ?Model
+    {
+        if ($this->matchedPayment) {
+            return $this->matchedPayment;
+        }
+
+        return $this->reconciliationLink?->reconcilable;
+    }
+
+    public function matchedEntityLabel(): ?string
+    {
+        $entity = $this->matchedEntity();
+
+        if (! $entity) {
+            return null;
+        }
+
+        if ($entity instanceof Payment) {
+            $order = $entity->order;
+
+            return 'Payment on order '.($order?->reference_number ?? '#'.$entity->order_id);
+        }
+
+        if ($entity instanceof Expense) {
+            return 'Expense '.$entity->reference_number;
+        }
+
+        if ($entity instanceof SupplierOrder) {
+            return 'Supplier order '.$entity->reference_number;
+        }
+
+        return null;
+    }
+
+    public function matchedEntityUrl(): ?string
+    {
+        $entity = $this->matchedEntity();
+
+        if (! $entity) {
+            return null;
+        }
+
+        if ($entity instanceof Payment) {
+            return $entity->order_id ? route('orders.show', $entity->order_id) : null;
+        }
+
+        if ($entity instanceof Expense) {
+            return route('expenses.show', $entity->id);
+        }
+
+        if ($entity instanceof SupplierOrder) {
+            return route('expenses.supplier-orders.show', $entity->id);
+        }
+
+        return null;
+    }
+
     public static function expenseCategories(): array
     {
         return [

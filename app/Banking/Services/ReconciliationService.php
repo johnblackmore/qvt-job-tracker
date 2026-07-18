@@ -4,6 +4,7 @@ namespace App\Banking\Services;
 
 use App\Models\BankTransaction;
 use App\Models\Expense;
+use App\Models\Order;
 use App\Models\Payment;
 use App\Models\ReconciliationLink;
 use App\Models\SupplierOrder;
@@ -45,6 +46,250 @@ class ReconciliationService
         }
 
         return compact('matched', 'ambiguous', 'unmatched');
+    }
+
+    public function suggestMatches(BankTransaction $txn): array
+    {
+        $suggestions = [];
+
+        $amount = abs($txn->amount);
+        $date = $txn->transaction_date;
+        $merchant = strtolower($txn->merchant_name ?? '');
+        $description = strtolower($txn->description ?? '');
+
+        $searchTerms = array_filter(explode(' ', $merchant.' '.$description));
+
+        if ($txn->amount < 0) {
+            $payments = Payment::whereNull('bank_transaction_id')
+                ->whereHas('order', function ($q) {
+                    $q->whereIn('status', ['deposit_paid', 'scheduled', 'in_progress', 'completed']);
+                })
+                ->with('order.customer')
+                ->get();
+
+            foreach ($payments as $payment) {
+                $paymentAmount = (float) $payment->amount;
+                $amountDiff = abs($amount - $paymentAmount);
+                $matchScore = 0;
+
+                if ($amountDiff <= 0.01) {
+                    $matchScore += 50;
+                } elseif ($amountDiff <= 1) {
+                    $matchScore += 30;
+                } elseif ($amountDiff <= 10) {
+                    $matchScore += 15;
+                }
+
+                $paymentDate = $payment->paid_at;
+                $dayDiff = abs($date->diffInDays($paymentDate));
+                if ($dayDiff <= 1) {
+                    $matchScore += 20;
+                } elseif ($dayDiff <= 3) {
+                    $matchScore += 10;
+                } elseif ($dayDiff <= 7) {
+                    $matchScore += 5;
+                }
+
+                if ($merchant || $description) {
+                    $customerName = strtolower($payment->order?->customer?->name ?? '');
+                    $orderRef = strtolower($payment->order?->reference_number ?? '');
+                    foreach ($searchTerms as $term) {
+                        if (strlen($term) < 2) {
+                            continue;
+                        }
+                        if (str_contains($customerName, $term)) {
+                            $matchScore += 15;
+                        }
+                        if (str_contains($orderRef, $term)) {
+                            $matchScore += 10;
+                        }
+                        if (str_contains($description, $term)) {
+                            $matchScore += 5;
+                        }
+                    }
+                }
+
+                if ($matchScore > 0) {
+                    $suggestions[] = [
+                        'type' => 'payment',
+                        'id' => $payment->id,
+                        'reference' => $payment->order?->reference_number ?? 'Order #'.$payment->order_id,
+                        'label' => $payment->order?->customer?->name ?? 'Unknown',
+                        'amount' => $paymentAmount,
+                        'date' => $paymentDate->format('j M Y'),
+                        'score' => $matchScore,
+                        'confidence' => $matchScore >= 60 ? 'High' : ($matchScore >= 30 ? 'Medium' : 'Low'),
+                    ];
+                }
+            }
+
+            $expenses = Expense::whereNull('bank_transaction_id')
+                ->where('status', 'approved')
+                ->get();
+
+            foreach ($expenses as $expense) {
+                $expenseAmount = (float) $expense->total_amount;
+                $amountDiff = abs($amount - $expenseAmount);
+                $matchScore = 0;
+
+                if ($amountDiff <= 0.01) {
+                    $matchScore += 50;
+                } elseif ($amountDiff <= 1) {
+                    $matchScore += 30;
+                } elseif ($amountDiff <= 10) {
+                    $matchScore += 15;
+                }
+
+                $expenseDate = $expense->expense_date;
+                $dayDiff = abs($date->diffInDays($expenseDate));
+                if ($dayDiff <= 3) {
+                    $matchScore += 15;
+                } elseif ($dayDiff <= 7) {
+                    $matchScore += 8;
+                } elseif ($dayDiff <= 14) {
+                    $matchScore += 3;
+                }
+
+                if ($merchant || $description) {
+                    $expMerchant = strtolower($expense->merchant_name ?? '');
+                    $expDesc = strtolower($expense->description ?? '');
+                    foreach ($searchTerms as $term) {
+                        if (strlen($term) < 2) {
+                            continue;
+                        }
+                        if (str_contains($expMerchant, $term)) {
+                            $matchScore += 20;
+                        }
+                        if (str_contains($expDesc, $term)) {
+                            $matchScore += 10;
+                        }
+                    }
+                }
+
+                if ($matchScore > 0) {
+                    $suggestions[] = [
+                        'type' => 'expense',
+                        'id' => $expense->id,
+                        'reference' => $expense->reference_number,
+                        'label' => $expense->merchant_name ?? $expense->description,
+                        'amount' => $expenseAmount,
+                        'date' => $expense->expense_date?->format('j M Y') ?? '',
+                        'score' => $matchScore,
+                        'confidence' => $matchScore >= 60 ? 'High' : ($matchScore >= 30 ? 'Medium' : 'Low'),
+                    ];
+                }
+            }
+
+            $supplierOrders = SupplierOrder::whereNull('bank_transaction_id')
+                ->whereIn('status', ['ordered', 'received', 'partially_received'])
+                ->with('supplier')
+                ->get();
+
+            foreach ($supplierOrders as $order) {
+                $orderAmount = (float) $order->total_amount;
+                $amountDiff = abs($amount - $orderAmount);
+                $matchScore = 0;
+
+                if ($amountDiff <= 0.01) {
+                    $matchScore += 50;
+                } elseif ($amountDiff <= 1) {
+                    $matchScore += 30;
+                } elseif ($amountDiff <= 10) {
+                    $matchScore += 15;
+                }
+
+                $orderDate = $order->order_date;
+                $dayDiff = abs($date->diffInDays($orderDate));
+                if ($dayDiff <= 3) {
+                    $matchScore += 15;
+                } elseif ($dayDiff <= 7) {
+                    $matchScore += 8;
+                } elseif ($dayDiff <= 14) {
+                    $matchScore += 3;
+                }
+
+                if ($merchant || $description) {
+                    $supplierName = strtolower($order->supplier?->name ?? '');
+                    $invNumber = strtolower($order->invoice_number ?? '');
+                    foreach ($searchTerms as $term) {
+                        if (strlen($term) < 2) {
+                            continue;
+                        }
+                        if (str_contains($supplierName, $term)) {
+                            $matchScore += 20;
+                        }
+                        if (str_contains($invNumber, $term)) {
+                            $matchScore += 10;
+                        }
+                    }
+                }
+
+                if ($matchScore > 0) {
+                    $suggestions[] = [
+                        'type' => 'supplier_order',
+                        'id' => $order->id,
+                        'reference' => $order->reference_number,
+                        'label' => $order->supplier?->name ?? $order->invoice_number ?? '',
+                        'amount' => $orderAmount,
+                        'date' => $order->order_date?->format('j M Y') ?? '',
+                        'score' => $matchScore,
+                        'confidence' => $matchScore >= 60 ? 'High' : ($matchScore >= 30 ? 'Medium' : 'Low'),
+                    ];
+                }
+            }
+        } else {
+            $orders = Order::whereIn('status', ['pending', 'deposit_paid', 'scheduled', 'in_progress'])
+                ->whereColumn('deposit_paid', '<', 'total_amount')
+                ->with('customer')
+                ->get();
+
+            foreach ($orders as $order) {
+                $balanceDue = (float) $order->total_amount - (float) $order->deposit_paid;
+                $amountDiff = abs($amount - $balanceDue);
+                $matchScore = 0;
+
+                if ($amountDiff <= 0.01) {
+                    $matchScore += 50;
+                } elseif ($amountDiff <= 1) {
+                    $matchScore += 30;
+                } elseif ($amountDiff <= 10) {
+                    $matchScore += 15;
+                }
+
+                if ($merchant || $description) {
+                    $custName = strtolower($order->customer?->name ?? '');
+                    $orderRef = strtolower($order->reference_number ?? '');
+                    foreach ($searchTerms as $term) {
+                        if (strlen($term) < 2) {
+                            continue;
+                        }
+                        if (str_contains($custName, $term)) {
+                            $matchScore += 15;
+                        }
+                        if (str_contains($orderRef, $term)) {
+                            $matchScore += 10;
+                        }
+                    }
+                }
+
+                if ($matchScore > 0) {
+                    $suggestions[] = [
+                        'type' => 'record_payment',
+                        'id' => $order->id,
+                        'reference' => $order->reference_number,
+                        'label' => $order->customer?->name ?? 'Unknown',
+                        'amount' => $balanceDue,
+                        'date' => '',
+                        'score' => $matchScore,
+                        'confidence' => $matchScore >= 60 ? 'High' : ($matchScore >= 30 ? 'Medium' : 'Low'),
+                    ];
+                }
+            }
+        }
+
+        usort($suggestions, fn ($a, $b) => $b['score'] - $a['score']);
+
+        return array_slice($suggestions, 0, 5);
     }
 
     public function isPotentialMatch(BankTransaction $txn, Payment $payment): bool
