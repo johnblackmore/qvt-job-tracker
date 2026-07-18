@@ -3,6 +3,8 @@
 namespace App\Banking\Controllers;
 
 use App\Banking\Adapters\MonzoAdapter;
+use App\Banking\Services\BankingProviderManager;
+use App\Banking\Services\TransactionImportService;
 use App\Models\BankAccount;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -14,6 +16,23 @@ class MonzoOAuthController extends Controller
     {
         $state = Str::random(40);
         session(['monzo_oauth_state' => $state]);
+
+        $clientId = config('banking.providers.monzo.client_id');
+        $redirectUri = $this->redirectUri();
+
+        $authUrl = MonzoAdapter::buildAuthUrl($clientId, $redirectUri, $state);
+
+        return redirect()->away($authUrl);
+    }
+
+    public function redirectReconnect(BankAccount $account)
+    {
+        $state = Str::random(40);
+        session([
+            'monzo_oauth_state' => $state,
+            'reconnect_account_id' => $account->id,
+            'reconnect_provider_account_id' => $account->provider_account_id,
+        ]);
 
         $clientId = config('banking.providers.monzo.client_id');
         $redirectUri = $this->redirectUri();
@@ -95,6 +114,21 @@ class MonzoOAuthController extends Controller
                 ->with('warning', 'No Monzo accounts found on your profile.');
         }
 
+        $reconnectAccountId = session('reconnect_account_id');
+        $reconnectProviderId = session('reconnect_provider_account_id');
+
+        if ($reconnectAccountId && $reconnectProviderId) {
+            foreach ($monzoAccounts as $monzoAccount) {
+                if (($monzoAccount['id'] ?? null) === $reconnectProviderId) {
+                    return $this->completeReconnect(
+                        $reconnectAccountId,
+                        $account,
+                        $monzoAccount,
+                    );
+                }
+            }
+        }
+
         $mapped = array_map(fn ($a) => [
             'id' => $a['id'],
             'description' => $a['description'] ?? 'Monzo Account',
@@ -105,6 +139,44 @@ class MonzoOAuthController extends Controller
         session()->forget('pending_monzo_retry');
 
         return redirect()->route('admin.banking.select-account');
+    }
+
+    private function completeReconnect(int $existingAccountId, BankAccount $pending, array $monzoAccount): mixed
+    {
+        $existing = BankAccount::find($existingAccountId);
+
+        if (! $existing) {
+            return redirect()->route('admin.banking.select-account');
+        }
+
+        $existing->update([
+            'metadata' => $pending->metadata,
+            'is_active' => true,
+        ]);
+
+        $pending->delete();
+
+        session()->forget([
+            'pending_monzo_account_id',
+            'pending_monzo_accounts',
+            'pending_monzo_retry',
+            'reconnect_account_id',
+            'reconnect_provider_account_id',
+        ]);
+
+        try {
+            $adapter = app(BankingProviderManager::class)->provider($existing);
+            $importService = app(TransactionImportService::class);
+            $importService->import($existing, $adapter, [
+                'limit' => 100,
+                'since' => now()->subDays(90)->format('Y-m-d\TH:i:s\Z'),
+            ]);
+        } catch (\Exception $e) {
+            report($e);
+        }
+
+        return redirect()->route('admin.banking.transactions')
+            ->with('success', 'Monzo account reconnected successfully.');
     }
 
     private function redirectUri(): string

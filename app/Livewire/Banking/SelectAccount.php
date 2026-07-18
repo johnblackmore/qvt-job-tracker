@@ -23,6 +23,7 @@ class SelectAccount extends Component
     {
         $accounts = session('pending_monzo_accounts', []);
         $accountId = session('pending_monzo_account_id');
+        $reconnectAccountId = session('reconnect_account_id');
 
         if (! isset($accounts[$index]) || ! $accountId) {
             $this->dispatch('notify', message: 'Session expired. Please connect your account again.', type: 'error');
@@ -31,17 +32,42 @@ class SelectAccount extends Component
         }
 
         $selected = $accounts[$index];
-        $account = BankAccount::find($accountId);
+        $pending = BankAccount::find($accountId);
 
-        if (! $account) {
+        if (! $pending) {
             $this->dispatch('notify', message: 'Account not found. Please reconnect.', type: 'error');
 
             return;
         }
 
-        session()->forget(['pending_monzo_accounts', 'pending_monzo_account_id']);
+        session()->forget([
+            'pending_monzo_accounts',
+            'pending_monzo_account_id',
+            'reconnect_account_id',
+            'reconnect_provider_account_id',
+        ]);
 
-        $this->linkAndFinish($account, $selected['id'], $selected['description'], $selected['account_type']);
+        if ($reconnectAccountId) {
+            $target = BankAccount::find($reconnectAccountId);
+
+            if ($target) {
+                $target->update([
+                    'metadata' => $pending->metadata,
+                    'provider_account_id' => $selected['id'],
+                    'name' => $selected['description'],
+                    'type' => $selected['account_type'],
+                    'is_active' => true,
+                ]);
+
+                $pending->delete();
+
+                $this->importAndRedirect($target, 'Monzo account reconnected successfully.');
+
+                return;
+            }
+        }
+
+        $this->linkAndFinish($pending, $selected['id'], $selected['description'], $selected['account_type']);
     }
 
     public function cancel(): void
@@ -52,7 +78,12 @@ class SelectAccount extends Component
             BankAccount::where('id', $accountId)->delete();
         }
 
-        session()->forget(['pending_monzo_accounts', 'pending_monzo_account_id']);
+        session()->forget([
+            'pending_monzo_accounts',
+            'pending_monzo_account_id',
+            'reconnect_account_id',
+            'reconnect_provider_account_id',
+        ]);
 
         $this->redirect(
             route('admin.banking.transactions'),
@@ -68,6 +99,11 @@ class SelectAccount extends Component
             'type' => $type,
         ]);
 
+        $this->importAndRedirect($account, 'Monzo account linked.');
+    }
+
+    private function importAndRedirect(BankAccount $account, string $successMessage): void
+    {
         try {
             $adapter = app(BankingProviderManager::class)->provider($account);
             $importService = app(TransactionImportService::class);
@@ -86,7 +122,7 @@ class SelectAccount extends Component
             navigate: false,
         );
 
-        session()->flash('success', 'Monzo account linked.'.$importMsg);
+        session()->flash('success', $successMessage.$importMsg);
     }
 
     public function render()

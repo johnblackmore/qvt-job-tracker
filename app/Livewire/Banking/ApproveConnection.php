@@ -39,7 +39,13 @@ class ApproveConnection extends Component
             BankAccount::where('id', $accountId)->delete();
         }
 
-        session()->forget(['pending_monzo_account_id', 'pending_monzo_accounts', 'pending_monzo_retry']);
+        session()->forget([
+            'pending_monzo_account_id',
+            'pending_monzo_accounts',
+            'pending_monzo_retry',
+            'reconnect_account_id',
+            'reconnect_provider_account_id',
+        ]);
 
         $this->redirect(
             route('admin.banking.transactions'),

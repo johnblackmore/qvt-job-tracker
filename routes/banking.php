@@ -2,6 +2,7 @@
 
 use App\Banking\Controllers\MonzoOAuthController;
 use App\Banking\Webhooks\MonzoWebhookController;
+use App\Livewire\Banking\AccountList;
 use App\Livewire\Banking\ApproveConnection;
 use App\Livewire\Banking\ReconciliationView;
 use App\Livewire\Banking\SelectAccount;
@@ -16,10 +17,12 @@ Route::middleware(['auth', 'verified', 'role:admin'])
     ->prefix('admin/banking')
     ->name('admin.banking.')
     ->group(function () {
+        Route::get('/accounts', AccountList::class)->name('accounts');
         Route::get('/transactions', TransactionList::class)->name('transactions');
         Route::get('/transactions/{transaction}', TransactionShow::class)->name('transactions.show');
         Route::get('/reconciliation', ReconciliationView::class)->name('reconciliation');
         Route::get('/connect', [MonzoOAuthController::class, 'redirect'])->name('connect');
+        Route::get('/reconnect/{account}', [MonzoOAuthController::class, 'redirectReconnect'])->name('reconnect');
         Route::get('/approve', ApproveConnection::class)->name('approve');
         Route::get('/select-account', SelectAccount::class)->name('select-account');
         Route::get('/receipts/{receipt}/download', function (Receipt $receipt) {
