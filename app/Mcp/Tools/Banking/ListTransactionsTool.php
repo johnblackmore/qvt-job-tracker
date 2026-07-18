@@ -4,6 +4,7 @@ namespace App\Mcp\Tools\Banking;
 
 use App\Models\BankTransaction;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Illuminate\Validation\Rule;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
@@ -66,7 +67,7 @@ class ListTransactionsTool extends Tool
     public function handle(Request $request): Response|ResponseFactory
     {
         $validated = $request->validate([
-            'expense_category' => ['nullable', 'string', 'in:stock,equipment,travel,fuel,subsistence,utilities,professional_fees,insurance,other'],
+            'expense_category' => ['nullable', 'string', Rule::in(BankTransaction::allCategories())],
             'reconciliation_status' => ['nullable', 'string', 'in:unmatched,matched,ignored'],
             'since' => ['nullable', 'date', 'date_format:Y-m-d'],
             'until' => ['nullable', 'date', 'date_format:Y-m-d'],

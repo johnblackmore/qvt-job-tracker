@@ -17,7 +17,7 @@ class TransactionImportService
         'cash' => 'other',
     ];
 
-    public function import(BankAccount $account, BankingProvider $provider, array $params = []): array
+    public function import(BankAccount $account, BankingProvider $provider, array $params = [], bool $refresh = false): array
     {
         $transactions = $provider->listTransactions(
             $account->provider_account_id,
@@ -26,13 +26,15 @@ class TransactionImportService
 
         $imported = 0;
         $skipped = 0;
+        $refreshed = 0;
         $errors = 0;
 
         foreach ($transactions as $txn) {
-            $result = $this->importSingle($account, $txn);
+            $result = $this->importSingle($account, $txn, $refresh);
 
             match ($result) {
                 'imported' => $imported++,
+                'refreshed' => $refreshed++,
                 'skipped' => $skipped++,
                 default => $errors++,
             };
@@ -40,13 +42,14 @@ class TransactionImportService
 
         return [
             'imported' => $imported,
+            'refreshed' => $refreshed,
             'skipped' => $skipped,
             'errors' => $errors,
             'total' => count($transactions),
         ];
     }
 
-    public function importSingle(BankAccount $account, array $txnData): string
+    public function importSingle(BankAccount $account, array $txnData, bool $refresh = false): string
     {
         $providerId = $txnData['id'] ?? null;
 
@@ -54,9 +57,15 @@ class TransactionImportService
             return 'error';
         }
 
-        $exists = BankTransaction::where('provider_transaction_id', $providerId)->exists();
+        $existing = BankTransaction::where('provider_transaction_id', $providerId)->first();
 
-        if ($exists) {
+        if ($existing) {
+            if ($refresh) {
+                $existing->update(['metadata' => $txnData]);
+
+                return 'refreshed';
+            }
+
             return 'skipped';
         }
 

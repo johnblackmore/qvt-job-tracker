@@ -12,7 +12,7 @@ use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Tool;
 
-#[Description('Import recent transactions from a linked bank account. Preview shows how many new transactions will be imported. Requires confirmation.')]
+#[Description('Import recent transactions from a linked bank account. Use refresh=true to re-fetch raw transaction JSON data for existing transactions (useful if raw data was lost). Preview shows what will happen. Requires confirmation.')]
 class ImportTransactionsTool extends Tool
 {
     public function schema(JsonSchema $schema): array
@@ -24,6 +24,9 @@ class ImportTransactionsTool extends Tool
             'since' => $schema->string()
                 ->description('Import transactions since this date (YYYY-MM-DD). Defaults to 7 days ago.')
                 ->nullable(),
+            'refresh' => $schema->boolean()
+                ->description('Set true to refresh raw transaction JSON data (metadata column) for existing transactions instead of skipping them. Defaults to false.')
+                ->default(false),
             'preview' => $schema->boolean()
                 ->description('Set true to preview what will happen without saving.')
                 ->default(true),
@@ -52,12 +55,14 @@ class ImportTransactionsTool extends Tool
         $validated = $request->validate([
             'bank_account_id' => ['nullable', 'integer', 'exists:bank_accounts,id'],
             'since' => ['nullable', 'date', 'date_format:Y-m-d'],
+            'refresh' => ['boolean'],
             'preview' => ['boolean'],
             'confirmed' => ['boolean'],
         ]);
 
         $isPreview = $validated['preview'] ?? true;
         $isConfirmed = $validated['confirmed'] ?? false;
+        $refresh = $validated['refresh'] ?? false;
 
         if (! $isPreview && ! $isConfirmed) {
             return Response::error(
@@ -82,11 +87,18 @@ class ImportTransactionsTool extends Tool
         if ($isPreview && ! $isConfirmed) {
             $accountNames = $accounts->pluck('name')->implode(', ');
 
+            if ($refresh) {
+                $message = "I will refresh raw transaction data (import + update existing) since {$since} for: {$accountNames}\n\nExisting transactions will have their raw JSON data updated. New transactions will be imported. Is that correct?";
+            } else {
+                $message = "I will import transactions since {$since} for: {$accountNames}\n\nIs that correct?";
+            }
+
             return Response::structured([
                 'status' => 'preview',
-                'message' => "I will import transactions since {$since} for: {$accountNames}\n\nIs that correct?",
+                'message' => $message,
                 'data' => [
                     'since' => $since,
+                    'refresh' => $refresh,
                     'accounts' => $accounts->map(fn ($a) => ['id' => $a->id, 'name' => $a->name])->toArray(),
                 ],
             ]);
@@ -102,30 +114,38 @@ class ImportTransactionsTool extends Tool
 
             $params = ['since' => $since];
 
-            $result = $importService->import($account, $provider, $params);
+            $result = $importService->import($account, $provider, $params, $refresh);
 
             $results[$account->name] = $result;
         }
 
         $totalImported = collect($results)->sum('imported');
+        $totalRefreshed = collect($results)->sum('refreshed');
         $totalSkipped = collect($results)->sum('skipped');
         $totalErrors = collect($results)->sum('errors');
 
-        $message = "Imported {$totalImported} transaction".($totalImported !== 1 ? 's' : '').'.';
-
+        $parts = [];
+        if ($totalImported > 0) {
+            $parts[] = $totalImported.' new transaction'.($totalImported !== 1 ? 's' : '');
+        }
+        if ($totalRefreshed > 0) {
+            $parts[] = $totalRefreshed.' existing transaction'.($totalRefreshed !== 1 ? 's' : '').' refreshed';
+        }
         if ($totalSkipped > 0) {
-            $message .= " {$totalSkipped} skipped (already imported or pending).";
+            $parts[] = $totalSkipped.' skipped';
+        }
+        if ($totalErrors > 0) {
+            $parts[] = $totalErrors.' error'.($totalErrors !== 1 ? 's' : '');
         }
 
-        if ($totalErrors > 0) {
-            $message .= " {$totalErrors} error".($totalErrors !== 1 ? 's' : '').'.';
-        }
+        $message = $parts ? implode(', ', $parts).'.' : 'No changes.';
 
         return Response::structured([
             'status' => 'completed',
             'message' => $message,
             'data' => [
                 'imported' => $totalImported,
+                'refreshed' => $totalRefreshed,
                 'skipped' => $totalSkipped,
                 'errors' => $totalErrors,
                 'accounts' => $results,

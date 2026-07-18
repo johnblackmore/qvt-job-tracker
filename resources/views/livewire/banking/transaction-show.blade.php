@@ -68,15 +68,17 @@
                     <div class="flex items-center gap-3">
                         <select wire:model="expenseCategory" class="w-full max-w-xs rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3 py-2.5">
                             <option value="">Uncategorised</option>
-                            <option value="stock">Stock</option>
-                            <option value="equipment">Equipment</option>
-                            <option value="travel">Travel</option>
-                            <option value="fuel">Fuel</option>
-                            <option value="subsistence">Subsistence</option>
-                            <option value="utilities">Utilities</option>
-                            <option value="professional_fees">Professional Fees</option>
-                            <option value="insurance">Insurance</option>
-                            <option value="other">Other</option>
+                            <optgroup label="Expenses">
+                                @foreach(App\Models\BankTransaction::expenseCategories() as $cat)
+                                    <option value="{{ $cat }}">{{ str_replace('_', ' ', ucfirst($cat)) }}</option>
+                                @endforeach
+                                <option value="other">Other</option>
+                            </optgroup>
+                            <optgroup label="Income">
+                                @foreach(App\Models\BankTransaction::incomeCategories() as $cat)
+                                    <option value="{{ $cat }}">{{ str_replace('_', ' ', ucfirst($cat)) }}</option>
+                                @endforeach
+                            </optgroup>
                         </select>
                         <button wire:click="saveCategory" class="inline-flex items-center gap-2 rounded-lg bg-copper px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark transition-colors">
                             Save

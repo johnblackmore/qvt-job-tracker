@@ -46,15 +46,17 @@
                     <label class="block text-xs font-medium text-slate-500 mb-1">Category</label>
                     <select wire:model.live="expenseCategory" class="w-full rounded-lg border-slate-300 text-slate-900 focus:border-copper focus:ring-copper text-sm px-3 py-2.5">
                         <option value="">All categories</option>
-                        <option value="stock">Stock</option>
-                        <option value="equipment">Equipment</option>
-                        <option value="travel">Travel</option>
-                        <option value="fuel">Fuel</option>
-                        <option value="subsistence">Subsistence</option>
-                        <option value="utilities">Utilities</option>
-                        <option value="professional_fees">Professional Fees</option>
-                        <option value="insurance">Insurance</option>
-                        <option value="other">Other</option>
+                        <optgroup label="Expenses">
+                            @foreach(App\Models\BankTransaction::expenseCategories() as $cat)
+                                <option value="{{ $cat }}">{{ str_replace('_', ' ', ucfirst($cat)) }}</option>
+                            @endforeach
+                            <option value="other">Other</option>
+                        </optgroup>
+                        <optgroup label="Income">
+                            @foreach(App\Models\BankTransaction::incomeCategories() as $cat)
+                                <option value="{{ $cat }}">{{ str_replace('_', ' ', ucfirst($cat)) }}</option>
+                            @endforeach
+                        </optgroup>
                     </select>
                 </div>
 

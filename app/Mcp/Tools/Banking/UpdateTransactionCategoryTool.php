@@ -4,6 +4,7 @@ namespace App\Mcp\Tools\Banking;
 
 use App\Models\BankTransaction;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Illuminate\Validation\Rule;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
@@ -51,7 +52,7 @@ class UpdateTransactionCategoryTool extends Tool
     {
         $validated = $request->validate([
             'id' => ['required', 'integer', 'exists:bank_transactions,id'],
-            'expense_category' => ['nullable', 'string', 'max:50'],
+            'expense_category' => ['nullable', 'string', Rule::in(BankTransaction::allCategories())],
             'preview' => ['boolean'],
             'confirmed' => ['boolean'],
         ]);

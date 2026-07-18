@@ -63,6 +63,36 @@ class BankTransaction extends Model
         return $this->hasOne(ReconciliationLink::class);
     }
 
+    public static function expenseCategories(): array
+    {
+        return [
+            'stock',
+            'equipment',
+            'travel',
+            'fuel',
+            'subsistence',
+            'utilities',
+            'professional_fees',
+            'insurance',
+        ];
+    }
+
+    public static function incomeCategories(): array
+    {
+        return [
+            'customer_payment',
+            'deposit',
+            'transfer',
+            'refund',
+            'other_income',
+        ];
+    }
+
+    public static function allCategories(): array
+    {
+        return array_merge(static::expenseCategories(), static::incomeCategories(), ['other']);
+    }
+
     public function scopeUnmatched($query)
     {
         return $query->where('reconciliation_status', 'unmatched');

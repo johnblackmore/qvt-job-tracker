@@ -13,7 +13,8 @@ class ImportTransactionsCommand extends Command
         {--account= : The ID of the bank account to import transactions for}
         {--since= : Import transactions since this date (Y-m-d)}
         {--before= : Import transactions before this date (Y-m-d)}
-        {--limit=100 : Maximum number of transactions to import per request}';
+        {--limit=100 : Maximum number of transactions to import per request}
+        {--refresh : Refresh raw transaction data for existing transactions instead of skipping them}';
 
     protected $description = 'Import recent transactions from linked bank accounts';
 
@@ -53,11 +54,21 @@ class ImportTransactionsCommand extends Command
                     $params['before'] = $before;
                 }
 
-                $result = $importService->import($account, $provider, $params);
+                $refresh = $this->option('refresh') ?? false;
+                $result = $importService->import($account, $provider, $params, $refresh);
 
                 $allResults[$account->name] = $result;
 
-                $this->info("  Imported: {$result['imported']}, Skipped: {$result['skipped']}, Errors: {$result['errors']}");
+                $parts = [];
+                if ($result['imported'] > 0) {
+                    $parts[] = "Imported: {$result['imported']}";
+                }
+                if (($result['refreshed'] ?? 0) > 0) {
+                    $parts[] = "Refreshed: {$result['refreshed']}";
+                }
+                $parts[] = "Skipped: {$result['skipped']}";
+                $parts[] = "Errors: {$result['errors']}";
+                $this->info('  '.implode(', ', $parts));
             } catch (\Exception $e) {
                 $this->error("  Failed: {$e->getMessage()}");
                 $allResults[$account->name] = ['error' => $e->getMessage()];

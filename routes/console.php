@@ -20,8 +20,14 @@ Schedule::call(function () {
     app(NetlifyFormService::class)->sync();
 })->hourly()->name('sync-netlify-submissions');
 
-Artisan::command('banking:import', function () {
-    $this->call(ImportTransactionsCommand::class);
+Artisan::command('banking:import {--account=} {--since=} {--before=} {--limit=100} {--refresh}', function () {
+    $exitCode = $this->call(ImportTransactionsCommand::class, [
+        '--account' => $this->option('account'),
+        '--since' => $this->option('since'),
+        '--before' => $this->option('before'),
+        '--limit' => $this->option('limit'),
+        '--refresh' => $this->option('refresh'),
+    ]);
 })->purpose('Import recent transactions from linked bank accounts');
 
 Schedule::command('banking:import')
