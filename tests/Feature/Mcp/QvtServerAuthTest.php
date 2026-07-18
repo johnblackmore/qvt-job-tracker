@@ -132,6 +132,6 @@ class QvtServerAuthTest extends TestCase
         $response->assertOk();
         $prompts = $response->json('result.prompts');
         $this->assertNotEmpty($prompts);
-        $this->assertCount(2, $prompts);
+        $this->assertCount(3, $prompts);
     }
 }

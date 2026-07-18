@@ -11,6 +11,46 @@ This is a **staff-only admin application** (Phase 1). Customers do not log in or
 
 ---
 
+## 🚨 CRITICAL: Database Safety — READ BEFORE RUNNING ANY COMMAND
+
+**This database contains real business data. It is NOT a test/staging database. There is no automated backup.**
+
+### ❌ NEVER run these commands (or their equivalents):
+
+| Command | Why it's forbidden |
+|---------|-------------------|
+| `php artisan migrate:fresh` | Drops ALL tables. Permanent data loss. |
+| `php artisan migrate:fresh --seed` | Drops all tables + seeds fake data. |
+| `php artisan db:wipe` | Drops all tables. Total data loss. |
+| `php artisan db:seed` | Can duplicate or overwrite real data. |
+| `php artisan migrate:refresh` | Rolls back + re-runs all migrations. Destructive. |
+| `php artisan migrate:reset` | Rolls back all migrations. Destructive. |
+| `php artisan migrate:rollback` | Rolling back can delete columns and data. |
+| `php artisan schema:drop` | Drops all tables. |
+
+### ✅ Safe alternatives:
+
+| Safe command | Instead of |
+|--------------|-----------|
+| `php artisan migrate` | `migrate:fresh`, `migrate:refresh` |
+| `php artisan migrate --pretend` | Preview migration SQL without touching data |
+| `php artisan route:list` | List routes (read-only) |
+| `php artisan config:show {key}` | Read config (read-only) |
+
+### 💾 Backup rule
+
+Before any migration that ALTERs or DROP columns on existing tables:
+
+```bash
+mysqldump -u root -proot qvt_job_tracker > ~/Sites/qvt_backup_$(date +%Y%m%d_%H%M%S).sql
+```
+
+### 🧪 Test rule
+
+Any automated tests MUST use a separate test database (`qvt_job_tracker_testing`) defined in `.env.testing` with `RefreshDatabase` trait (transaction-based). **Never use migrate:fresh in tests.**
+
+---
+
 ## Technology Stack
 
 | Layer | Technology | Notes |
