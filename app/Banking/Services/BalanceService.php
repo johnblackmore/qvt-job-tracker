@@ -63,9 +63,11 @@ class BalanceService
             fn () => $this->fetchAndStoreBalance($account),
         );
 
-        if ($balance !== null) {
-            $account->setAttribute('balance_pence', $balance['balance_pence']);
-            $account->setAttribute('balance_fetched_at', $balance['balance_fetched_at']);
+        if ($balance !== null && is_array($balance)) {
+            if (isset($balance['balance_pence'], $balance['balance_fetched_at'])) {
+                $account->setAttribute('balance_pence', $balance['balance_pence']);
+                $account->setAttribute('balance_fetched_at', $balance['balance_fetched_at']);
+            }
         }
     }
 
@@ -85,7 +87,7 @@ class BalanceService
 
             return [
                 'balance_pence' => $balancePence,
-                'balance_fetched_at' => $now,
+                'balance_fetched_at' => $now->toISOString(),
             ];
         } catch (\Exception $e) {
             Log::warning('Failed to fetch balance for bank account {account_id}: {message}', [
@@ -96,7 +98,7 @@ class BalanceService
             return $account->balance_pence !== null
                 ? [
                     'balance_pence' => $account->balance_pence,
-                    'balance_fetched_at' => $account->balance_fetched_at,
+                    'balance_fetched_at' => $account->balance_fetched_at?->toISOString(),
                 ]
                 : null;
         }
