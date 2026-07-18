@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Banking;
 
+use App\Banking\Services\BankingProviderManager;
+use App\Banking\Services\TransactionImportService;
 use App\Models\BankAccount;
 use App\Models\BankTransaction;
 use Livewire\Component;
@@ -14,6 +16,8 @@ class TransactionList extends Component
     public string $search = '';
 
     public string $expenseCategory = '';
+
+    public bool $syncing = false;
 
     public string $reconciliationStatus = '';
 
@@ -57,6 +61,52 @@ class TransactionList extends Component
     {
         $this->reset(['search', 'expenseCategory', 'reconciliationStatus', 'dateFrom', 'dateTo', 'bankAccountId']);
         $this->resetPage();
+    }
+
+    public function syncTransactions(): void
+    {
+        $this->syncing = true;
+
+        try {
+            $accounts = BankAccount::where('is_active', true)->get();
+
+            if ($accounts->isEmpty()) {
+                $this->dispatch('notify', message: 'No active bank accounts to sync.', type: 'warning');
+
+                return;
+            }
+
+            $totalImported = 0;
+            $totalErrors = 0;
+
+            foreach ($accounts as $account) {
+                try {
+                    $provider = app(BankingProviderManager::class)->provider($account);
+                    $result = app(TransactionImportService::class)->import($account, $provider, [
+                        'limit' => 100,
+                    ]);
+                    $totalImported += $result['imported'];
+                } catch (\Exception $e) {
+                    report($e);
+                    $totalErrors++;
+                }
+            }
+
+            $message = $totalImported > 0
+                ? "Synced {$totalImported} new transaction".($totalImported !== 1 ? 's' : '').'.'
+                : 'No new transactions found.';
+
+            if ($totalErrors > 0) {
+                $message .= " {$totalErrors} account(s) had errors (check logs).";
+            }
+
+            $this->dispatch('notify', message: $message, type: $totalErrors > 0 ? 'warning' : 'success');
+        } catch (\Exception $e) {
+            report($e);
+            $this->dispatch('notify', message: 'Sync failed: '.$e->getMessage(), type: 'error');
+        } finally {
+            $this->syncing = false;
+        }
     }
 
     public function sortBy(string $field): void
