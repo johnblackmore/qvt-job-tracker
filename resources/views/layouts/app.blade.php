@@ -5,29 +5,37 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
+        <meta name="theme-color" content="#B45309" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="QVT Jobs" />
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}" />
+        <link rel="manifest" href="{{ asset('manifest.json') }}" />
+        <link rel="icon" type="image/svg+xml" href="{{ asset('images/quantock-van-tech-logo.svg') }}" />
+
         <title>{{ config('app.name', 'Laravel') }}</title>
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-slate-700 antialiased bg-slate-50">
-        <div class="min-h-screen flex">
+        <div
+            x-data="{ sidebarOpen: false }"
+            @keydown.window.escape="sidebarOpen = false"
+            class="min-h-screen flex"
+        >
             {{-- Sidebar --}}
             <aside
-                x-data="{ sidebarOpen: false }"
-                @keydown.window.escape="sidebarOpen = false"
                 class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:flex lg:flex-col"
                 :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
             >
                 {{-- Logo --}}
-                <div class="flex items-center gap-3 h-16 px-6 border-b border-slate-200 shrink-0">
-                    <div class="w-8 h-8 rounded-lg bg-copper flex items-center justify-center">
-                        <x-lucide-bolt class="w-5 h-5 text-white" />
-                    </div>
+                <a href="{{ route('dashboard') }}" wire:navigate class="flex items-center gap-3 h-16 px-6 border-b border-slate-200 shrink-0">
+                    <img src="{{ asset('images/quantock-van-tech-logo.svg') }}" alt="Quantock Van Tech" class="h-8 w-8 rounded-lg" />
                     <div class="flex flex-col">
                         <span class="text-sm font-bold text-slate-900 leading-none">QVT</span>
                         <span class="text-[10px] text-slate-500 leading-none mt-0.5">Job Tracker</span>
                     </div>
-                </div>
+                </a>
 
                 {{-- Navigation --}}
                 <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">

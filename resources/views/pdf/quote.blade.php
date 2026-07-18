@@ -93,11 +93,7 @@
         <div class="header">
             <div class="header-top">
                 <div class="brand">
-                    <div class="brand-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                        </svg>
-                    </div>
+                    <img src="data:image/svg+xml;base64,{{ base64_encode(file_get_contents(public_path('images/quantock-van-tech-logo.svg'))) }}" alt="Quantock Van Tech" style="height: 32px; width: auto;" />
                     <div>
                         <div class="brand-name">Quantock Van Tech</div>
                         <div class="brand-tagline">Campervan Electrical Specialists</div>

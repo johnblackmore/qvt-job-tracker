@@ -37,7 +37,58 @@
 
     <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         @if($expenses->count() > 0)
-            <div class="overflow-x-auto">
+            {{-- Mobile card view --}}
+            <div class="block md:hidden divide-y divide-slate-100">
+                @foreach($expenses as $expense)
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex-1 min-w-0">
+                                <a href="{{ route('expenses.show', $expense->id) }}" wire:navigate class="font-medium text-copper hover:underline">
+                                    {{ $expense->reference_number }}
+                                </a>
+                                <div class="text-sm text-slate-900 mt-0.5">{{ $expense->merchant_name ?? '—' }}</div>
+                                <div class="text-xs text-slate-500">{{ Str::limit($expense->description, 40) }}</div>
+                            </div>
+                            @php
+                                $expStatusStyles = [
+                                    'draft' => 'bg-slate-100 text-slate-600',
+                                    'approved' => 'bg-teal/10 text-teal-dark',
+                                    'paid' => 'bg-teal/10 text-teal-dark',
+                                    'cancelled' => 'bg-red-50 text-red-600',
+                                ];
+                            @endphp
+                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium shrink-0 {{ $expStatusStyles[$expense->status] ?? 'bg-slate-100 text-slate-600' }}">
+                                {{ ucfirst($expense->status) }}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <div class="flex items-center gap-2">
+                                @if($expense->category)
+                                    <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
+                                        {{ $expense->category->name }}
+                                    </span>
+                                @endif
+                                <span class="text-xs text-slate-500">{{ $expense->expense_date->format('j M Y') }}</span>
+                            </div>
+                            <span class="font-medium text-slate-900">£{{ number_format($expense->total_amount, 2) }}</span>
+                        </div>
+                        <div class="flex items-center gap-2 pt-1">
+                            <a href="{{ route('expenses.show', $expense->id) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors">
+                                <x-lucide-eye class="w-4 h-4" />
+                            </a>
+                            <a href="{{ route('expenses.edit', $expense->id) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors">
+                                <x-lucide-pencil class="w-4 h-4" />
+                            </a>
+                            <button wire:click="delete({{ $expense->id }})" wire:confirm="Delete this expense?" class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                                <x-lucide-trash-2 class="w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            {{-- Desktop table view --}}
+            <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-sm text-left">
                     <thead class="bg-slate-50 border-b border-slate-200">
                         <tr>

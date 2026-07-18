@@ -94,7 +94,48 @@
     </div>
 
     <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
+        {{-- Mobile card view --}}
+        @if($transactions->count() > 0)
+            <div class="block md:hidden divide-y divide-slate-100">
+                @foreach($transactions as $txn)
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex-1 min-w-0">
+                                <a href="{{ route('admin.banking.transactions.show', $txn) }}" wire:navigate class="font-medium text-slate-900 hover:text-copper transition-colors">
+                                    {{ $txn->description }}
+                                </a>
+                                @if($txn->merchant_name)
+                                    <div class="text-xs text-slate-500 mt-0.5">{{ $txn->merchant_name }}</div>
+                                @endif
+                            </div>
+                            <a href="{{ route('admin.banking.transactions.show', $txn) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors shrink-0">
+                                <x-lucide-eye class="w-4 h-4" />
+                            </a>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-slate-500">{{ $txn->transaction_date->format('j M Y') }}</span>
+                            <span class="font-mono text-sm font-medium {{ $txn->amount < 0 ? 'text-slate-700' : 'text-teal' }}">
+                                {{ $txn->amount < 0 ? '-' : '+' }}&pound;{{ number_format(abs($txn->amount), 2) }}
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            @if($txn->expense_category)
+                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">{{ str_replace('_', ' ', $txn->expense_category) }}</span>
+                            @endif
+                            @if($txn->reconciliation_status === 'matched')
+                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-teal/10 text-teal-dark border border-teal/20">Matched</span>
+                            @elseif($txn->reconciliation_status === 'ignored')
+                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-slate-100 text-slate-400 border border-slate-200">Ignored</span>
+                            @else
+                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">Unmatched</span>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
+        <div class="hidden md:block overflow-x-auto">
             <table class="w-full text-sm text-left">
                 <thead class="bg-slate-50 border-b border-slate-200">
                     <tr>

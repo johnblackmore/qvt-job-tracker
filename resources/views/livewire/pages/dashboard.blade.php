@@ -52,7 +52,7 @@ new class extends Component
     </div>
 
     {{-- Stat cards --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+    <div class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
         <a href="{{ route('customers.index') }}" wire:navigate class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-copper/30 transition-colors">
             <div class="flex items-center justify-between">
                 <div>

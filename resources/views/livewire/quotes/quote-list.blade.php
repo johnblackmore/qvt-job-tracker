@@ -33,7 +33,53 @@
 
     <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         @if($quotes->count() > 0)
-            <div class="overflow-x-auto">
+            {{-- Mobile card view --}}
+            <div class="block md:hidden divide-y divide-slate-100">
+                @foreach($quotes as $quote)
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex-1 min-w-0">
+                                <a href="{{ route('quotes.show', $quote) }}" wire:navigate class="font-medium text-slate-900 hover:text-copper transition-colors font-mono text-xs">
+                                    {{ $quote->reference_number }}
+                                </a>
+                                <p class="text-sm text-slate-600 truncate">{{ $quote->customer?->name ?? 'Deleted Customer' }}</p>
+                            </div>
+                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium shrink-0
+                                {{ $quote->status === 'draft' ? 'bg-slate-100 text-slate-600 border border-slate-200' : '' }}
+                                {{ $quote->status === 'sent' ? 'bg-blue-50 text-blue-700 border border-blue-200' : '' }}
+                                {{ $quote->status === 'accepted' ? 'bg-teal/10 text-teal-dark border border-teal/20' : '' }}
+                                {{ $quote->status === 'declined' ? 'bg-red-50 text-red-700 border border-red-200' : '' }}
+                                {{ $quote->status === 'expired' ? 'bg-amber-50 text-amber-700 border border-amber-200' : '' }}
+                            ">
+                                {{ ucfirst($quote->status) }}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="font-medium text-slate-900">£{{ number_format($quote->grand_total, 2) }}</span>
+                            <span class="text-xs text-slate-400">{{ $quote->created_at->format('d M Y') }}</span>
+                        </div>
+                        <div class="flex items-center gap-2 pt-1">
+                            <a href="{{ route('quotes.pdf.download', $quote) }}" class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors" title="Download PDF">
+                                <x-lucide-download class="w-4 h-4" />
+                            </a>
+                            @if($quote->status === 'accepted' && ! $quote->converted_order_id)
+                                <button wire:click="convertToOrder({{ $quote->id }})" class="p-1.5 rounded-lg text-slate-400 hover:text-teal hover:bg-teal/10 transition-colors" title="Convert to order">
+                                    <x-lucide-clipboard-plus class="w-4 h-4" />
+                                </button>
+                            @endif
+                            <a href="{{ route('quotes.edit', $quote) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors">
+                                <x-lucide-pencil class="w-4 h-4" />
+                            </a>
+                            <button wire:click="delete({{ $quote->id }})" wire:confirm="Delete this quote?" class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                                <x-lucide-trash-2 class="w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            {{-- Desktop table view --}}
+            <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-sm text-left">
                     <thead class="bg-slate-50 border-b border-slate-200">
                         <tr>

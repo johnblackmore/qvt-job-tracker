@@ -19,7 +19,47 @@
 
     <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         @if($suppliers->count() > 0)
-            <div class="overflow-x-auto">
+            {{-- Mobile card view --}}
+            <div class="block md:hidden divide-y divide-slate-100">
+                @foreach($suppliers as $supplier)
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex-1 min-w-0">
+                                <div class="font-medium text-slate-900">{{ $supplier->name }}</div>
+                                @if($supplier->website)
+                                    <a href="{{ $supplier->website }}" target="_blank" class="text-xs text-copper hover:underline">{{ $supplier->website }}</a>
+                                @endif
+                            </div>
+                            <button wire:click="toggleActive({{ $supplier->id }})" class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium shrink-0 {{ $supplier->is_active ? 'bg-teal/10 text-teal-dark border border-teal/20' : 'bg-slate-100 text-slate-600 border border-slate-200' }}">
+                                {{ $supplier->is_active ? 'Active' : 'Inactive' }}
+                            </button>
+                        </div>
+                        @if($supplier->contact_name || $supplier->email || $supplier->phone)
+                            <div class="text-xs text-slate-500 space-y-0.5">
+                                @if($supplier->contact_name)<div>{{ $supplier->contact_name }}</div>@endif
+                                @if($supplier->email)<div>{{ $supplier->email }}</div>@endif
+                                @if($supplier->phone)<div>{{ $supplier->phone }}</div>@endif
+                            </div>
+                        @endif
+                        <div class="flex items-center justify-between">
+                            <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
+                                {{ $supplier->products_count }} products
+                            </span>
+                            <div class="flex items-center gap-1">
+                                <a href="{{ route('suppliers.edit', $supplier) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors">
+                                    <x-lucide-pencil class="w-4 h-4" />
+                                </a>
+                                <button wire:click="delete({{ $supplier->id }})" wire:confirm="Delete this supplier? This will remove all product links." class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                                    <x-lucide-trash-2 class="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            {{-- Desktop table view --}}
+            <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-sm text-left">
                     <thead class="bg-slate-50 border-b border-slate-200">
                         <tr>

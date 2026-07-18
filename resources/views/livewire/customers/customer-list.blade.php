@@ -24,7 +24,40 @@
 
     <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         @if($customers->count() > 0)
-            <div class="overflow-x-auto">
+            {{-- Mobile card view --}}
+            <div class="block md:hidden divide-y divide-slate-100">
+                @foreach($customers as $customer)
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <a href="{{ route('customers.show', $customer) }}" wire:navigate class="font-medium text-slate-900 hover:text-copper transition-colors">
+                                {{ $customer->name }}
+                            </a>
+                            <div class="flex items-center gap-1 shrink-0">
+                                <a href="{{ route('customers.edit', $customer) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors">
+                                    <x-lucide-pencil class="w-4 h-4" />
+                                </a>
+                                <button wire:click="delete({{ $customer->id }})" wire:confirm="Are you sure you want to delete this customer? This will also delete all their vehicles and linked records." class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                                    <x-lucide-trash-2 class="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                        @if($customer->email || $customer->phone)
+                            <div class="text-xs text-slate-500 space-y-0.5">
+                                @if($customer->email)<div>{{ $customer->email }}</div>@endif
+                                @if($customer->phone)<div>{{ $customer->phone }}</div>@endif
+                            </div>
+                        @endif
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600">{{ $customer->vehicles_count }} vehicles</span>
+                            <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600">{{ $customer->enquiries_count }} enquiries</span>
+                            <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600">{{ $customer->quotes_count }} quotes</span>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            {{-- Desktop table view --}}
+            <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-sm text-left">
                     <thead class="bg-slate-50 border-b border-slate-200">
                         <tr>

@@ -28,7 +28,58 @@
 
     <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         @if($orders->count() > 0)
-            <div class="overflow-x-auto">
+            {{-- Mobile card view --}}
+            <div class="block md:hidden divide-y divide-slate-100">
+                @foreach($orders as $order)
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex-1 min-w-0">
+                                <a href="{{ route('orders.show', $order) }}" wire:navigate class="font-medium text-slate-900 hover:text-copper transition-colors font-mono text-xs">
+                                    {{ $order->reference_number }}
+                                </a>
+                                @if($order->quote)
+                                    <div class="text-[10px] text-slate-400">from {{ $order->quote->reference_number }}</div>
+                                @endif
+                                <p class="text-sm text-slate-600 truncate mt-0.5">{{ $order->customer?->name ?? 'Deleted Customer' }}</p>
+                            </div>
+                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium shrink-0
+                                {{ $order->status === 'pending' ? 'bg-slate-100 text-slate-600 border border-slate-200' : '' }}
+                                {{ $order->status === 'deposit_paid' ? 'bg-blue-50 text-blue-700 border border-blue-200' : '' }}
+                                {{ $order->status === 'scheduled' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : '' }}
+                                {{ $order->status === 'in_progress' ? 'bg-amber-50 text-amber-700 border border-amber-200' : '' }}
+                                {{ $order->status === 'completed' ? 'bg-teal/10 text-teal-dark border border-teal/20' : '' }}
+                                {{ $order->status === 'cancelled' ? 'bg-red-50 text-red-700 border border-red-200' : '' }}
+                            ">
+                                {{ ucwords(str_replace('_', ' ', $order->status)) }}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="font-medium text-slate-900">£{{ number_format($order->total_amount, 2) }}</span>
+                            <span class="text-xs text-slate-500">{{ $order->scheduled_date?->format('d M Y') ?? '—' }}</span>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-slate-500">Deposit</span>
+                                <span class="text-slate-600">£{{ number_format($order->deposit_paid, 2) }} / £{{ number_format($order->deposit_required, 2) }}</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                                <div class="bg-copper/100 h-1.5 rounded-full transition-all" style="width: {{ min($order->deposit_percent, 100) }}%"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 pt-1">
+                            <a href="{{ route('orders.edit', $order) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors">
+                                <x-lucide-pencil class="w-4 h-4" />
+                            </a>
+                            <button wire:click="delete({{ $order->id }})" wire:confirm="Delete this order?" class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                                <x-lucide-trash-2 class="w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            {{-- Desktop table view --}}
+            <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-sm text-left">
                     <thead class="bg-slate-50 border-b border-slate-200">
                         <tr>

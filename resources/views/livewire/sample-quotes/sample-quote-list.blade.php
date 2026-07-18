@@ -19,7 +19,47 @@
 
     <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         @if($sampleQuotes->count() > 0)
-            <div class="overflow-x-auto">
+            {{-- Mobile card view --}}
+            <div class="block md:hidden divide-y divide-slate-100">
+                @foreach($sampleQuotes as $sample)
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex-1 min-w-0">
+                                <div class="font-medium text-slate-900">{{ $sample->name }}</div>
+                                @if($sample->description)
+                                    <div class="text-xs text-slate-500 mt-0.5">{{ Str::limit($sample->description, 80) }}</div>
+                                @endif
+                            </div>
+                            <button wire:click="toggleActive({{ $sample->id }})" class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium shrink-0 {{ $sample->is_active ? 'bg-teal/10 text-teal-dark border border-teal/20' : 'bg-slate-100 text-slate-600 border border-slate-200' }}">
+                                {{ $sample->is_active ? 'Active' : 'Inactive' }}
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
+                                {{ count($sample->line_items ?? []) }} items
+                            </span>
+                            <span class="font-medium text-slate-900">£{{ number_format($sample->total, 2) }}</span>
+                        </div>
+                        <div class="flex items-center gap-2 pt-1">
+                            <button wire:click="preview({{ $sample->id }})" class="p-1.5 rounded-lg text-slate-400 hover:text-teal hover:bg-teal/10 transition-colors" title="Preview template">
+                                <x-lucide-eye class="w-4 h-4" />
+                            </button>
+                            <a href="{{ route('quotes.create-from-sample', $sample) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors" title="Clone to quote">
+                                <x-lucide-copy class="w-4 h-4" />
+                            </a>
+                            <a href="{{ route('sample-quotes.edit', $sample) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors">
+                                <x-lucide-pencil class="w-4 h-4" />
+                            </a>
+                            <button wire:click="delete({{ $sample->id }})" wire:confirm="Delete this sample quote template?" class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                                <x-lucide-trash-2 class="w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            {{-- Desktop table view --}}
+            <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-sm text-left">
                     <thead class="bg-slate-50 border-b border-slate-200">
                         <tr>

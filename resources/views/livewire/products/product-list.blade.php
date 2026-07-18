@@ -25,7 +25,48 @@
 
     <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         @if($products->count() > 0)
-            <div class="overflow-x-auto">
+            {{-- Mobile card view --}}
+            <div class="block md:hidden divide-y divide-slate-100">
+                @foreach($products as $product)
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex-1 min-w-0">
+                                <a href="{{ route('products.show', $product) }}" wire:navigate class="font-medium text-slate-900 hover:text-copper transition-colors">
+                                    {{ $product->name }}
+                                </a>
+                                <div class="text-xs text-slate-400 mt-0.5">{{ $product->sku }}</div>
+                            </div>
+                            <div class="flex items-center gap-1 shrink-0">
+                                <a href="{{ route('products.edit', $product) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors">
+                                    <x-lucide-pencil class="w-4 h-4" />
+                                </a>
+                                <button wire:click="delete({{ $product->id }})" wire:confirm="Delete this product? This will remove all supplier links." class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                                    <x-lucide-trash-2 class="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 text-sm">
+                            @if($product->category)
+                                <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
+                                    {{ $product->category->name }}
+                                </span>
+                            @endif
+                            <span class="font-medium text-slate-900">£{{ number_format($product->retail_price, 2) }}</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="inline-flex items-center rounded-full {{ $product->stock_qty > 0 ? 'bg-teal/10 text-teal-dark' : 'bg-red-50 text-red-700' }} px-2.5 py-0.5 font-medium">
+                                Stock: {{ $product->stock_qty }}
+                            </span>
+                            <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 font-medium text-slate-600">
+                                {{ $product->suppliers->count() }} supplier(s)
+                            </span>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            {{-- Desktop table view --}}
+            <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-sm text-left">
                     <thead class="bg-slate-50 border-b border-slate-200">
                         <tr>
