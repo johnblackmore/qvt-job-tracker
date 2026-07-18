@@ -130,7 +130,7 @@
         x-transition:leave="transition ease-in duration-150"
         x-transition:leave-start="translate-y-0 opacity-100"
         x-transition:leave-end="translate-y-4 opacity-0"
-        class="absolute bottom-16 right-0 w-[420px] h-[580px] bg-white rounded-xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden"
+        class="absolute bottom-16 right-0 w-[640px] max-w-[calc(100vw-3rem)] h-[580px] bg-white rounded-xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden"
         style="display: none;"
     >
         {{-- Header --}}
@@ -179,7 +179,7 @@
             {{-- Messages --}}
             <div
                 x-ref="messagesContainer"
-                class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50"
+                class="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-4 bg-slate-50/50"
             >
                 @if($messages->isEmpty() && !$isStreaming)
                     <div class="flex flex-col items-center justify-center h-full text-center text-slate-400 px-4">
@@ -192,7 +192,7 @@
                 @foreach($messages as $message)
                     @if($message->role === 'user')
                         <div class="chat chat-end">
-                            <div class="chat-bubble bg-copper text-white text-sm whitespace-pre-line">
+                            <div class="chat-bubble bg-copper text-white text-sm">
                                 {{ $message->content }}
                             </div>
                         </div>
@@ -204,7 +204,7 @@
                                 </div>
                             </div>
                             <div class="chat-bubble bg-white border border-slate-200 text-slate-700 text-sm shadow-sm">
-                                <div class="prose prose-sm max-w-none">
+                                <div class="prose prose-sm max-w-none overflow-x-auto">
                                     {!! Str::markdown($message->content ?? '') !!}
                                 </div>
                                 @if($message->tool_calls)
@@ -256,7 +256,7 @@
                         </div>
                     </div>
                     <div class="chat-bubble bg-white border border-copper/30 text-slate-700 text-sm shadow-sm">
-                        <div x-html="streamingContent" class="prose prose-sm max-w-none"></div>
+                        <div x-html="streamingContent" class="prose prose-sm max-w-none overflow-x-auto"></div>
                         <span class="inline-block w-2 h-4 bg-copper/50 ml-0.5 animate-pulse">&nbsp;</span>
                     </div>
                 </div>
@@ -269,7 +269,7 @@
                         </div>
                     </div>
                     <div class="chat-bubble bg-white border border-slate-200 text-slate-700 text-sm shadow-sm">
-                        <div x-html="completedContent" class="prose prose-sm max-w-none"></div>
+                        <div x-html="completedContent" class="prose prose-sm max-w-none overflow-x-auto"></div>
                     </div>
                 </div>
 
