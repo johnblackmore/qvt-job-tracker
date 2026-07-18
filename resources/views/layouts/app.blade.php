@@ -111,11 +111,6 @@
                         Products
                     </a>
 
-                    <div class="border-t border-slate-200 my-3"></div>
-                    <div class="px-3 pb-1">
-                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Admin</span>
-                    </div>
-
                     <a
                         href="{{ route('products.categories.index') }}"
                         wire:navigate
@@ -132,60 +127,6 @@
                     >
                         <x-lucide-building-2 class="w-5 h-5 shrink-0" />
                         Suppliers
-                    </a>
-
-                    <a
-                        href="{{ route('email-templates.index') }}"
-                        wire:navigate
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('email-templates.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
-                    >
-                        <x-lucide-mail-plus class="w-5 h-5 shrink-0" />
-                        Email Templates
-                    </a>
-
-                    <a
-                        href="{{ route('admin.ai.configs.index') }}"
-                        wire:navigate
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.ai.configs.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
-                    >
-                        <x-lucide-cpu class="w-5 h-5 shrink-0" />
-                        AI Models
-                    </a>
-
-                    <a
-                        href="{{ route('admin.ai.assistants.index') }}"
-                        wire:navigate
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.ai.assistants.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
-                    >
-                        <x-lucide-bot class="w-5 h-5 shrink-0" />
-                        AI Assistants
-                    </a>
-
-                    <a
-                        href="{{ route('admin.api-tokens') }}"
-                        wire:navigate
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.api-tokens') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
-                    >
-                        <x-lucide-key class="w-5 h-5 shrink-0" />
-                        AI Agent Access
-                    </a>
-
-                    <a
-                        href="{{ route('admin.vat-settings') }}"
-                        wire:navigate
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.vat-settings') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
-                    >
-                        <x-lucide-pound-sterling class="w-5 h-5 shrink-0" />
-                        VAT Settings
-                    </a>
-
-                    <a
-                        href="{{ route('admin.backups.index') }}"
-                        wire:navigate
-                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.backups.*') ? 'bg-copper/10 text-copper' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}"
-                    >
-                        <x-lucide-hard-drive class="w-5 h-5 shrink-0" />
-                        Data Backups
                     </a>
                 </nav>
 
@@ -208,6 +149,14 @@
                         >
                             <x-lucide-settings class="w-4 h-4 shrink-0" />
                             Profile Settings
+                        </a>
+                        <a
+                            href="{{ route('admin.system-settings') }}"
+                            wire:navigate
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                        >
+                            <x-lucide-cog class="w-4 h-4 shrink-0" />
+                            System Settings
                         </a>
                         <livewire:actions.logout />
                     </div>
