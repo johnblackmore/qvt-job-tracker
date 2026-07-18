@@ -132,6 +132,7 @@ class ExpensesExtractorAssistant
             ->usingStructuredMode(StructuredMode::Auto)
             ->usingTemperature($fallback['temperature'])
             ->withMaxTokens($fallback['max_tokens'])
+            ->withClientOptions(['timeout' => 300, 'connect_timeout' => 30])
             ->asStructured();
 
         return $this->finalizeExtraction($response, $extraction);
@@ -166,6 +167,7 @@ class ExpensesExtractorAssistant
             ->usingStructuredMode(StructuredMode::Auto)
             ->usingTemperature($fallback['temperature'])
             ->withMaxTokens($fallback['max_tokens'])
+            ->withClientOptions(['timeout' => 300, 'connect_timeout' => 30])
             ->asStructured();
 
         return $this->finalizeExtraction($response, $extraction);
@@ -202,6 +204,7 @@ class ExpensesExtractorAssistant
             ->usingStructuredMode(StructuredMode::Auto)
             ->usingTemperature($fallback['temperature'])
             ->withMaxTokens($fallback['max_tokens'])
+            ->withClientOptions(['timeout' => 300, 'connect_timeout' => 30])
             ->asStructured();
 
         return $this->finalizeExtraction($response, $extraction);
