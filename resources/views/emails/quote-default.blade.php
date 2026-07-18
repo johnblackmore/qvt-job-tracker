@@ -30,7 +30,7 @@
             <p>Your Quote — {{ $quote->reference_number }}</p>
         </div>
         <div class="body">
-            <p class="greeting">Hi {{ $quote->customer->name }},</p>
+            <p class="greeting">Hi {{ $quote->customer?->name ?? 'Customer' }},</p>
 
             @if($customMessage)
                 <div class="message-box">{{ $customMessage }}</div>

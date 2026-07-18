@@ -116,15 +116,19 @@
             <div>
                 <div class="section-title">Quote To</div>
                 <div class="customer-details">
-                    <div class="customer-name">{{ $quote->customer->name }}</div>
-                    @if($quote->customer->email)
-                        <div>{{ $quote->customer->email }}</div>
-                    @endif
-                    @if($quote->customer->phone)
-                        <div>{{ $quote->customer->phone }}</div>
-                    @endif
-                    @if($quote->customer->address)
-                        <div style="margin-top:4px; white-space:pre-line;">{{ $quote->customer->address }}</div>
+                    @if($quote->customer)
+                        <div class="customer-name">{{ $quote->customer->name }}</div>
+                        @if($quote->customer->email)
+                            <div>{{ $quote->customer->email }}</div>
+                        @endif
+                        @if($quote->customer->phone)
+                            <div>{{ $quote->customer->phone }}</div>
+                        @endif
+                        @if($quote->customer->address)
+                            <div style="margin-top:4px; white-space:pre-line;">{{ $quote->customer->address }}</div>
+                        @endif
+                    @else
+                        <div class="customer-name">Customer deleted</div>
                     @endif
                 </div>
             </div>

@@ -54,7 +54,7 @@
                                     </a>
                                 </td>
                                 <td class="px-6 py-4 text-sm text-slate-600">
-                                    {{ $quote->customer->name }}
+                                    {{ $quote->customer?->name ?? 'Deleted Customer' }}
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium

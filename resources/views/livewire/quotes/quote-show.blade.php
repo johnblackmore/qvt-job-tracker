@@ -9,7 +9,7 @@
             <div>
                 <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">Quote {{ $quote->reference_number }}</h1>
                 <div class="mt-1 flex items-center gap-3 text-sm text-slate-500">
-                    <span>{{ $quote->customer->name }}</span>
+                    <span>{{ $quote->customer?->name ?? 'Deleted Customer' }}</span>
                     <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
                         {{ $quote->status === 'draft' ? 'bg-slate-100 text-slate-600 border border-slate-200' : '' }}
                         {{ $quote->status === 'sent' ? 'bg-blue-50 text-blue-700 border border-blue-200' : '' }}
@@ -112,12 +112,16 @@
             {{-- Customer card --}}
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
                 <h2 class="text-sm font-semibold text-slate-900 mb-3">Customer</h2>
-                <p class="text-sm font-medium text-slate-900">{{ $quote->customer->name }}</p>
-                @if($quote->customer->email)
-                    <p class="text-xs text-slate-500 mt-1">{{ $quote->customer->email }}</p>
-                @endif
-                @if($quote->customer->phone)
-                    <p class="text-xs text-slate-500">{{ $quote->customer->phone }}</p>
+                @if($quote->customer)
+                    <p class="text-sm font-medium text-slate-900">{{ $quote->customer->name }}</p>
+                    @if($quote->customer->email)
+                        <p class="text-xs text-slate-500 mt-1">{{ $quote->customer->email }}</p>
+                    @endif
+                    @if($quote->customer->phone)
+                        <p class="text-xs text-slate-500">{{ $quote->customer->phone }}</p>
+                    @endif
+                @else
+                    <p class="text-sm text-slate-500 italic">Deleted Customer</p>
                 @endif
             </div>
 
@@ -165,7 +169,11 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">To</label>
-                        <p class="text-sm text-slate-900">{{ $quote->customer->name }} &lt;{{ $quote->customer->email }}&gt;</p>
+                        @if($quote->customer)
+                            <p class="text-sm text-slate-900">{{ $quote->customer->name }} &lt;{{ $quote->customer->email }}&gt;</p>
+                        @else
+                            <p class="text-sm text-slate-500 italic">Deleted Customer</p>
+                        @endif
                     </div>
 
                     <div>

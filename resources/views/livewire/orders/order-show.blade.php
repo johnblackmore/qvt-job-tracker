@@ -9,7 +9,7 @@
             <div>
                 <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">Order {{ $order->reference_number }}</h1>
                 <div class="mt-1 flex items-center gap-3 text-sm text-slate-500">
-                    <span>{{ $order->customer->name }}</span>
+                    <span>{{ $order->customer?->name ?? 'Deleted Customer' }}</span>
                     <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
                         {{ $order->status === 'pending' ? 'bg-slate-100 text-slate-600 border border-slate-200' : '' }}
                         {{ $order->status === 'deposit_paid' ? 'bg-blue-50 text-blue-700 border border-blue-200' : '' }}
@@ -139,12 +139,16 @@
             {{-- Customer card --}}
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
                 <h2 class="text-sm font-semibold text-slate-900 mb-3">Customer</h2>
-                <p class="text-sm font-medium text-slate-900">{{ $order->customer->name }}</p>
-                @if($order->customer->email)
-                    <p class="text-xs text-slate-500 mt-1">{{ $order->customer->email }}</p>
-                @endif
-                @if($order->customer->phone)
-                    <p class="text-xs text-slate-500">{{ $order->customer->phone }}</p>
+                @if($order->customer)
+                    <p class="text-sm font-medium text-slate-900">{{ $order->customer->name }}</p>
+                    @if($order->customer->email)
+                        <p class="text-xs text-slate-500 mt-1">{{ $order->customer->email }}</p>
+                    @endif
+                    @if($order->customer->phone)
+                        <p class="text-xs text-slate-500">{{ $order->customer->phone }}</p>
+                    @endif
+                @else
+                    <p class="text-sm text-slate-500 italic">Deleted Customer</p>
                 @endif
             </div>
 

@@ -13,6 +13,19 @@ class Customer extends Model
 
     protected $fillable = ['name', 'email', 'phone', 'address', 'notes'];
 
+    protected static function booted(): void
+    {
+        static::deleting(function (Customer $customer) {
+            if ($customer->isForceDeleting()) {
+                return;
+            }
+            $customer->quotes->each->delete();
+            $customer->orders->each->delete();
+            $customer->vehicles->each->delete();
+            $customer->enquiries->each->delete();
+        });
+    }
+
     public function vehicles(): HasMany
     {
         return $this->hasMany(Vehicle::class);
