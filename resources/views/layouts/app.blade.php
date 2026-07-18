@@ -2,15 +2,15 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="light">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <meta name="theme-color" content="#B45309" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="QVT Jobs" />
         <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}" />
-        <link rel="manifest" href="{{ asset('manifest.json') }}" />
+        <link rel="manifest" href="{{ route('manifest') }}" />
         <link rel="icon" type="image/svg+xml" href="{{ asset('images/quantock-van-tech-logo.svg') }}" />
 
         <title>{{ config('app.name', 'Laravel') }}</title>
@@ -21,7 +21,7 @@
         <div
             x-data="{ sidebarOpen: false }"
             @keydown.window.escape="sidebarOpen = false"
-            class="min-h-screen flex"
+            class="min-h-screen flex pwa-safe-top pwa-safe-bottom"
         >
             {{-- Sidebar --}}
             <aside

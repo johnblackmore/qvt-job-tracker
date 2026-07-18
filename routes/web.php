@@ -5,6 +5,19 @@ use App\Livewire\ApiTokens\ApiTokenManager;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/manifest.json', function () {
+    $path = public_path('manifest.json');
+
+    if (! file_exists($path)) {
+        return response()->json(['error' => 'Manifest not found. Run npm run build.'], 404);
+    }
+
+    return response(file_get_contents($path), 200, [
+        'Content-Type' => 'application/manifest+json',
+        'Cache-Control' => 'no-cache, no-store, must-revalidate',
+    ]);
+})->name('manifest');
+
 Route::view('/', 'welcome');
 
 Route::view('dashboard', 'dashboard')
