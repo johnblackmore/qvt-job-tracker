@@ -17,12 +17,14 @@ use App\Mcp\Tools\AiConfig\ListAiModelConfigsTool;
 use App\Mcp\Tools\AiConfig\UpdateAiAssistantConfigSettingsTool;
 use App\Mcp\Tools\AiConfig\UpdateAiModelConfigTool;
 use App\Mcp\Tools\Banking\AttachReceiptTool;
+use App\Mcp\Tools\Banking\GetAccountBalancesTool;
 use App\Mcp\Tools\Banking\GetReconciliationSummaryTool;
 use App\Mcp\Tools\Banking\GetTransactionTool;
 use App\Mcp\Tools\Banking\ImportTransactionsTool;
 use App\Mcp\Tools\Banking\ListTransactionsTool;
 use App\Mcp\Tools\Banking\ListUnmatchedTransactionsTool;
 use App\Mcp\Tools\Banking\ReconcilePaymentTool;
+use App\Mcp\Tools\Banking\RefreshBankBalancesTool;
 use App\Mcp\Tools\Banking\UpdateTransactionCategoryTool;
 use App\Mcp\Tools\CreateCustomerTool;
 use App\Mcp\Tools\CreateEnquiryReplyTool;
@@ -143,6 +145,8 @@ class QvtServer extends Server
         ListUnmatchedTransactionsTool::class,
         GetReconciliationSummaryTool::class,
         AttachReceiptTool::class,
+        GetAccountBalancesTool::class,
+        RefreshBankBalancesTool::class,
 
         // Dashboard & reporting tools
         GetDashboardStatsTool::class,
@@ -224,6 +228,8 @@ class QvtServer extends Server
             ListUnmatchedTransactionsTool::class,
             GetReconciliationSummaryTool::class,
             AttachReceiptTool::class,
+            GetAccountBalancesTool::class,
+            RefreshBankBalancesTool::class,
             GetDashboardStatsTool::class,
             GetQuoteActivityTool::class,
             GetWeeklySummaryTool::class,

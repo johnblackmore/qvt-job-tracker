@@ -1,9 +1,11 @@
 <?php
 
+use App\Banking\Services\BalanceService;
 use App\Models\Customer;
 use App\Models\Enquiry;
 use App\Models\Order;
 use App\Models\Quote;
+use Illuminate\Database\Eloquent\Collection;
 use Livewire\Volt\Component;
 
 new class extends Component
@@ -13,12 +15,32 @@ new class extends Component
     public int $pendingOrderCount = 0;
     public int $enquiryCount = 0;
 
+    public Collection $bankAccounts;
+
+    public bool $refreshing = false;
+
     public function mount(): void
     {
         $this->customerCount = Customer::count();
         $this->enquiryCount = Enquiry::whereIn('status', ['new', 'in_progress'])->count();
         $this->openQuoteCount = Quote::whereIn('status', ['draft', 'sent'])->count();
         $this->pendingOrderCount = Order::whereIn('status', ['pending', 'deposit_paid'])->count();
+
+        $this->bankAccounts = app(BalanceService::class)->getBalances();
+    }
+
+    public function refreshBalances(): void
+    {
+        $this->refreshing = true;
+
+        try {
+            $this->bankAccounts = app(BalanceService::class)->refreshAllBalances();
+            $this->dispatch('notify', message: 'Balances refreshed successfully.', type: 'success');
+        } catch (\Exception $e) {
+            $this->dispatch('notify', message: 'Failed to refresh balances: '.$e->getMessage(), type: 'error');
+        } finally {
+            $this->refreshing = false;
+        }
     }
 }; ?>
 
@@ -78,6 +100,56 @@ new class extends Component
                 </div>
             </div>
         </a>
+    </div>
+
+    {{-- Bank balances --}}
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm mb-8">
+        <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+            <h2 class="text-base font-display font-semibold text-slate-900">Bank Accounts</h2>
+            <button
+                wire:click="refreshBalances"
+                wire:loading.attr="disabled"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-copper hover:text-copper-dark transition-colors disabled:opacity-50"
+            >
+                <x-lucide-refresh-cw class="w-4 h-4" wire:loading.class="animate-spin" />
+                <span wire:loading.remove>Refresh</span>
+                <span wire:loading>Refreshing...</span>
+            </button>
+        </div>
+        <div class="p-6">
+            @if ($bankAccounts->isEmpty())
+                <p class="text-sm text-slate-500">No bank accounts linked yet.</p>
+            @else
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                    @foreach ($bankAccounts as $account)
+                        <div class="p-4 rounded-lg border border-slate-200 bg-slate-50/50">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center">
+                                        <x-lucide-landmark class="w-4 h-4 text-teal-600" />
+                                    </div>
+                                    <p class="text-sm font-medium text-slate-700">{{ $account->name }}</p>
+                                </div>
+                            </div>
+                            <p class="text-2xl font-bold text-slate-900 font-display tracking-tight">
+                                @if ($account->balance_pence !== null)
+                                    £{{ number_format($account->balance_pence / 100, 2) }}
+                                @else
+                                    <span class="text-slate-400 text-base font-normal">Pending</span>
+                                @endif
+                            </p>
+                            <p class="mt-1 text-xs text-slate-500">
+                                @if ($account->balance_fetched_at)
+                                    Updated {{ $account->balance_fetched_at->diffForHumans() }}
+                                @else
+                                    Not yet fetched
+                                @endif
+                            </p>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </div>
     </div>
 
     {{-- Quick actions --}}

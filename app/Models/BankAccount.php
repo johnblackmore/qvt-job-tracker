@@ -17,11 +17,15 @@ class BankAccount extends Model
         'type',
         'currency',
         'is_active',
+        'balance_pence',
+        'balance_fetched_at',
         'metadata',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'balance_pence' => 'integer',
+        'balance_fetched_at' => 'datetime',
         'metadata' => 'array',
     ];
 

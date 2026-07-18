@@ -1,6 +1,7 @@
 <?php
 
 use App\Banking\Console\ImportTransactionsCommand;
+use App\Banking\Console\RefreshBalancesCommand;
 use App\Services\NetlifyFormService;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -26,3 +27,12 @@ Artisan::command('banking:import', function () {
 Schedule::command('banking:import')
     ->hourly()
     ->name('banking-import-transactions');
+
+Artisan::command('banking:refresh-balances', function () {
+    $this->call(RefreshBalancesCommand::class);
+})->purpose('Refresh cached bank account balances from the banking provider');
+
+Schedule::command('banking:refresh-balances')
+    ->everyFourHours()
+    ->between('8:00', '20:00')
+    ->name('banking-refresh-balances');
