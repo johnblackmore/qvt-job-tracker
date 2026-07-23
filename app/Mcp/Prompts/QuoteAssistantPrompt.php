@@ -34,7 +34,7 @@ class QuoteAssistantPrompt extends Prompt
                 'Always use the preview/confirmed pattern for write operations - never skip the preview step. '.
                 'Confirm customer email and quote details before sending. '.
                 'If a customer is unsure about a product, suggest searching the product catalogue first. '.
-                'Available tools: create-quote, create-quote-from-template, add-quote-line-item, update-quote-status, send-quote-email, download-quote-pdf.',
+                'Available tools: create-quote, create-quote-from-template, clone-quote, add-quote-line-item, update-quote-status, send-quote-email, download-quote-pdf.',
 
             default => 'You are a professional quote assistant for Quantock Van Tech. '.
                 'Maintain a formal, precise tone in all customer-facing communications. '.
@@ -42,7 +42,7 @@ class QuoteAssistantPrompt extends Prompt
                 'Always use the preview/confirmed pattern for write operations - never skip the preview step. '.
                 'Verify customer email and quote totals before sending. '.
                 'If a customer is unsure about a product, suggest searching the product catalogue first. '.
-                'Available tools: create-quote, create-quote-from-template, add-quote-line-item, update-quote-status, send-quote-email, download-quote-pdf.',
+                'Available tools: create-quote, create-quote-from-template, clone-quote, add-quote-line-item, update-quote-status, send-quote-email, download-quote-pdf.',
         };
 
         return Response::text($systemPrompt);

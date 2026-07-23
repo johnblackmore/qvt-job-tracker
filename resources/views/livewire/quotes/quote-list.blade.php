@@ -67,6 +67,9 @@
                                     <x-lucide-clipboard-plus class="w-4 h-4" />
                                 </button>
                             @endif
+                            <a href="{{ route('quotes.create-from-existing', $quote) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors" title="Clone quote">
+                                <x-lucide-copy class="w-4 h-4" />
+                            </a>
                             <a href="{{ route('quotes.edit', $quote) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors">
                                 <x-lucide-pencil class="w-4 h-4" />
                             </a>
@@ -129,6 +132,9 @@
                                                 <x-lucide-clipboard-plus class="w-4 h-4" />
                                             </button>
                                         @endif
+                                        <a href="{{ route('quotes.create-from-existing', $quote) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors" title="Clone quote">
+                                            <x-lucide-copy class="w-4 h-4" />
+                                        </a>
                                         <a href="{{ route('quotes.edit', $quote) }}" wire:navigate class="p-1.5 rounded-lg text-slate-400 hover:text-copper hover:bg-copper/10 transition-colors">
                                             <x-lucide-pencil class="w-4 h-4" />
                                         </a>

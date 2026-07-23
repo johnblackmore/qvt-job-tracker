@@ -11,6 +11,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('quotes', QuoteList::class)->name('quotes.index');
     Route::get('quotes/create', QuoteBuilder::class)->name('quotes.create');
     Route::get('quotes/create/from-sample/{sampleQuoteId}', QuoteBuilder::class)->name('quotes.create-from-sample');
+    Route::get('quotes/create/from-existing/{sourceQuoteId}', QuoteBuilder::class)->name('quotes.create-from-existing');
     Route::get('quotes/{id}', QuoteShow::class)->name('quotes.show');
     Route::get('quotes/{quoteId}/edit', QuoteBuilder::class)->name('quotes.edit');
 

@@ -36,7 +36,9 @@ class QuoteBuilder extends Component
 
     public ?int $enquiryId = null;
 
-    public function mount(?int $quoteId = null, ?int $sampleQuoteId = null, ?int $customerId = null, ?int $enquiryId = null): void
+    public ?int $sourceQuoteId = null;
+
+    public function mount(?int $quoteId = null, ?int $sampleQuoteId = null, ?int $customerId = null, ?int $enquiryId = null, ?int $sourceQuoteId = null): void
     {
         $this->valid_until = now()->addDays(30)->format('Y-m-d');
 
@@ -92,6 +94,29 @@ class QuoteBuilder extends Component
             $enquiry = Enquiry::find($this->enquiryId);
             if ($enquiry && $enquiry->customer_id) {
                 $this->customer_id = $enquiry->customer_id;
+            }
+        }
+
+        if ($sourceQuoteId) {
+            $this->sourceQuoteId = $sourceQuoteId;
+            $source = Quote::with('lineItems')->findOrFail($sourceQuoteId);
+            $this->customer_id ??= $source->customer_id;
+            $this->notes = $source->notes ?? '';
+            $this->enquiryId ??= $source->enquiry_id;
+
+            foreach ($source->lineItems as $item) {
+                $this->lineItems[] = [
+                    'line_type' => $item->line_type,
+                    'product_id' => $item->product_id,
+                    'product_supplier_id' => $item->product_supplier_id,
+                    'description' => $item->description,
+                    'quantity' => (string) $item->quantity,
+                    'unit_retail_price' => (string) $item->unit_retail_price,
+                    'unit_trade_price' => (string) $item->unit_trade_price,
+                    'trade_price_includes_vat' => false,
+                    'vat_rate_type' => 'standard',
+                    'notes' => $item->notes ?? '',
+                ];
             }
         }
     }

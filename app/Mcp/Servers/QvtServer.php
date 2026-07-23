@@ -33,6 +33,7 @@ use App\Mcp\Tools\Banking\ListUnmatchedTransactionsTool;
 use App\Mcp\Tools\Banking\ReconcilePaymentTool;
 use App\Mcp\Tools\Banking\RefreshBankBalancesTool;
 use App\Mcp\Tools\Banking\UpdateTransactionCategoryTool;
+use App\Mcp\Tools\CloneQuoteTool;
 use App\Mcp\Tools\CreateCustomerTool;
 use App\Mcp\Tools\CreateEnquiryReplyTool;
 use App\Mcp\Tools\CreateEnquiryTool;
@@ -122,6 +123,7 @@ class QvtServer extends Server
         // Quote tools
         CreateQuoteTool::class,
         CreateQuoteFromTemplateTool::class,
+        CloneQuoteTool::class,
         AddQuoteLineItemTool::class,
         UpdateQuoteStatusTool::class,
 
@@ -236,6 +238,7 @@ class QvtServer extends Server
             SearchProductsTool::class,
             CreateQuoteTool::class,
             CreateQuoteFromTemplateTool::class,
+            CloneQuoteTool::class,
             AddQuoteLineItemTool::class,
             UpdateQuoteStatusTool::class,
             ListOrdersTool::class,

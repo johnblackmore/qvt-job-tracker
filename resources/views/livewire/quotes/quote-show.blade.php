@@ -41,6 +41,10 @@
                     <x-lucide-pencil class="w-4 h-4" />
                     Edit
                 </a>
+                <a href="{{ route('quotes.create-from-existing', $quote) }}" wire:navigate class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+                    <x-lucide-copy class="w-4 h-4" />
+                    Clone
+                </a>
                 @if($quote->status === 'accepted' && ! $quote->converted_order_id)
                     <button wire:click="convertToOrder" class="inline-flex items-center gap-2 rounded-lg bg-copper px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-copper-dark transition-colors">
                         <x-lucide-clipboard-plus class="w-4 h-4" />

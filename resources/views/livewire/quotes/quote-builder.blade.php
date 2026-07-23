@@ -1,10 +1,10 @@
 <div class="max-w-6xl">
     <div class="mb-8">
         <h1 class="text-2xl font-display font-semibold text-slate-900 tracking-tight">
-            {{ $quote ? 'Edit Quote' : ($sampleQuote ? 'Clone from Template' : 'Create Quote') }}
+            {{ $quote ? 'Edit Quote' : ($sampleQuote ? 'Clone from Template' : ($sourceQuoteId ? 'Clone from Quote' : 'Create Quote')) }}
         </h1>
         <p class="mt-1 text-sm text-slate-500">
-            {{ $quote ? 'Update quote details' : ($sampleQuote ? 'Customise this template for a customer' : 'Build a new customer quote') }}
+            {{ $quote ? 'Update quote details' : ($sampleQuote ? 'Customise this template for a customer' : ($sourceQuoteId ? 'Customise this clone before saving' : 'Build a new customer quote')) }}
         </p>
     </div>
 
